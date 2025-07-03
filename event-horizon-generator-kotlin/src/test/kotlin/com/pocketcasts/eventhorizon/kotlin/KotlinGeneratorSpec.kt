@@ -59,12 +59,16 @@ class KotlinGeneratorSpec : FunSpec({
       |  public val propertyA: EnumA,
       |) : Trackable {
       |  override val trackableName: String
-      |    get() = "event_a"
+      |    get() = EventName
       |
       |  override val trackableProperties: Map<String, Any>
       |    get() = buildMap<String, Any> {
       |      put("property_a", propertyA)
       |    }
+      |
+      |  public companion object {
+      |    public const val EventName: String = "event_a"
+      |  }
       |}
       |
       |public data class EventBEvent(
@@ -75,7 +79,7 @@ class KotlinGeneratorSpec : FunSpec({
       |  public val propertyB: EnumB,
       |) : Trackable {
       |  override val trackableName: String
-      |    get() = "event_b"
+      |    get() = EventName
       |
       |  override val trackableProperties: Map<String, Any>
       |    get() = buildMap<String, Any> {
@@ -84,6 +88,10 @@ class KotlinGeneratorSpec : FunSpec({
       |      }
       |      put("property_b", propertyB)
       |    }
+      |
+      |  public companion object {
+      |    public const val EventName: String = "event_b"
+      |  }
       |}
       |
       |public enum class EnumA {

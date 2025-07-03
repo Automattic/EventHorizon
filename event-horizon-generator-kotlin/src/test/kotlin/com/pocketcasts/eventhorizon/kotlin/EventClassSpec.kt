@@ -16,8 +16,10 @@ class EventClassSpec : FunSpec({
 
     typeSpec.toString() shouldBe """
       |public data object EventNameEvent : dev.sample.Trackable {
+      |  public const val EventName: kotlin.String = "event_name"
+      |
       |  override val trackableName: kotlin.String
-      |    get() = "event_name"
+      |    get() = EventName
       |
       |  override val trackableProperties: kotlin.collections.Map<kotlin.String, kotlin.Any>
       |    get() = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
@@ -45,7 +47,7 @@ class EventClassSpec : FunSpec({
       |  public val propertyFour: dev.sample.EnumName,
       |) : dev.sample.Trackable {
       |  override val trackableName: kotlin.String
-      |    get() = "event_name"
+      |    get() = EventName
       |
       |  override val trackableProperties: kotlin.collections.Map<kotlin.String, kotlin.Any>
       |    get() = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
@@ -54,6 +56,10 @@ class EventClassSpec : FunSpec({
       |      put("property_three", propertyThree)
       |      put("property_four", propertyFour)
       |    }
+      |
+      |  public companion object {
+      |    public const val EventName: kotlin.String = "event_name"
+      |  }
       |}
       |
     """.trimMargin()
@@ -69,8 +75,10 @@ class EventClassSpec : FunSpec({
       | * Some description
       | */
       |public data object EventNameEvent : dev.sample.Trackable {
+      |  public const val EventName: kotlin.String = "event_name"
+      |
       |  override val trackableName: kotlin.String
-      |    get() = "event_name"
+      |    get() = EventName
       |
       |  override val trackableProperties: kotlin.collections.Map<kotlin.String, kotlin.Any>
       |    get() = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
@@ -102,7 +110,7 @@ class EventClassSpec : FunSpec({
       |  public val propertyThree: kotlin.String,
       |) : dev.sample.Trackable {
       |  override val trackableName: kotlin.String
-      |    get() = "event_name"
+      |    get() = EventName
       |
       |  override val trackableProperties: kotlin.collections.Map<kotlin.String, kotlin.Any>
       |    get() = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
@@ -110,6 +118,10 @@ class EventClassSpec : FunSpec({
       |      put("property_two", propertyTwo)
       |      put("property_three", propertyThree)
       |    }
+      |
+      |  public companion object {
+      |    public const val EventName: kotlin.String = "event_name"
+      |  }
       |}
       |
     """.trimMargin()
@@ -132,7 +144,7 @@ class EventClassSpec : FunSpec({
       |  public val propertyThree: kotlin.String?,
       |) : dev.sample.Trackable {
       |  override val trackableName: kotlin.String
-      |    get() = "event_name"
+      |    get() = EventName
       |
       |  override val trackableProperties: kotlin.collections.Map<kotlin.String, kotlin.Any>
       |    get() = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
@@ -142,6 +154,10 @@ class EventClassSpec : FunSpec({
       |        put("property_three", propertyThree)
       |      }
       |    }
+      |
+      |  public companion object {
+      |    public const val EventName: kotlin.String = "event_name"
+      |  }
       |}
       |
     """.trimMargin()

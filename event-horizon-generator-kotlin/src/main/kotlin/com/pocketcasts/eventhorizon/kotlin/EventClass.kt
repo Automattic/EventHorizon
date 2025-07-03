@@ -40,6 +40,18 @@ internal class EventClass(
       is Type.Enum -> EventPropertyEnum(packageName, type).className
     }.copy(nullable = isOptional(Platform.Android))
 
+  private val eventNameProperty
+    get() = PropertySpec
+      .builder("EventName", STRING, KModifier.CONST)
+      .initializer("%S", event.name)
+      .build()
+
+  private val companionObject
+    get() = TypeSpec
+      .companionObjectBuilder()
+      .addProperty(eventNameProperty)
+      .build()
+
   private val constructor
     get() = FunSpec
       .constructorBuilder()
@@ -52,7 +64,7 @@ internal class EventClass(
 
   private val trackableNameGetter
     get() = buildCodeBlock {
-      addStatement("return %S", event.name)
+      addStatement("return %N", eventNameProperty)
     }
 
   private val trackablePropertiesGetter
@@ -84,9 +96,14 @@ internal class EventClass(
     get() {
       val className = ClassName(packageName, "${event.name.snakeToPascalCase()}Event")
       val baseType = if (classProperties.isNotEmpty()) {
-        TypeSpec.classBuilder(className).primaryConstructor(constructor)
+        TypeSpec
+          .classBuilder(className)
+          .primaryConstructor(constructor)
+          .addType(companionObject)
       } else {
-        TypeSpec.objectBuilder(className)
+        TypeSpec
+          .objectBuilder(className)
+          .addProperty(eventNameProperty)
       }
       val initializerProperties = classProperties.keys.map { property ->
         property.toBuilder().initializer(property.name).build()
