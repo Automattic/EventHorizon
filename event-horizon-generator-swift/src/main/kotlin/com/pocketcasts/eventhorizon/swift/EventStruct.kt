@@ -10,6 +10,7 @@ import io.outfoxx.swiftpoet.BOOL
 import io.outfoxx.swiftpoet.CodeBlock
 import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.FunctionSpec
+import io.outfoxx.swiftpoet.Modifier
 import io.outfoxx.swiftpoet.PropertySpec
 import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeName
@@ -20,6 +21,9 @@ internal class EventStruct(
   private val event: Event,
   private val trackableProtocol: TrackableProtocol,
 ) {
+  private val type
+    get() = DeclaredTypeName(moduleName, "${event.name.snakeToPascalCase()}Event")
+
   private val structProperties
     get() = event.properties
       .associateBy { property ->
@@ -43,6 +47,12 @@ internal class EventStruct(
       }
     }
 
+  private val eventNameProperty
+    get() = PropertySpec
+      .builder("eventName", STRING, Modifier.STATIC)
+      .initializer("%S", event.name)
+      .build()
+
   private val constructor
     get() = FunctionSpec.constructorBuilder()
       .also { builder ->
@@ -57,7 +67,7 @@ internal class EventStruct(
   private val trackableNameGetter
     get() = CodeBlock
       .builder()
-      .addStatement("return %S", event.name)
+      .addStatement("return %T.%N", type, eventNameProperty)
       .build()
 
   private val trackablePropertiesGetter
@@ -84,7 +94,8 @@ internal class EventStruct(
 
   val typeSpec
     get() = TypeSpec
-      .structBuilder(DeclaredTypeName(moduleName, "${event.name.snakeToPascalCase()}Event"))
+      .structBuilder(type)
+      .addProperty(eventNameProperty)
       .addProperties(structProperties.keys)
       .also { builder -> event.description?.let(builder::addDoc) }
       .also { builder ->
