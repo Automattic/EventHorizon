@@ -1,0 +1,15 @@
+build:
+  maxIssues: 0
+
+
+naming:
+  ObjectPropertyNaming:
+    active: true
+    constantPattern: '^([a-z]+)([A-Z]?[a-z]+)+$'
+    propertyPattern: '^([a-z]+)([A-Z]?[a-z]+)+$'
+    privatePropertyPattern: '^([a-z]+)([A-Z]?[a-z]+)+$'
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
+    propertyPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
+    privatePropertyPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
