@@ -1,6 +1,7 @@
 package com.automattic.eventhorizon.swift
 
 import com.automattic.eventhorizon.Event
+import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.Property.Type
@@ -14,20 +15,23 @@ class SwiftGeneratorSpec : FunSpec({
   val generator = SwiftGenerator("MyModule")
 
   test("generate everything") {
-    val events = Events(
-      Event(
-        "event_a",
-        Property("property_a", Type.Enum("enum_a", "value")),
-        description = "Event description",
-      ),
-      Event(
-        "event_b",
-        Property("property_a", Type.Enum("enum_a", "value"), optIos = true),
-        Property("property_b", Type.Enum("enum_b", "value_a", "value_b"), description = "Property description"),
+    val schema = EventHorizonSchema.create(
+      schemaVersion = 1u,
+      events = Events(
+        Event(
+          "event_a",
+          Property("property_a", Type.Enum("enum_a", "value")),
+          description = "Event description",
+        ),
+        Event(
+          "event_b",
+          Property("property_a", Type.Enum("enum_a", "value"), optIos = true),
+          Property("property_b", Type.Enum("enum_b", "value_a", "value_b"), description = "Property description"),
+        ),
       ),
     )
 
-    val file = generator.generate(events, tempDir)
+    val file = generator.generate(schema, tempDir)
 
     file.readText() shouldBe """
       |class EventHorizon {

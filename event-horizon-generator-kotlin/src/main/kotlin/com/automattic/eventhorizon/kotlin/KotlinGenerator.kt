@@ -1,6 +1,6 @@
 package com.automattic.eventhorizon.kotlin
 
-import com.automattic.eventhorizon.Events
+import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Generator
 import com.squareup.kotlinpoet.FileSpec
 import java.nio.file.Path
@@ -8,11 +8,11 @@ import java.nio.file.Path
 public class KotlinGenerator(
   private val packageName: String,
 ) : Generator {
-  override fun generate(events: Events, outputDir: Path): Path {
+  override fun generate(schema: EventHorizonSchema, outputDir: Path): Path {
     val trackable = TrackableInterface(packageName)
     val eventHorizonType = EventHorizonClass(packageName, trackable).typeSpec
-    val eventTypes = events.map { event -> EventClass(packageName, event, trackable).typeSpec }
-    val enumTypes = events.distinctEnums.map { enum -> EventPropertyEnum(packageName, enum).typeSpec }
+    val eventTypes = schema.events.map { event -> EventClass(packageName, event, trackable).typeSpec }
+    val enumTypes = schema.events.distinctEnums.map { enum -> EventPropertyEnum(packageName, enum).typeSpec }
 
     return FileSpec
       .builder(packageName, "EventHorizon")

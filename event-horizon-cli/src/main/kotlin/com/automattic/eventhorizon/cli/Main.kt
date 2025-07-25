@@ -60,7 +60,7 @@ private class EventHorizonCli : CliktCommand() {
     val format = requireOption(outputFormat) { "missing option --output-format" }
     val dir = requireOption(outputDir) { "missing option --output-dir" }
     parseSchema(inputFile)
-      .map { schema -> createGenerator(format).generate(schema.events, dir) }
+      .map { schema -> createGenerator(format).generate(schema, dir) }
       .onSuccess { file -> echo("$file file generated successfully") }
       .getOrThrow()
   }

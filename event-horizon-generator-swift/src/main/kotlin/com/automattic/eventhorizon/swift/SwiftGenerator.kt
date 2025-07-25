@@ -1,6 +1,6 @@
 package com.automattic.eventhorizon.swift
 
-import com.automattic.eventhorizon.Events
+import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Generator
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.TypeSpec
@@ -9,11 +9,11 @@ import java.nio.file.Path
 public class SwiftGenerator(
   private val moduleName: String,
 ) : Generator {
-  override fun generate(events: Events, outputDir: Path): Path {
+  override fun generate(schema: EventHorizonSchema, outputDir: Path): Path {
     val trackable = TrackableProtocol(moduleName)
     val eventHorizonType = EventHorizonClass(moduleName, trackable).typeSpec
-    val eventTypes = events.map { event -> EventStruct(moduleName, event, trackable).typeSpec }
-    val enumTypes = events.distinctEnums.map { enum -> EventPropertyEnum(moduleName, enum).typeSpec }
+    val eventTypes = schema.events.map { event -> EventStruct(moduleName, event, trackable).typeSpec }
+    val enumTypes = schema.events.distinctEnums.map { enum -> EventPropertyEnum(moduleName, enum).typeSpec }
 
     val fileSpec = FileSpec
       .builder(moduleName, "EventHorizon")

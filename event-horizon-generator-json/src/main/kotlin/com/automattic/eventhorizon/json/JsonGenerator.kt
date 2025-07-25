@@ -1,7 +1,7 @@
 package com.automattic.eventhorizon.json
 
 import com.automattic.eventhorizon.Event as InputEvent
-import com.automattic.eventhorizon.Events
+import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property as InputProperty
@@ -20,8 +20,8 @@ public class JsonGenerator(
     this.prettyPrint = prettyPrint
   }
 
-  override fun generate(events: Events, outputDir: Path): Path {
-    val outputEvents = events.map(InputEvent::toEvent)
+  override fun generate(schema: EventHorizonSchema, outputDir: Path): Path {
+    val outputEvents = schema.events.map(InputEvent::toEvent)
     val jsonText = json.encodeToString(outputEvents)
 
     val outputPath = outputDir.resolve("event-horizon.json")
