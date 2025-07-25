@@ -34,6 +34,7 @@ public class JsonGenerator(
 private fun InputEvent.toEvent() = Event(
   name = name,
   documentation = documentation,
+  availablePlatforms = availablePlatforms.map(Platform::value),
   properties = properties.map(InputProperty::toProperty),
 )
 
@@ -54,6 +55,7 @@ private fun InputProperty.toProperty() = Property(
 private class Event(
   val name: String,
   val documentation: String?,
+  val availablePlatforms: List<String>,
   val properties: List<Property>,
 )
 
