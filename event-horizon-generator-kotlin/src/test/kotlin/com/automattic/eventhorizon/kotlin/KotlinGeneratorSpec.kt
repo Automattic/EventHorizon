@@ -18,12 +18,13 @@ class KotlinGeneratorSpec : FunSpec({
   test("generate everything") {
     val schema = EventHorizonSchema.create(
       schemaVersion = 1u,
-      availablePlatforms = setOf(Platform("android")),
+      availablePlatforms = setOf(Platform("android"), Platform("ios")),
       events = Events(
         Event(
           "event_a",
           Property.test("property_a", type = Type.Enum.test("enum_a", "value")),
           documentation = "Event documentation",
+          availablePlatforms = setOf("android"),
         ),
         Event(
           "event_b",
@@ -33,7 +34,9 @@ class KotlinGeneratorSpec : FunSpec({
             type = Type.Enum.test("enum_b", "value_a", "value_b"),
             documentation = "Property documentation",
           ),
+          availablePlatforms = setOf("android"),
         ),
+        Event("event_c", availablePlatforms = setOf("ios")),
       ),
     )
 
