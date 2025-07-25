@@ -1,5 +1,6 @@
 package com.automattic.eventhorizon
 
+import com.automattic.eventhorizon.Property.Type
 import com.charleskorn.kaml.Yaml as YamlObject
 import com.charleskorn.kaml.YamlException
 import com.charleskorn.kaml.YamlList
@@ -8,7 +9,6 @@ import com.charleskorn.kaml.YamlNull
 import com.charleskorn.kaml.YamlScalar
 import com.charleskorn.kaml.decodeFromStream
 import com.charleskorn.kaml.yamlScalar
-import com.automattic.eventhorizon.Property.Type
 import java.nio.file.Path
 import kotlin.io.path.fileSize
 import kotlin.io.path.inputStream
@@ -17,21 +17,26 @@ import kotlinx.serialization.Serializable
 private const val DescriptionNode = "description"
 private val Yaml = YamlObject.default
 
-public fun parseEvents(file: Path): Result<Events> = runCatching {
+public fun parseSchema(file: Path): Result<EventHorizonSchema> = runCatching {
   if (file.fileSize() != 0L) {
     parseFile(file)
   } else {
-    Events()
+    EventHorizonSchema.Empty
   }
 }
 
-private fun parseFile(file: Path): Events {
+private fun parseFile(file: Path): EventHorizonSchema {
   val definition = Yaml.decodeFromStream<InputDefinition>(file.inputStream())
   val enums = definition.enums.map { (name, values) -> Type.Enum(name, values.orEmpty()) }
   val events = definition
     .parseProperties(enums)
     .map { (eventName, description, properties) -> Event(eventName, description, properties) }
-  return Events(events)
+  return EventHorizonSchema.create(
+    schemaVersion = requireNotNull(definition.version.toULongOrNull()) {
+      "Schema version must be a positive number. Is: ${definition.version}"
+    },
+    events = Events(events),
+  )
 }
 
 private fun InputDefinition.parseProperties(enums: List<Type.Enum>) = events.map { (eventName, rawProperties) ->
@@ -92,6 +97,7 @@ private fun YamlList.parsePlatforms() = items.mapTo(mutableSetOf()) { item ->
 
 @Serializable
 private data class InputDefinition(
+  val version: String,
   val events: Map<String, Map<String, YamlNode>?> = emptyMap(),
   val enums: Map<String, Set<String>?> = emptyMap(),
 )

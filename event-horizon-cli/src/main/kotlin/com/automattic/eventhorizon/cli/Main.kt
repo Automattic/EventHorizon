@@ -1,5 +1,10 @@
 package com.automattic.eventhorizon.cli
 
+import com.automattic.eventhorizon.json.JsonGenerator
+import com.automattic.eventhorizon.kotlin.KotlinGenerator
+import com.automattic.eventhorizon.parseSchema
+import com.automattic.eventhorizon.swift.SwiftGenerator
+import com.automattic.eventhorizon.ts.TypeScriptGenerator
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.main
@@ -10,11 +15,6 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
-import com.automattic.eventhorizon.json.JsonGenerator
-import com.automattic.eventhorizon.kotlin.KotlinGenerator
-import com.automattic.eventhorizon.parseEvents
-import com.automattic.eventhorizon.swift.SwiftGenerator
-import com.automattic.eventhorizon.ts.TypeScriptGenerator
 
 public fun main(vararg args: String) {
   EventHorizonCli().main(args)
@@ -51,7 +51,7 @@ private class EventHorizonCli : CliktCommand() {
   }
 
   private fun verify() {
-    parseEvents(inputFile)
+    parseSchema(inputFile)
       .onSuccess { echo("No issues found in $inputFile file") }
       .getOrThrow()
   }
@@ -59,8 +59,8 @@ private class EventHorizonCli : CliktCommand() {
   private fun generate() {
     val format = requireOption(outputFormat) { "missing option --output-format" }
     val dir = requireOption(outputDir) { "missing option --output-dir" }
-    parseEvents(inputFile)
-      .map { events -> createGenerator(format).generate(events, dir) }
+    parseSchema(inputFile)
+      .map { schema -> createGenerator(format).generate(schema.events, dir) }
       .onSuccess { file -> echo("$file file generated successfully") }
       .getOrThrow()
   }
