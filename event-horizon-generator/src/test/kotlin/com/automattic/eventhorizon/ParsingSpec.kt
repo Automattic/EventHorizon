@@ -400,6 +400,45 @@ class ParsingSpec : FunSpec({
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event.properties shouldHaveSingleElement Property.test("property1", description = "Property description")
   }
+
+  test("parse opt out platform events description") {
+    val text = """
+      |version: 1
+      |platforms:
+      |  - android
+      |  - ios
+      |  - web
+      |
+      |events:
+      |  event:
+      |    optOut:
+      |      - ios
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parseSchema(tempFile)
+
+    val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
+    event.availablePlatforms shouldContainExactly setOf(Platform("android"), Platform("web"))
+  }
+
+  test("parse event with optOut set as one of properties") {
+    val text = """
+      |version: 1
+      |
+      |events:
+      |  event:
+      |    optOut:
+      |      type: text
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parseSchema(tempFile)
+
+    val exception = result.shouldBeFailure<YamlException>()
+    exception shouldHaveMessage "'optOut' cannot be used as a property name"
+    exception.location shouldBe Location(line = 6, column = 7)
+  }
 })
 
 @Suppress("NOTHING_TO_INLINE")

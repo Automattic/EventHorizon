@@ -21,6 +21,28 @@ class EventHorizonSchemaSpec() : FunSpec({
     EventHorizonSchema.Empty.schemaVersion shouldBe 0u
   }
 
+  test("schema with missing event platforms") {
+    val exception = shouldThrow<IllegalArgumentException> {
+      EventHorizonSchema.create(
+        schemaVersion = 1u,
+        availablePlatforms = setOf(Platform("android"), Platform("ios")),
+        events = Events(
+          Event("event1", availablePlatforms = setOf("android")),
+          Event("event2", availablePlatforms = setOf("ios", "web")),
+          Event("event3", availablePlatforms = setOf("web", "embedded")),
+        ),
+      )
+    }
+    exception shouldHaveMessage """
+      |Schema must declare platforms for optional events. Available platforms:
+      | - android
+      | - ios
+      |Issues found with the following events:
+      | - event2: [web]
+      | - event3: [web, embedded]
+    """.trimMargin()
+  }
+
   test("schema with missing property platforms") {
     val exception = shouldThrow<IllegalArgumentException> {
       EventHorizonSchema.create(

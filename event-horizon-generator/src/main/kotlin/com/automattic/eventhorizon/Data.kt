@@ -18,6 +18,7 @@ public data class EventHorizonSchema private constructor(
 
     public fun create(schemaVersion: ULong, availablePlatforms: Set<Platform>, events: Events): EventHorizonSchema {
       require(schemaVersion > 0u) { "Schema version must be a positive number. Is: $schemaVersion" }
+      requirePredeclaredEventPlatforms(events, availablePlatforms)
       requirePredeclaredPropertyPlatforms(events, availablePlatforms)
       return EventHorizonSchema(
         schemaVersion = schemaVersion,
@@ -26,8 +27,27 @@ public data class EventHorizonSchema private constructor(
       )
     }
 
+    private fun requirePredeclaredEventPlatforms(events: Events, availablePlatforms: Set<Platform>) {
+      val invalidPlatforms = events.findInvalidEventPlatforms(availablePlatforms)
+      require(invalidPlatforms.isEmpty()) {
+        buildString {
+          append("Schema must declare platforms for optional events. Available platforms:\n")
+          val platforms = availablePlatforms.joinToString(separator = "\n") { platform ->
+            " - ${platform.value}"
+          }
+          append(platforms)
+
+          append("\nIssues found with the following events:\n")
+          val eventIssues = invalidPlatforms.joinToString(separator = "\n") { (eventName, platformNames) ->
+            " - $eventName: $platformNames"
+          }
+          append(eventIssues)
+        }
+      }
+    }
+
     private fun requirePredeclaredPropertyPlatforms(events: Events, availablePlatforms: Set<Platform>) {
-      val invalidPlatforms = events.findInvalidPlatforms(availablePlatforms)
+      val invalidPlatforms = events.findInvalidPropertyPlatforms(availablePlatforms)
       require(invalidPlatforms.isEmpty()) {
         buildString {
           append("Schema must declare platforms for optional properties. Available platforms:\n")
@@ -39,7 +59,7 @@ public data class EventHorizonSchema private constructor(
           append("\nIssues found with the following events and properties:\n")
           val eventIssues = invalidPlatforms.joinToString(separator = "\n") { (eventName, propertyNames) ->
             val propertyIssues = propertyNames.joinToString(separator = "\n") { (propertyName, platformNames) ->
-              "   - $propertyName: ${platformNames.joinToString(prefix = "[", postfix = "]")}"
+              "   - $propertyName: $platformNames"
             }
             " - $eventName:\n$propertyIssues"
           }
@@ -48,7 +68,18 @@ public data class EventHorizonSchema private constructor(
       }
     }
 
-    private fun Events.findInvalidPlatforms(availablePlatforms: Set<Platform>) = mapNotNull { event ->
+    private fun Events.findInvalidEventPlatforms(availablePlatforms: Set<Platform>) = mapNotNull { event ->
+      val invalidPlatforms = event.availablePlatforms.filter { platform ->
+        platform !in availablePlatforms
+      }
+      if (invalidPlatforms.isNotEmpty()) {
+        event.name to invalidPlatforms.map(Platform::value)
+      } else {
+        null
+      }
+    }
+
+    private fun Events.findInvalidPropertyPlatforms(availablePlatforms: Set<Platform>) = mapNotNull { event ->
       val invalidProperties = event.properties.mapNotNull { property ->
         val invalidPlatforms = property.optionalPlatforms.filter { platform ->
           platform !in availablePlatforms
@@ -94,9 +125,10 @@ public data class Events(
 }
 
 public data class Event(
-  public val name: String,
-  public val description: String?,
-  public val properties: List<Property>,
+  val name: String,
+  val description: String?,
+  val properties: List<Property>,
+  val availablePlatforms: Set<Platform>,
 ) {
   init {
     requireNoDuplicates(properties.map(Property::name)) { duplicates ->
@@ -108,7 +140,13 @@ public data class Event(
     name: String,
     vararg properties: Property,
     description: String? = null,
-  ) : this(name, description, properties.toList())
+    availablePlatforms: Set<String> = emptySet(),
+  ) : this(
+    name = name,
+    description = description,
+    properties = properties.toList(),
+    availablePlatforms = availablePlatforms.mapTo(mutableSetOf(), ::Platform),
+  )
 }
 
 public data class Property(

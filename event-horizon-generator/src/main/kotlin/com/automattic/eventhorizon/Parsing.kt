@@ -14,7 +14,8 @@ import kotlin.io.path.fileSize
 import kotlin.io.path.inputStream
 import kotlinx.serialization.Serializable
 
-private const val DescriptionNode = "description"
+private const val DescriptionNode = "documentation"
+private const val OptOutPlatformsNode = "optOut"
 private val Yaml = YamlObject.default
 
 public fun parseSchema(file: Path): Result<EventHorizonSchema> = runCatching {
@@ -29,9 +30,7 @@ private fun parseFile(file: Path): EventHorizonSchema {
   val definition = Yaml.decodeFromStream<InputDefinition>(file.inputStream())
   val enums = definition.enums.map { (name, values) -> Type.Enum(name, values.orEmpty()) }
   val platforms = definition.platforms.mapTo(mutableSetOf(), ::Platform)
-  val events = definition
-    .parseProperties(enums, platforms)
-    .map { (eventName, description, properties) -> Event(eventName, description, properties) }
+  val events = definition.parseEvents(enums, platforms)
   return EventHorizonSchema.create(
     schemaVersion = requireNotNull(definition.version.toULongOrNull()) {
       "Schema version must be a positive number. Is: ${definition.version}"
@@ -41,21 +40,35 @@ private fun parseFile(file: Path): EventHorizonSchema {
   )
 }
 
-private fun InputDefinition.parseProperties(enums: List<Type.Enum>, platforms: Set<Platform>) =
+private fun InputDefinition.parseEvents(enums: List<Type.Enum>, platforms: Set<Platform>) =
   events.map { (eventName, rawProperties) ->
     val description = rawProperties?.parseDescription()
+    val optOutPlatforms = rawProperties?.parsePlatforms().orEmpty()
     val properties = rawProperties
-      ?.minus(DescriptionNode)
+      ?.minus(setOf(DescriptionNode, OptOutPlatformsNode))
       ?.mapValues { (_, rawProperty) -> Yaml.decodeFromYamlNode<EventPropertyConfiguration>(rawProperty) }
       ?.parseProperties(enums, platforms)
       .orEmpty()
-    Triple(eventName, description, properties)
+    Event(
+      name = eventName,
+      description = description,
+      properties = properties,
+      availablePlatforms = platforms - optOutPlatforms,
+    )
   }
 
 private fun Map<String, YamlNode>.parseDescription() = when (val yamlDescription = get(DescriptionNode)) {
   is YamlScalar -> yamlDescription.content
   is YamlNull, null -> null
-  else -> throw YamlException("'description' cannot be used as a property name", yamlDescription.path)
+  else -> throw YamlException("'$DescriptionNode' cannot be used as a property name", yamlDescription.path)
+}
+
+private fun Map<String, YamlNode>.parsePlatforms() = when (val yamlPlatforms = get(OptOutPlatformsNode)) {
+  is YamlList -> yamlPlatforms.items.mapTo(mutableSetOf()) { item ->
+    Platform(item.yamlScalar.content)
+  }
+  is YamlNull, null -> emptySet()
+  else -> throw YamlException("'$OptOutPlatformsNode' cannot be used as a property name", yamlPlatforms.path)
 }
 
 private fun RawProperty.parseProperties(enums: List<Type.Enum>, platforms: Set<Platform>) =
