@@ -1,9 +1,0 @@
-plugins {
-  id "com.android.library"
-  id "com.pocketcasts.eventhorizon"
-}
-
-android {
-  namespace "com.pocketacats.eventhorizon.sample"
-  compileSdkVersion 35
-}

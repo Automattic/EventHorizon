@@ -1,8 +1,0 @@
-plugins {
-  id "org.jetbrains.kotlin.jvm"
-  id "com.pocketcasts.eventhorizon"
-}
-
-eventHorizon {
-  inputFile = file("events.yaml")
-}
