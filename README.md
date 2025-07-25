@@ -1,0 +1,291 @@
+# Event Horizon
+
+A multi-language code generation tool for type-safe event tracking. The system takes YAML schema definitions as input and generates equivalent tracking implementations for Kotlin, Swift, TypeScript, and JSON schema formats.
+
+## Input Schema
+
+```yaml
+# Required key defining schema version. Must be a positive number.
+version: 1
+
+# List of platforms that are available for code generation.
+platforms:
+  - android
+  - ios
+  - web
+  - desktop
+
+# List of events
+events:
+  user_signup:
+    # Optional key.
+    # 'documentation' is a reserved key word and cannot be used as a property
+    documentation: Some description
+    # Optional key.
+    # List of platforms for which event should not be generated. Must be one of predeclared platforms.
+    # If key is not present event will be generated for all platforms.
+    optOut:
+      - android
+      - web
+
+    # Optional properties used with an event
+    user_id:
+      # Required. Type of the property for the generated code.
+      # Must be one of [text, boolean, number, <predeclared enum reference>].
+      type: text
+      # Optional key.
+      documentation: Some description
+      # Optional key.
+      # Defines if a property can be null. Must be either a boolean or a list of predeclared platforms.
+      # If key is not present property is assumed to be not null.
+      optional: true
+    signup_provider:
+      type: signup_type
+      documentation: Some description
+      optional:
+        - android
+        - ios
+
+# List of enums used for property types
+enums:
+  signup_type:
+    - google
+    - facebook
+    - apple
+```
+
+## CLI
+
+The CLI supports two primary operation modes:
+- Verification Mode: Validates input YAML schema without generating code.
+- Generation Mode: Parses input and generates code using the specified format and platform.
+
+| Option              | Short | Description                               | Required             |
+|---------------------|-------|-------------------------------------------|----------------------|
+| `--input-file`      | `-i`  | Input schema file                         | Yes                  |
+| `--output-dir`      | `-o`  | Output directory used for generated files | Yes (for generation) |
+| `--output-platform` | `-p`  | Output platform for code generation       | Conditional*         |
+| `--output-format`   | `-f`  | Format: `kotlin`, `swift`, `ts`, `json`   | Yes (for generation) |
+| `--namespace`       | `-n`  | Namespace used for generated code         | No                   |
+| `--verify`          | `-v`  | Only run input file verification          | No                   |
+
+*Required for generation when schema declares `availablePlatforms` and format is not `json`.
+
+## Generated code
+
+Event Horizon generates compact code that can be integrated with external analytics tools.
+
+### Kotlin
+
+Generated code:
+
+```kotlin
+class EventHorizon(
+  private val eventSink: (String, Map<String, Any>) -> Unit,
+) {
+  fun track(event: Trackable) {
+    eventSink(event.trackableName, event.trackableProperties)
+  }
+}
+
+interface Trackable {
+  val trackableName: String
+  val trackableProperties: Map<String, Any>
+}
+
+data class UpNextQueueReorderedEvent(
+  val direction: QueueDirection,
+  /**
+   * The number of slots the episode was moved
+   */
+  val slots: Number?,
+  /**
+   * Whether the episode was moved to the next item that will play
+   */
+  val isNext: Boolean,
+  val source: String,
+) : Trackable {
+  override val trackableName: String
+    get() = "up_next_queue_reordered"
+
+  override val trackableProperties: Map<String, Any>
+    get() = buildMap<String, Any> {
+      put("direction", direction)
+      if (slots != null) {
+        put("slots", slots)
+      }
+      put("is_next", isNext)
+      put("source", source)
+    }
+}
+
+enum class QueueDirection {
+  Up {
+    override fun toString(): String = "up"
+  },
+  Down {
+    override fun toString(): String = "down"
+  },
+}
+```
+
+Integration and usage:
+
+```kotlin
+val tracker: AnalyticsTracker = TODO()
+val eventHorizon = EventHorizon { eventName, eventProperties ->
+  // delegation to analytics tracker
+}
+
+
+val event = UpNextQueueReorderedEvent(
+  direction = QueueDirection.Up,
+  slots = 2,
+  isNext = false,
+  episodeUuid = episode.uuid,
+)
+eventHorizon.track(event)
+```
+
+### Swift
+
+Generated code:
+
+```swift
+class EventHorizon {
+  private let eventSink: (String, [AnyHashable : Any]) -> Void
+
+  init(eventSink: @escaping (String, [AnyHashable : Any]) -> Void) {
+    self.eventSink = eventSink
+  }
+
+  func track(_ event: Trackable) {
+    eventSink(event.trackableName, event.trackableProperties)
+  }
+}
+
+protocol Trackable {
+  var trackableName: String { get }
+  var trackableProperties: [AnyHashable : Any] { get }
+}
+
+/**
+ * When the user moves (up or down) one of the episodes
+ */
+struct UpNextQueueReorderedEvent: Trackable {
+  let direction: QueueDirection
+  /**
+   * The number of slots the episode was moved
+   */
+  let slots: (any Numeric)?
+  /**
+   * Whether the episode was moved to the next item that will play
+   */
+  let isNext: Bool
+  let episodeUuid: String
+
+  var trackableName: String {
+    return "up_next_queue_reordered"
+  }
+
+  var trackableProperties: [AnyHashable : Any] {
+    var props: [AnyHashable : Any] = [:]
+    props["direction"] = direction.analyticsValue
+    if let slots = slots {
+      props["slots"] = slots
+    }
+    props["is_next"] = isNext
+    props["episode_uuid"] = episodeUuid
+    return props
+  }
+
+  init(
+    direction: QueueDirection,
+    slots: (any Numeric)?,
+    isNext: Bool,
+    episodeUuid: String
+  ) {
+    self.direction = direction
+    self.slots = slots
+    self.isNext = isNext
+    self.episodeUuid = episodeUuid
+  }
+}
+
+enum QueueDirection: String {
+  case up = "up"
+  case down = "down"
+
+  var analyticsValue: String {
+    return rawValue
+  }
+}
+```
+
+Integration and usage:
+
+```swift
+let tracker: AnalyticsTracker = TODO()
+let eventHorizon = EventHorizon { eventName, eventProperties ->
+   // delegation to analytics tracker
+}
+
+
+let event = UpNextQueueReorderedEvent(
+  direction: .up,
+  slots: 2,
+  isNext: false,
+  episodeUuid: episode.uuid,
+)
+eventHorizon.track(event)
+```
+
+### TypeScript
+
+Generated code:
+
+```ts
+export type Trackable = {
+  // When the user moves (up or down) one of the episodes
+  "up_next_queue_reordered": {
+    direction: QueueDirection;
+    // The number of slots the episode was moved
+    slots?: number;
+    // Whether the episode was moved to the next item that will play
+    is_next: boolean;
+    episode_uuid: string;
+  };
+};
+
+export type QueueDirection =
+  | "up"
+  | "down";
+```
+
+Integration and usage:
+
+```ts
+const tracker = TODO()
+
+function trackEvent<K extends keyof Trackable>(
+  event: K,
+  props: Trackable[K] extends undefined ? never : Trackable[K],
+): void;
+
+function trackEvent<K extends keyof Trackable>(event: K): void;
+
+function trackEvent<K extends keyof Trackable>(event: K, props?: Trackable[K]): void {
+  // delegation to analytics tracker
+}
+
+
+trackEvent(
+  "up_next_queue_reordered",
+  {
+    direction: "up",
+    slots: 2,
+    is_next: false,
+    episode_uuid: episode.uuid,
+  }
+)
+```
