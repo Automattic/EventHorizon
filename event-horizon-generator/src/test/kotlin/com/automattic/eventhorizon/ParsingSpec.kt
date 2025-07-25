@@ -13,6 +13,7 @@ import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.result.shouldBeFailure
 import io.kotest.matchers.result.shouldBeSuccess
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.throwable.shouldHaveMessage
 import kotlin.io.path.writeText
 
 class ParsingSpec : FunSpec({
@@ -48,7 +49,7 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<IllegalArgumentException>()
-    exception.message shouldBe "Schema version must be a positive number. Is: -1"
+    exception shouldHaveMessage "Schema version must be a positive number. Is: -1"
   }
 
   test("parse non-numeric schema version") {
@@ -60,7 +61,7 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<IllegalArgumentException>()
-    exception.message shouldBe "Schema version must be a positive number. Is: some text"
+    exception shouldHaveMessage "Schema version must be a positive number. Is: some text"
   }
 
   test("parse event without properties") {
@@ -88,7 +89,7 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<MissingRequiredPropertyException>()
-    exception.message shouldBe "Property 'version' is required but it is missing."
+    exception shouldHaveMessage "Property 'version' is required but it is missing."
   }
 
   test("parse event with text property") {
@@ -180,7 +181,7 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
-    exception.message shouldBe "Value 'enum_reference' must be one of boolean, number, text, or a predefined enum."
+    exception shouldHaveMessage "Value 'enum_reference' must be one of boolean, number, text, or a predefined enum."
     exception.location shouldBe Location(line = 6, column = 13)
   }
 
@@ -342,7 +343,7 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
-    exception.message shouldBe "Value 'unknown' must be one of android, ios, or web."
+    exception shouldHaveMessage "Value 'unknown' must be one of android, ios, or web."
     exception.location shouldBe Location(line = 8, column = 9)
   }
 
@@ -425,7 +426,7 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
-    exception.message shouldBe "'description' cannot be used as a property name"
+    exception shouldHaveMessage "'description' cannot be used as a property name"
     exception.location shouldBe Location(line = 6, column = 7)
   }
 
