@@ -5,7 +5,7 @@ plugins {
 }
 
 application {
-  mainClass.set("com.pocketcasts.eventhorizon.cli.MainKt")
+  mainClass.set("com.automattic.eventhorizon.cli.MainKt")
 }
 
 dependencies {

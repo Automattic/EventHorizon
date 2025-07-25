@@ -1,0 +1,27 @@
+package com.automattic.eventhorizon.swift
+
+import com.automattic.eventhorizon.Property.Type
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+
+class EventPropertyEnumSpec : FunSpec({
+  test("enum type") {
+    val enum = Type.Enum("enum_name", "value_1", "value_2")
+
+    val typeSpec = EventPropertyEnum("MyModule", enum).typeSpec
+
+    typeSpec.toString() shouldBe """
+      |enum EnumName : Swift.String {
+      |
+      |  case value1 = "value_1"
+      |  case value2 = "value_2"
+      |
+      |  var analyticsValue: Swift.String {
+      |    return rawValue
+      |  }
+      |
+      |}
+      |
+    """.trimMargin()
+  }
+})
