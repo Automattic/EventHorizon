@@ -23,7 +23,7 @@ class TypeScriptGeneratorSpec : FunSpec({
         Event(
           "event_a",
           Property.test("property_a", type = Type.Enum.test("enum_a", "value")),
-          description = "Event description",
+          documentation = "Event documentation",
         ),
         Event(
           "event_b",
@@ -31,7 +31,7 @@ class TypeScriptGeneratorSpec : FunSpec({
           Property.test(
             "property_b",
             type = Type.Enum.test("enum_b", "value_a", "value_b"),
-            description = "Property description",
+            documentation = "Property documentation",
           ),
         ),
       ),
@@ -41,14 +41,14 @@ class TypeScriptGeneratorSpec : FunSpec({
 
     file.readText() shouldBe """
       |export type Trackable = {
-      |  // Event description
+      |  // Event documentation
       |  "event_a": {
       |    property_a: EnumA;
       |  };
       |
       |  "event_b": {
       |    property_a?: EnumA;
-      |    // Property description
+      |    // Property documentation
       |    property_b: EnumB;
       |  };
       |};

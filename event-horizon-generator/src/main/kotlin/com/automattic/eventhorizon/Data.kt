@@ -126,7 +126,7 @@ public data class Events(
 
 public data class Event(
   val name: String,
-  val description: String?,
+  val documentation: String?,
   val properties: List<Property>,
   val availablePlatforms: Set<Platform>,
 ) {
@@ -139,11 +139,11 @@ public data class Event(
   public constructor(
     name: String,
     vararg properties: Property,
-    description: String? = null,
+    documentation: String? = null,
     availablePlatforms: Set<String> = emptySet(),
   ) : this(
     name = name,
-    description = description,
+    documentation = documentation,
     properties = properties.toList(),
     availablePlatforms = availablePlatforms.mapTo(mutableSetOf(), ::Platform),
   )
@@ -152,7 +152,7 @@ public data class Event(
 public data class Property(
   val name: String,
   val type: Type,
-  val description: String?,
+  val documentation: String?,
   val optionalPlatforms: Set<Platform>,
 ) {
   public fun isOptional(platform: Platform): Boolean = platform in optionalPlatforms
@@ -161,12 +161,12 @@ public data class Property(
     public fun test(
       name: String,
       type: Type = Type.Text,
-      description: String? = null,
+      documentation: String? = null,
       optionalPlatforms: Set<String> = emptySet(),
     ): Property = Property(
       name = name,
       type = type,
-      description = description,
+      documentation = documentation,
       optionalPlatforms = optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
     )
   }

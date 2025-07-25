@@ -32,10 +32,10 @@ internal class TrackableType(
   }
 
   private fun StringBuilder.appendEventComment(event: Event) {
-    event.description?.let { description ->
+    event.documentation?.let { documentation ->
       appendIndent()
       append("// ")
-      append(description)
+      append(documentation)
       appendNewLine()
     }
   }
@@ -61,11 +61,11 @@ internal class TrackableType(
   }
 
   private fun StringBuilder.appendPropertyComment(property: Property) {
-    property.description?.let { description ->
+    property.documentation?.let { documentation ->
       appendNewLine()
       appendIndent(count = 4)
       append("// ")
-      append(description)
+      append(documentation)
     }
   }
 

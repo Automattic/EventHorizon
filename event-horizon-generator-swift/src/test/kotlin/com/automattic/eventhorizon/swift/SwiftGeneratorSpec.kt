@@ -23,7 +23,7 @@ class SwiftGeneratorSpec : FunSpec({
         Event(
           "event_a",
           Property.test("property_a", type = Type.Enum.test("enum_a", "value")),
-          description = "Event description",
+          documentation = "Event documentation",
         ),
         Event(
           "event_b",
@@ -31,7 +31,7 @@ class SwiftGeneratorSpec : FunSpec({
           Property.test(
             "property_b",
             type = Type.Enum.test("enum_b", "value_a", "value_b"),
-            description = "Property description",
+            documentation = "Property documentation",
           ),
         ),
       ),
@@ -62,7 +62,7 @@ class SwiftGeneratorSpec : FunSpec({
       |}
       |
       |/**
-      | * Event description */
+      | * Event documentation */
       |struct EventAEvent : Trackable {
       |
       |  static let eventName: String = "event_a"
@@ -87,7 +87,7 @@ class SwiftGeneratorSpec : FunSpec({
       |  static let eventName: String = "event_b"
       |  let propertyA: EnumA?
       |  /**
-      |   * Property description */
+      |   * Property documentation */
       |  let propertyB: EnumB
       |  var trackableName: String {
       |    return EventBEvent.eventName

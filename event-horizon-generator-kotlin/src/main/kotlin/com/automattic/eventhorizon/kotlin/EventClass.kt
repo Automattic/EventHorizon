@@ -29,7 +29,7 @@ internal class EventClass(
       .associateBy { property ->
         PropertySpec
           .builder(property.name.snakeToCamelCase(), property.className)
-          .also { builder -> property.description?.let(builder::addKdoc) }
+          .also { builder -> property.documentation?.let(builder::addKdoc) }
           .build()
       }
 
@@ -110,7 +110,7 @@ internal class EventClass(
         property.toBuilder().initializer(property.name).build()
       }
       return baseType
-        .also { builder -> event.description?.let(builder::addKdoc) }
+        .also { builder -> event.documentation?.let(builder::addKdoc) }
         .addModifiers(KModifier.DATA)
         .addProperties(initializerProperties)
         .build()

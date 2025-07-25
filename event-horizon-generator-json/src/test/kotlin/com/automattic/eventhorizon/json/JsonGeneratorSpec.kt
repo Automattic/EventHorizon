@@ -27,7 +27,7 @@ class JsonGeneratorSpec : FunSpec({
         Event(
           "event_a",
           Property.test("property_a", type = Type.Enum.test("enum_a", "value"), optionalPlatforms = setOf("web")),
-          description = "Event description",
+          documentation = "Event documentation",
         ),
         Event(
           "event_b",
@@ -39,7 +39,7 @@ class JsonGeneratorSpec : FunSpec({
           Property.test(
             "property_b",
             type = Type.Enum.test("enum_b", "value_a", "value_b"),
-            description = "Property description",
+            documentation = "Property documentation",
           ),
         ),
       ),
@@ -51,7 +51,7 @@ class JsonGeneratorSpec : FunSpec({
       |[
       |    {
       |        "name": "event_a",
-      |        "description": "Event description",
+      |        "documentation": "Event documentation",
       |        "properties": [
       |            {
       |                "name": "property_a",
@@ -81,7 +81,7 @@ class JsonGeneratorSpec : FunSpec({
       |            },
       |            {
       |                "name": "property_b",
-      |                "description": "Property description",
+      |                "documentation": "Property documentation",
       |                "type": "enum",
       |                "values": [
       |                    "value_a",

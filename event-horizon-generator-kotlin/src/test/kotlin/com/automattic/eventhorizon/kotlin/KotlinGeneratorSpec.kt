@@ -23,7 +23,7 @@ class KotlinGeneratorSpec : FunSpec({
         Event(
           "event_a",
           Property.test("property_a", type = Type.Enum.test("enum_a", "value")),
-          description = "Event description",
+          documentation = "Event documentation",
         ),
         Event(
           "event_b",
@@ -31,7 +31,7 @@ class KotlinGeneratorSpec : FunSpec({
           Property.test(
             "property_b",
             type = Type.Enum.test("enum_b", "value_a", "value_b"),
-            description = "Property description",
+            documentation = "Property documentation",
           ),
         ),
       ),
@@ -63,7 +63,7 @@ class KotlinGeneratorSpec : FunSpec({
       |}
       |
       |/**
-      | * Event description
+      | * Event documentation
       | */
       |public data class EventAEvent(
       |  public val propertyA: EnumA,
@@ -84,7 +84,7 @@ class KotlinGeneratorSpec : FunSpec({
       |public data class EventBEvent(
       |  public val propertyA: EnumA?,
       |  /**
-      |   * Property description
+      |   * Property documentation
       |   */
       |  public val propertyB: EnumB,
       |) : Trackable {

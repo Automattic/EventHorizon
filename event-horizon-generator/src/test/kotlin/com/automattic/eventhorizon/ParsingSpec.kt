@@ -349,29 +349,29 @@ class ParsingSpec : FunSpec({
     events shouldBe Events(Event("event1"), Event("event2"), Event("event3"))
   }
 
-  test("parse event description") {
+  test("parse event documentation") {
     val text = """
       |version: 1
       |
       |events:
       |  event:
-      |    description: Some description
+      |    documentation: Some documentation
     """
     tempFile.writeText(text.trimMargin())
 
     val result = parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event shouldBe Event("event", description = "Some description")
+    event shouldBe Event("event", documentation = "Some documentation")
   }
 
-  test("parse event with description set as one of properties") {
+  test("parse event with documentation set as one of properties") {
     val text = """
       |version: 1
       |
       |events:
       |  event:
-      |    description:
+      |    documentation:
       |      type: text
     """
     tempFile.writeText(text.trimMargin())
@@ -379,11 +379,11 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
-    exception shouldHaveMessage "'description' cannot be used as a property name"
+    exception shouldHaveMessage "'documentation' cannot be used as a property name"
     exception.location shouldBe Location(line = 6, column = 7)
   }
 
-  test("parse property description") {
+  test("parse property documentation") {
     val text = """
       |version: 1
       |
@@ -391,17 +391,17 @@ class ParsingSpec : FunSpec({
       |  event:
       |    property1:
       |      type: text
-      |      description: Property description
+      |      documentation: Property documentation
     """
     tempFile.writeText(text.trimMargin())
 
     val result = parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event.properties shouldHaveSingleElement Property.test("property1", description = "Property description")
+    event.properties shouldHaveSingleElement Property.test("property1", documentation = "Property documentation")
   }
 
-  test("parse opt out platform events description") {
+  test("parse opt out platform events documentation") {
     val text = """
       |version: 1
       |platforms:

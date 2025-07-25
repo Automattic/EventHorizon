@@ -81,13 +81,13 @@ class EventStructSpec : FunSpec({
   }
 
   test("event comment") {
-    val event = Event("event_name", description = "Some description")
+    val event = Event("event_name", documentation = "Some documentation")
 
     val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
 
     typeSpec.toString() shouldBe """
       |/**
-      | * Some description */
+      | * Some documentation */
       |struct EventNameEvent : MyModule.Trackable {
       |
       |  static let eventName: Swift.String = "event_name"
@@ -107,9 +107,9 @@ class EventStructSpec : FunSpec({
   test("property_comment") {
     val event = Event(
       "event_name",
-      Property.test("property_one", description = "Description 1"),
+      Property.test("property_one", documentation = "Documentation 1"),
       Property.test("property_two"),
-      Property.test("property_three", description = "Description 2"),
+      Property.test("property_three", documentation = "Documentation 2"),
     )
 
     val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
@@ -119,11 +119,11 @@ class EventStructSpec : FunSpec({
       |
       |  static let eventName: Swift.String = "event_name"
       |  /**
-      |   * Description 1 */
+      |   * Documentation 1 */
       |  let propertyOne: Swift.String
       |  let propertyTwo: Swift.String
       |  /**
-      |   * Description 2 */
+      |   * Documentation 2 */
       |  let propertyThree: Swift.String
       |  var trackableName: Swift.String {
       |    return MyModule.EventNameEvent.eventName

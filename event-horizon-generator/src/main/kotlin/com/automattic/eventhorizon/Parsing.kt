@@ -14,7 +14,7 @@ import kotlin.io.path.fileSize
 import kotlin.io.path.inputStream
 import kotlinx.serialization.Serializable
 
-private const val DescriptionNode = "documentation"
+private const val DocumentationNode = "documentation"
 private const val OptOutPlatformsNode = "optOut"
 private val Yaml = YamlObject.default
 
@@ -42,25 +42,25 @@ private fun parseFile(file: Path): EventHorizonSchema {
 
 private fun InputDefinition.parseEvents(enums: List<Type.Enum>, platforms: Set<Platform>) =
   events.map { (eventName, rawProperties) ->
-    val description = rawProperties?.parseDescription()
+    val documentation = rawProperties?.parseDocumentation()
     val optOutPlatforms = rawProperties?.parsePlatforms().orEmpty()
     val properties = rawProperties
-      ?.minus(setOf(DescriptionNode, OptOutPlatformsNode))
+      ?.minus(setOf(DocumentationNode, OptOutPlatformsNode))
       ?.mapValues { (_, rawProperty) -> Yaml.decodeFromYamlNode<EventPropertyConfiguration>(rawProperty) }
       ?.parseProperties(enums, platforms)
       .orEmpty()
     Event(
       name = eventName,
-      description = description,
+      documentation = documentation,
       properties = properties,
       availablePlatforms = platforms - optOutPlatforms,
     )
   }
 
-private fun Map<String, YamlNode>.parseDescription() = when (val yamlDescription = get(DescriptionNode)) {
-  is YamlScalar -> yamlDescription.content
+private fun Map<String, YamlNode>.parseDocumentation() = when (val yamlDocumentation = get(DocumentationNode)) {
+  is YamlScalar -> yamlDocumentation.content
   is YamlNull, null -> null
-  else -> throw YamlException("'$DescriptionNode' cannot be used as a property name", yamlDescription.path)
+  else -> throw YamlException("'$DocumentationNode' cannot be used as a property name", yamlDocumentation.path)
 }
 
 private fun Map<String, YamlNode>.parsePlatforms() = when (val yamlPlatforms = get(OptOutPlatformsNode)) {
@@ -75,7 +75,7 @@ private fun RawProperty.parseProperties(enums: List<Type.Enum>, platforms: Set<P
   map { (name, configuration) ->
     val propertyType = configuration.type.parsePropertyType(enums)
     val optionalPlatforms = configuration.optional?.parsePlatforms(platforms).orEmpty()
-    Property(name, propertyType, configuration.description, optionalPlatforms)
+    Property(name, propertyType, configuration.documentation, optionalPlatforms)
   }
 
 private fun YamlScalar.parsePropertyType(enums: List<Type.Enum>) = when (content) {
@@ -119,7 +119,7 @@ private data class InputDefinition(
 private data class EventPropertyConfiguration(
   val type: YamlScalar,
   val optional: YamlNode? = null,
-  val description: String? = null,
+  val documentation: String? = null,
 )
 
 private typealias RawProperty = Map<String, EventPropertyConfiguration>
