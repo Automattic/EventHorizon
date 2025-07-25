@@ -8,6 +8,7 @@ import com.automattic.eventhorizon.parseSchema
 import com.automattic.eventhorizon.swift.SwiftGenerator
 import com.automattic.eventhorizon.ts.TypeScriptGenerator
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.CliktError
 import com.github.ajalt.clikt.core.UsageError
 import com.github.ajalt.clikt.core.parse
 import com.github.ajalt.clikt.parameters.options.convert
@@ -20,7 +21,13 @@ import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
 
 public fun main(vararg args: String) {
-  EventHorizonCli().parse(args.asList())
+  val cli = EventHorizonCli()
+  try {
+    cli.parse(args.asList())
+  } catch (e: CliktError) {
+    cli.echoFormattedHelp(e)
+    throw e
+  }
 }
 
 private class EventHorizonCli : CliktCommand() {
