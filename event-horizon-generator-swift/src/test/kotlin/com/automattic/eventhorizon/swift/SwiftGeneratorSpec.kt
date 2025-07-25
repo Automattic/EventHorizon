@@ -36,7 +36,7 @@ class SwiftGeneratorSpec : FunSpec({
           ),
           availablePlatforms = setOf("ios"),
         ),
-        Event("event_c", availablePlatforms = setOf("android"))
+        Event("event_c", availablePlatforms = setOf("android")),
       ),
     )
 

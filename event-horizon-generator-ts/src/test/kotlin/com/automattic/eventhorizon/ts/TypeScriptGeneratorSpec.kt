@@ -18,12 +18,13 @@ class TypeScriptGeneratorSpec : FunSpec({
   test("generate everything") {
     val schema = EventHorizonSchema.create(
       schemaVersion = 1u,
-      availablePlatforms = setOf(Platform("web")),
+      availablePlatforms = setOf(Platform("web"), Platform("ios")),
       events = Events(
         Event(
           "event_a",
           Property.test("property_a", type = Type.Enum.test("enum_a", "value")),
           documentation = "Event documentation",
+          availablePlatforms = setOf("web"),
         ),
         Event(
           "event_b",
@@ -33,7 +34,9 @@ class TypeScriptGeneratorSpec : FunSpec({
             type = Type.Enum.test("enum_b", "value_a", "value_b"),
             documentation = "Property documentation",
           ),
+          availablePlatforms = setOf("web"),
         ),
+        Event("event_c", availablePlatforms = setOf("ios")),
       ),
     )
 
