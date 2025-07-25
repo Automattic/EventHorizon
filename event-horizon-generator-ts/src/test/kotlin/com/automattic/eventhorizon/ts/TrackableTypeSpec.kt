@@ -25,10 +25,10 @@ class TrackableTypeSpec : FunSpec({
     val events = Events(
       Event(
         "event_name",
-        Property("property_one", type = Type.Text),
-        Property("property_two", type = Type.Number),
-        Property("property_three", type = Type.Boolean),
-        Property("property_four", type = Type.Enum("enum_name", "value")),
+        Property.test("property_one", type = Type.Text),
+        Property.test("property_two", type = Type.Number),
+        Property.test("property_three", type = Type.Boolean),
+        Property.test("property_four", type = Type.Enum.test("enum_name", "value")),
       ),
     )
 
@@ -63,9 +63,9 @@ class TrackableTypeSpec : FunSpec({
     val events = Events(
       Event(
         "event_name",
-        Property("property_one", description = "Description 1"),
-        Property("property_two"),
-        Property("property_three", description = "Description 2"),
+        Property.test("property_one", description = "Description 1"),
+        Property.test("property_two"),
+        Property.test("property_three", description = "Description 2"),
       ),
     )
 
@@ -88,9 +88,9 @@ class TrackableTypeSpec : FunSpec({
     val events = Events(
       Event(
         "event_name",
-        Property("property_one", "web"),
-        Property("property_two", "ios"),
-        Property("property_three", "android"),
+        Property.test("property_one", optionalPlatforms = setOf("web")),
+        Property.test("property_two", optionalPlatforms = setOf("ios")),
+        Property.test("property_three", optionalPlatforms = setOf("android")),
       ),
     )
 
@@ -109,8 +109,8 @@ class TrackableTypeSpec : FunSpec({
 
   test("multiple events") {
     val events = Events(
-      Event("event_one", Property("property")),
-      Event("event_two", Property("property", type = Type.Boolean)),
+      Event("event_one", Property.test("property")),
+      Event("event_two", Property.test("property", type = Type.Boolean)),
       Event("event_three"),
     )
 

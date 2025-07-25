@@ -27,11 +27,19 @@ class EventHorizonSchemaSpec() : FunSpec({
         schemaVersion = 1u,
         availablePlatforms = setOf(Platform("android"), Platform("ios")),
         events = Events(
-          Event("event1", Property("prop1")),
-          Event("event2", Property("prop1", "android")),
-          Event("event3", Property("prop1", "web"), Property("prop2", "android")),
-          Event("event4", Property("prop1", "web"), Property("prop2", "desktop")),
-          Event("event5", Property("prop1", "web", "embedded")),
+          Event("event1", Property.test("prop1")),
+          Event("event2", Property.test("prop1", optionalPlatforms = setOf("android"))),
+          Event(
+            "event3",
+            Property.test("prop1", optionalPlatforms = setOf("web")),
+            Property.test("prop2", optionalPlatforms = setOf("android")),
+          ),
+          Event(
+            "event4",
+            Property.test("prop1", optionalPlatforms = setOf("web")),
+            Property.test("prop2", optionalPlatforms = setOf("desktop")),
+          ),
+          Event("event5", Property.test("prop1", optionalPlatforms = setOf("web", "embedded"))),
         ),
       )
     }

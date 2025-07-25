@@ -26,15 +26,19 @@ class JsonGeneratorSpec : FunSpec({
       events = Events(
         Event(
           "event_a",
-          Property("property_a", "web", type = Type.Enum("enum_a", "value")),
+          Property.test("property_a", type = Type.Enum.test("enum_a", "value"), optionalPlatforms = setOf("web")),
           description = "Event description",
         ),
         Event(
           "event_b",
-          Property("property_a", "android", "ios", type = Type.Enum("enum_a", "value")),
-          Property(
+          Property.test(
+            "property_a",
+            optionalPlatforms = setOf("android", "ios"),
+            type = Type.Enum.test("enum_a", "value"),
+          ),
+          Property.test(
             "property_b",
-            type = Type.Enum("enum_b", "value_a", "value_b"),
+            type = Type.Enum.test("enum_b", "value_a", "value_b"),
             description = "Property description",
           ),
         ),

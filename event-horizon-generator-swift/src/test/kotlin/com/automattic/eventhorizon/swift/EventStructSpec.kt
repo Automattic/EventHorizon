@@ -35,10 +35,10 @@ class EventStructSpec : FunSpec({
   test("event with properties") {
     val event = Event(
       "event_name",
-      Property("property_one", type = Type.Text),
-      Property("property_two", type = Type.Number),
-      Property("property_three", type = Type.Boolean),
-      Property("property_four", type = Type.Enum("enum_name", "value")),
+      Property.test("property_one", type = Type.Text),
+      Property.test("property_two", type = Type.Number),
+      Property.test("property_three", type = Type.Boolean),
+      Property.test("property_four", type = Type.Enum.test("enum_name", "value")),
     )
 
     val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
@@ -107,9 +107,9 @@ class EventStructSpec : FunSpec({
   test("property_comment") {
     val event = Event(
       "event_name",
-      Property("property_one", description = "Description 1"),
-      Property("property_two"),
-      Property("property_three", description = "Description 2"),
+      Property.test("property_one", description = "Description 1"),
+      Property.test("property_two"),
+      Property.test("property_three", description = "Description 2"),
     )
 
     val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
@@ -154,9 +154,9 @@ class EventStructSpec : FunSpec({
   test("nullable property") {
     val event = Event(
       "event_name",
-      Property("property_one", "web"),
-      Property("property_two", "ios"),
-      Property("property_three", "android"),
+      Property.test("property_one", optionalPlatforms = setOf("web")),
+      Property.test("property_two", optionalPlatforms = setOf("ios")),
+      Property.test("property_three", optionalPlatforms = setOf("android")),
     )
 
     val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec

@@ -164,7 +164,7 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe Type.Enum("enum_reference", "value_1")
+    property.type shouldBe Type.Enum.test("enum_reference", "value_1")
   }
 
   test("parse event with enum property that doesn't exist") {
@@ -205,7 +205,7 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe Type.Enum("enum_reference", "value1", "value2", "value3")
+    property.type shouldBe Type.Enum.test("enum_reference", "value1", "value2", "value3")
   }
 
   test("parse event with optional property on all platforms") {
@@ -325,10 +325,10 @@ class ParsingSpec : FunSpec({
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event.properties shouldBe
       setOf(
-        Property("property1", "android", "web", type = Type.Text),
-        Property("property2", "android", type = Type.Boolean),
-        Property("property3", type = Type.Number),
-        Property("property4", type = Type.Number),
+        Property.test("property1", type = Type.Text, optionalPlatforms = setOf("android", "web")),
+        Property.test("property2", type = Type.Boolean, optionalPlatforms = setOf("android")),
+        Property.test("property3", type = Type.Number),
+        Property.test("property4", type = Type.Number),
       )
   }
 
@@ -398,7 +398,7 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event.properties shouldHaveSingleElement Property("property1", description = "Property description")
+    event.properties shouldHaveSingleElement Property.test("property1", description = "Property description")
   }
 })
 

@@ -6,7 +6,7 @@ import io.kotest.matchers.shouldBe
 
 class EventPropertyEnumSpec : FunSpec({
   test("enum type") {
-    val enum = Type.Enum("enum_name", "value_1", "value_2")
+    val enum = Type.Enum.test("enum_name", "value_1", "value_2")
 
     val typeSpec = EventPropertyEnum("dev.sample", enum).typeSpec
 

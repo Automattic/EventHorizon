@@ -119,17 +119,19 @@ public data class Property(
 ) {
   public fun isOptional(platform: Platform): Boolean = platform in optionalPlatforms
 
-  public constructor(
-    name: String,
-    vararg optionalPlatforms: String,
-    type: Type = Type.Text,
-    description: String? = null,
-  ) : this(
-    name = name,
-    type = type,
-    description = description,
-    optionalPlatforms = optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
-  )
+  public companion object {
+    public fun test(
+      name: String,
+      type: Type = Type.Text,
+      description: String? = null,
+      optionalPlatforms: Set<String> = emptySet(),
+    ): Property = Property(
+      name = name,
+      type = type,
+      description = description,
+      optionalPlatforms = optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
+    )
+  }
 
   public sealed interface Type {
     public data object Text : Type
@@ -146,11 +148,10 @@ public data class Property(
         require(values.isNotEmpty()) { "Enum property '$name' has no values" }
       }
 
-      public constructor(
-        name: String,
-        value: String,
-        vararg values: String,
-      ) : this(name, setOf(value) + values.toSet())
+      public companion object {
+        public fun test(name: String, value: String, vararg values: String): Enum =
+          Enum(name, setOf(value) + values.toSet())
+      }
     }
   }
 }
