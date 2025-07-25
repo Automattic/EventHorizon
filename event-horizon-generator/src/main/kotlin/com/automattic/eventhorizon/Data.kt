@@ -9,6 +9,11 @@ public data class EventHorizonSchema private constructor(
   val events: Events,
 ) {
   public companion object {
+    public val Empty: EventHorizonSchema = EventHorizonSchema(
+      schemaVersion = 0u,
+      events = Events(),
+    )
+
     public fun create(schemaVersion: ULong, events: Events): EventHorizonSchema {
       require(schemaVersion > 0u) { "Schema version must be a positive number. Is: $schemaVersion" }
       return EventHorizonSchema(
@@ -16,11 +21,6 @@ public data class EventHorizonSchema private constructor(
         events = events,
       )
     }
-
-    public val Empty: EventHorizonSchema = EventHorizonSchema(
-      schemaVersion = 0u,
-      events = Events(),
-    )
   }
 }
 
