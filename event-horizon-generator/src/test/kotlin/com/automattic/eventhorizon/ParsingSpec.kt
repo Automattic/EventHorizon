@@ -208,9 +208,12 @@ class ParsingSpec : FunSpec({
     property.type shouldBe Type.Enum("enum_reference", "value1", "value2", "value3")
   }
 
-  test("parse event with optional property") {
+  test("parse event with optional property on all platforms") {
     val text = """
       |version: 1
+      |platforms:
+      |  - android
+      |  - ios
       |
       |events:
       |  event:
@@ -224,7 +227,7 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms shouldContainExactly Platform.entries
+    property.optionalPlatforms shouldContainExactly setOf(Platform("android"), Platform("ios"))
   }
 
   test("parse event with non-optional property") {
@@ -246,9 +249,12 @@ class ParsingSpec : FunSpec({
     property.optionalPlatforms.shouldBeEmpty()
   }
 
-  test("parse event with optional property on android platform") {
+  test("parse event with optional property on a single platform") {
     val text = """
       |version: 1
+      |platforms:
+      |  - android
+      |  - ios
       |
       |events:
       |  event:
@@ -263,52 +269,16 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms shouldHaveSingleElement Platform.Android
-  }
-
-  test("parse event with optional property on ios platform") {
-    val text = """
-      |version: 1
-      |
-      |events:
-      |  event:
-      |    property:
-      |      type: text
-      |      optional:
-      |        - ios
-    """
-    tempFile.writeText(text.trimMargin())
-
-    val result = parseSchema(tempFile)
-
-    val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms shouldHaveSingleElement Platform.Ios
-  }
-
-  test("parse event with optional property on web platform") {
-    val text = """
-      |version: 1
-      |
-      |events:
-      |  event:
-      |    property:
-      |      type: text
-      |      optional:
-      |        - web
-    """
-    tempFile.writeText(text.trimMargin())
-
-    val result = parseSchema(tempFile)
-
-    val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms shouldHaveSingleElement Platform.Web
+    property.optionalPlatforms shouldHaveSingleElement Platform("android")
   }
 
   test("parse event with optional property on multiple platforms") {
     val text = """
       |version: 1
+      |platforms:
+      |  - android
+      |  - ios
+      |  - web
       |
       |events:
       |  event:
@@ -324,32 +294,15 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms shouldBe setOf(Platform.Android, Platform.Ios)
-  }
-
-  test("parse event with optional property on unknown platform") {
-    val text = """
-      |version: 1
-      |
-      |events:
-      |  event:
-      |    property:
-      |      type: text
-      |      optional:
-      |        - unknown
-    """
-    tempFile.writeText(text.trimMargin())
-
-    val result = parseSchema(tempFile)
-
-    val exception = result.shouldBeFailure<YamlException>()
-    exception shouldHaveMessage "Value 'unknown' must be one of android, ios, or web."
-    exception.location shouldBe Location(line = 8, column = 9)
+    property.optionalPlatforms shouldBe setOf(Platform("android"), Platform("ios"))
   }
 
   test("parse event with multiple properties") {
     val text = """
       |version: 1
+      |platforms:
+      |  - android
+      |  - web
       |
       |events:
       |  event:
@@ -372,10 +325,10 @@ class ParsingSpec : FunSpec({
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event.properties shouldBe
       setOf(
-        Property("property1", Type.Text, optAndroid = true, optIos = true, optWeb = true),
-        Property("property2", Type.Boolean, optAndroid = true),
-        Property("property3", Type.Number),
-        Property("property4", Type.Number),
+        Property("property1", "android", "web", type = Type.Text),
+        Property("property2", "android", type = Type.Boolean),
+        Property("property3", type = Type.Number),
+        Property("property4", type = Type.Number),
       )
   }
 

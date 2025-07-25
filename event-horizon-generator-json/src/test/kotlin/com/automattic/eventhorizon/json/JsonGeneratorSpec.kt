@@ -3,6 +3,7 @@ package com.automattic.eventhorizon.json
 import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Events
+import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.Property.Type
 import io.kotest.core.spec.style.FunSpec
@@ -17,16 +18,25 @@ class JsonGeneratorSpec : FunSpec({
   test("generate everything") {
     val schema = EventHorizonSchema.create(
       schemaVersion = 1u,
+      availablePlatforms = setOf(
+        Platform("web"),
+        Platform("ios"),
+        Platform("android"),
+      ),
       events = Events(
         Event(
           "event_a",
-          Property("property_a", Type.Enum("enum_a", "value"), optWeb = true),
+          Property("property_a", "web", type = Type.Enum("enum_a", "value")),
           description = "Event description",
         ),
         Event(
           "event_b",
-          Property("property_a", Type.Enum("enum_a", "value"), optIos = true, optAndroid = true),
-          Property("property_b", Type.Enum("enum_b", "value_a", "value_b"), description = "Property description"),
+          Property("property_a", "android", "ios", type = Type.Enum("enum_a", "value")),
+          Property(
+            "property_b",
+            type = Type.Enum("enum_b", "value_a", "value_b"),
+            description = "Property description",
+          ),
         ),
       ),
     )

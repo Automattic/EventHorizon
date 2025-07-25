@@ -1,5 +1,7 @@
 package com.automattic.eventhorizon.cli
 
+import com.automattic.eventhorizon.EventHorizonSchema
+import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.json.JsonGenerator
 import com.automattic.eventhorizon.kotlin.KotlinGenerator
 import com.automattic.eventhorizon.parseSchema
@@ -7,7 +9,8 @@ import com.automattic.eventhorizon.swift.SwiftGenerator
 import com.automattic.eventhorizon.ts.TypeScriptGenerator
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.UsageError
-import com.github.ajalt.clikt.core.main
+import com.github.ajalt.clikt.core.parse
+import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
@@ -17,7 +20,7 @@ import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
 
 public fun main(vararg args: String) {
-  EventHorizonCli().main(args)
+  EventHorizonCli().parse(args.asList())
 }
 
 private class EventHorizonCli : CliktCommand() {
@@ -29,6 +32,10 @@ private class EventHorizonCli : CliktCommand() {
   val outputDir by option("-o", "--output-dir")
     .help("Output directory used for generated files")
     .path(canBeFile = false)
+
+  val outputPlatform by option("-p", "--output-platform")
+    .help("Output platform for code generation")
+    .convert { Platform(it) }
 
   val outputFormat by option("-f", "--output-format")
     .help("Format used for code generation")
@@ -60,16 +67,29 @@ private class EventHorizonCli : CliktCommand() {
     val format = requireOption(outputFormat) { "missing option --output-format" }
     val dir = requireOption(outputDir) { "missing option --output-dir" }
     parseSchema(inputFile)
-      .map { schema -> createGenerator(format).generate(schema, dir) }
+      .mapCatching(::requireDeclaredPlatform)
+      .map { schema -> createGenerator(format, outputPlatform ?: Platform.NoPlatform).generate(schema, dir) }
       .onSuccess { file -> echo("$file file generated successfully") }
       .getOrThrow()
   }
 
-  private fun createGenerator(formatType: FormatType) = when (formatType) {
-    FormatType.Kotlin -> KotlinGenerator(namespace)
-    FormatType.Swift -> SwiftGenerator(namespace)
-    FormatType.TypeScript -> TypeScriptGenerator()
+  private fun createGenerator(formatType: FormatType, platform: Platform) = when (formatType) {
+    FormatType.Kotlin -> KotlinGenerator(namespace, platform)
+    FormatType.Swift -> SwiftGenerator(namespace, platform)
+    FormatType.TypeScript -> TypeScriptGenerator(platform)
     FormatType.Json -> JsonGenerator()
+  }
+
+  private fun requireDeclaredPlatform(schema: EventHorizonSchema): EventHorizonSchema {
+    if (schema.availablePlatforms.isNotEmpty()) {
+      val platform = requireOption(outputPlatform) { "missing option --output-platform" }
+      if (schema.availablePlatforms.isNotEmpty() && platform !in schema.availablePlatforms) {
+        throw UsageError(
+          "Invalid value for --output-platform: ${platform.value}. It must be one of the schema-declared values: ${schema.availablePlatforms}",
+        )
+      }
+    }
+    return schema
   }
 }
 

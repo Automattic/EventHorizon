@@ -2,6 +2,7 @@ package com.automattic.eventhorizon.ts
 
 import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Events
+import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.Property.Type
 import io.kotest.core.spec.style.FunSpec
@@ -11,7 +12,7 @@ class TrackableTypeSpec : FunSpec({
   test("event without properties") {
     val events = Events(Event("event_name"))
 
-    val typeSpec = TrackableType(events).typeSpec
+    val typeSpec = TrackableType(events, Platform("web")).typeSpec
 
     typeSpec shouldBe """
       |export type Trackable = {
@@ -24,14 +25,14 @@ class TrackableTypeSpec : FunSpec({
     val events = Events(
       Event(
         "event_name",
-        Property("property_one", Type.Text),
-        Property("property_two", Type.Number),
-        Property("property_three", Type.Boolean),
-        Property("property_four", Type.Enum("enum_name", "value")),
+        Property("property_one", type = Type.Text),
+        Property("property_two", type = Type.Number),
+        Property("property_three", type = Type.Boolean),
+        Property("property_four", type = Type.Enum("enum_name", "value")),
       ),
     )
 
-    val typeSpec = TrackableType(events).typeSpec
+    val typeSpec = TrackableType(events, Platform("web")).typeSpec
 
     typeSpec shouldBe """
       |export type Trackable = {
@@ -48,7 +49,7 @@ class TrackableTypeSpec : FunSpec({
   test("event comment") {
     val events = Events(Event("event_name", description = "Some description"))
 
-    val typeSpec = TrackableType(events).typeSpec
+    val typeSpec = TrackableType(events, Platform("web")).typeSpec
 
     typeSpec shouldBe """
       |export type Trackable = {
@@ -68,7 +69,7 @@ class TrackableTypeSpec : FunSpec({
       ),
     )
 
-    val typeSpec = TrackableType(events).typeSpec
+    val typeSpec = TrackableType(events, Platform("web")).typeSpec
 
     typeSpec shouldBe """
       |export type Trackable = {
@@ -87,13 +88,13 @@ class TrackableTypeSpec : FunSpec({
     val events = Events(
       Event(
         "event_name",
-        Property("property_one", optWeb = true),
-        Property("property_two", optIos = true),
-        Property("property_three", optAndroid = true),
+        Property("property_one", "web"),
+        Property("property_two", "ios"),
+        Property("property_three", "android"),
       ),
     )
 
-    val typeSpec = TrackableType(events).typeSpec
+    val typeSpec = TrackableType(events, Platform("web")).typeSpec
 
     typeSpec shouldBe """
       |export type Trackable = {
@@ -109,11 +110,11 @@ class TrackableTypeSpec : FunSpec({
   test("multiple events") {
     val events = Events(
       Event("event_one", Property("property")),
-      Event("event_two", Property("property", Type.Boolean)),
+      Event("event_two", Property("property", type = Type.Boolean)),
       Event("event_three"),
     )
 
-    val typeSpec = TrackableType(events).typeSpec
+    val typeSpec = TrackableType(events, Platform("web")).typeSpec
 
     typeSpec shouldBe """
       |export type Trackable = {

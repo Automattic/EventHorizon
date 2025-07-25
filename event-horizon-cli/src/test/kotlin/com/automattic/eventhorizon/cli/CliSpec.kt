@@ -61,4 +61,31 @@ class CliSpec : FunSpec({
 
     outputDir.resolve("event-horizon.json").shouldExist()
   }
+
+  test("require schema-declared output platform") {
+    inputFile.writeText(
+      """
+        |version: 1
+        |platforms:
+        |  - android
+      """.trimMargin(),
+    )
+
+    val exception = shouldThrowAny {
+      main("-i", "$inputFile", "-o", "$outputDir", "-f", "ts")
+    }
+    exception shouldHaveMessage "missing option --output-platform"
+  }
+
+  test("do not require schema-declared output platform when none is defined") {
+    inputFile.writeText(
+      """
+        |version: 1
+      """.trimMargin(),
+    )
+
+    main("-i", "$inputFile", "-o", "$outputDir", "-f", "ts")
+
+    outputDir.resolve("eventHorizon.ts").shouldExist()
+  }
 })

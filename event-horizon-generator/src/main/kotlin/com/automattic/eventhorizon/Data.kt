@@ -6,20 +6,64 @@ import java.util.function.IntFunction
 @ConsistentCopyVisibility
 public data class EventHorizonSchema private constructor(
   val schemaVersion: ULong,
+  val availablePlatforms: Set<Platform>,
   val events: Events,
 ) {
   public companion object {
     public val Empty: EventHorizonSchema = EventHorizonSchema(
       schemaVersion = 0u,
+      availablePlatforms = emptySet(),
       events = Events(),
     )
 
-    public fun create(schemaVersion: ULong, events: Events): EventHorizonSchema {
+    public fun create(schemaVersion: ULong, availablePlatforms: Set<Platform>, events: Events): EventHorizonSchema {
       require(schemaVersion > 0u) { "Schema version must be a positive number. Is: $schemaVersion" }
+      requirePredeclaredPropertyPlatforms(events, availablePlatforms)
       return EventHorizonSchema(
         schemaVersion = schemaVersion,
+        availablePlatforms = availablePlatforms,
         events = events,
       )
+    }
+
+    private fun requirePredeclaredPropertyPlatforms(events: Events, availablePlatforms: Set<Platform>) {
+      val invalidPlatforms = events.findInvalidPlatforms(availablePlatforms)
+      require(invalidPlatforms.isEmpty()) {
+        buildString {
+          append("Schema must declare platforms for optional properties. Available platforms:\n")
+          val platforms = availablePlatforms.joinToString(separator = "\n") { platform ->
+            " - ${platform.value}"
+          }
+          append(platforms)
+
+          append("\nIssues found with the following events and properties:\n")
+          val eventIssues = invalidPlatforms.joinToString(separator = "\n") { (eventName, propertyNames) ->
+            val propertyIssues = propertyNames.joinToString(separator = "\n") { (propertyName, platformNames) ->
+              "   - $propertyName: ${platformNames.joinToString(prefix = "[", postfix = "]")}"
+            }
+            " - $eventName:\n$propertyIssues"
+          }
+          append(eventIssues)
+        }
+      }
+    }
+
+    private fun Events.findInvalidPlatforms(availablePlatforms: Set<Platform>) = mapNotNull { event ->
+      val invalidProperties = event.properties.mapNotNull { property ->
+        val invalidPlatforms = property.optionalPlatforms.filter { platform ->
+          platform !in availablePlatforms
+        }
+        if (invalidPlatforms.isNotEmpty()) {
+          property.name to invalidPlatforms.map(Platform::value)
+        } else {
+          null
+        }
+      }
+      if (invalidProperties.isNotEmpty()) {
+        event.name to invalidProperties
+      } else {
+        null
+      }
     }
   }
 }
@@ -77,26 +121,14 @@ public data class Property(
 
   public constructor(
     name: String,
+    vararg optionalPlatforms: String,
     type: Type = Type.Text,
     description: String? = null,
-    optAndroid: Boolean = false,
-    optIos: Boolean = false,
-    optWeb: Boolean = false,
   ) : this(
-    name,
-    type,
-    description,
-    buildSet {
-      if (optAndroid) {
-        add(Platform.Android)
-      }
-      if (optIos) {
-        add(Platform.Ios)
-      }
-      if (optWeb) {
-        add(Platform.Web)
-      }
-    },
+    name = name,
+    type = type,
+    description = description,
+    optionalPlatforms = optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
   )
 
   public sealed interface Type {
@@ -123,10 +155,13 @@ public data class Property(
   }
 }
 
-public enum class Platform {
-  Android,
-  Ios,
-  Web,
+@JvmInline
+public value class Platform(
+  public val value: String,
+) {
+  public companion object {
+    public val NoPlatform: Platform = Platform("")
+  }
 }
 
 private fun <T> requireNoDuplicates(collection: Collection<T>, message: (Map<T, Int>) -> String) {

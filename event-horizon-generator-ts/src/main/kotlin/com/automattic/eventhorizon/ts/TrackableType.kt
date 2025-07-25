@@ -8,6 +8,7 @@ import com.automattic.eventhorizon.Property.Type
 
 internal class TrackableType(
   private val events: Events,
+  private val platform: Platform,
 ) {
   val typeSpec
     get() = buildString {
@@ -72,7 +73,7 @@ internal class TrackableType(
     appendNewLine()
     appendIndent(count = 4)
     append(property.name)
-    if (property.isOptional(Platform.Web)) {
+    if (property.isOptional(platform)) {
       append('?')
     }
     append(": ")

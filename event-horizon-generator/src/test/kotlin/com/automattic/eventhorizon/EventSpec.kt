@@ -10,12 +10,12 @@ class EventSpec : FunSpec({
     val exception = shouldThrow<IllegalArgumentException> {
       Event(
         "event_name",
-        Property("name_a", Type.Text),
-        Property("name_a", Type.Boolean),
-        Property("name_a", Type.Number),
-        Property("name_b", Type.Text),
-        Property("name_b", Type.Boolean),
-        Property("name_c", Type.Boolean),
+        Property("name_a", type = Type.Text),
+        Property("name_a", type = Type.Boolean),
+        Property("name_a", type = Type.Number),
+        Property("name_b", type = Type.Text),
+        Property("name_b", type = Type.Boolean),
+        Property("name_c", type = Type.Boolean),
       )
     }
 

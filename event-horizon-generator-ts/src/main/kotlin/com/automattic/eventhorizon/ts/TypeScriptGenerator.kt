@@ -2,13 +2,16 @@ package com.automattic.eventhorizon.ts
 
 import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Generator
+import com.automattic.eventhorizon.Platform
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
 
-public class TypeScriptGenerator : Generator {
+public class TypeScriptGenerator(
+  private val platform: Platform,
+) : Generator {
   override fun generate(schema: EventHorizonSchema, outputDir: Path): Path {
-    val trackableType = TrackableType(schema.events)
+    val trackableType = TrackableType(schema.events, platform)
     val enumTypes = schema.events.distinctEnums.map(::EventPropertyType)
 
     val tsText = buildString {

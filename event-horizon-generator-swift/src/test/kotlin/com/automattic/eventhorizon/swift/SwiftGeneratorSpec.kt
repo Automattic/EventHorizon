@@ -3,6 +3,7 @@ package com.automattic.eventhorizon.swift
 import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Events
+import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.Property.Type
 import io.kotest.core.spec.style.FunSpec
@@ -12,21 +13,26 @@ import kotlin.io.path.readText
 
 class SwiftGeneratorSpec : FunSpec({
   val tempDir = tempdir().toPath()
-  val generator = SwiftGenerator("MyModule")
+  val generator = SwiftGenerator("MyModule", Platform("ios"))
 
   test("generate everything") {
     val schema = EventHorizonSchema.create(
       schemaVersion = 1u,
+      availablePlatforms = setOf(Platform("ios")),
       events = Events(
         Event(
           "event_a",
-          Property("property_a", Type.Enum("enum_a", "value")),
+          Property("property_a", type = Type.Enum("enum_a", "value")),
           description = "Event description",
         ),
         Event(
           "event_b",
-          Property("property_a", Type.Enum("enum_a", "value"), optIos = true),
-          Property("property_b", Type.Enum("enum_b", "value_a", "value_b"), description = "Property description"),
+          Property("property_a", "ios", type = Type.Enum("enum_a", "value")),
+          Property(
+            "property_b",
+            type = Type.Enum("enum_b", "value_a", "value_b"),
+            description = "Property description",
+          ),
         ),
       ),
     )

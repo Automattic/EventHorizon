@@ -47,13 +47,7 @@ private fun InputProperty.toProperty() = Property(
     is Type.Enum -> "enum"
   },
   values = (type as? Type.Enum)?.values?.toList().orEmpty(),
-  optionalPlatforms = optionalPlatforms.map { platform ->
-    when (platform) {
-      Platform.Android -> "android"
-      Platform.Ios -> "ios"
-      Platform.Web -> "web"
-    }
-  },
+  optionalPlatforms = optionalPlatforms.map(Platform::value),
 )
 
 @Serializable

@@ -20,6 +20,7 @@ internal class EventStruct(
   private val moduleName: String,
   private val event: Event,
   private val trackableProtocol: TrackableProtocol,
+  private val platform: Platform,
 ) {
   private val type
     get() = DeclaredTypeName(moduleName, "${event.name.snakeToPascalCase()}Event")
@@ -40,7 +41,7 @@ internal class EventStruct(
         is Type.Text -> STRING
         is Type.Enum -> EventPropertyEnum(moduleName, type).typeName
       }
-      return if (isOptional(Platform.Ios)) {
+      return if (isOptional(platform)) {
         // https://github.com/outfoxx/swiftpoet/issues/120
         if (typeName == NumericAny) NumericAnyNullable else typeName.makeOptional()
       } else {

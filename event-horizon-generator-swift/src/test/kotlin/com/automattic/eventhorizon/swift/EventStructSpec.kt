@@ -1,6 +1,7 @@
 package com.automattic.eventhorizon.swift
 
 import com.automattic.eventhorizon.Event
+import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.Property.Type
 import io.kotest.core.spec.style.FunSpec
@@ -12,7 +13,7 @@ class EventStructSpec : FunSpec({
   test("event without properties") {
     val event = Event("event_name")
 
-    val typeSpec = EventStruct("MyModule", event, trackable).typeSpec
+    val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
 
     typeSpec.toString() shouldBe """
       |struct EventNameEvent : MyModule.Trackable {
@@ -34,13 +35,13 @@ class EventStructSpec : FunSpec({
   test("event with properties") {
     val event = Event(
       "event_name",
-      Property("property_one", Type.Text),
-      Property("property_two", Type.Number),
-      Property("property_three", Type.Boolean),
-      Property("property_four", Type.Enum("enum_name", "value")),
+      Property("property_one", type = Type.Text),
+      Property("property_two", type = Type.Number),
+      Property("property_three", type = Type.Boolean),
+      Property("property_four", type = Type.Enum("enum_name", "value")),
     )
 
-    val typeSpec = EventStruct("MyModule", event, trackable).typeSpec
+    val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
 
     typeSpec.toString() shouldBe """
       |struct EventNameEvent : MyModule.Trackable {
@@ -82,7 +83,7 @@ class EventStructSpec : FunSpec({
   test("event comment") {
     val event = Event("event_name", description = "Some description")
 
-    val typeSpec = EventStruct("MyModule", event, trackable).typeSpec
+    val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
 
     typeSpec.toString() shouldBe """
       |/**
@@ -111,7 +112,7 @@ class EventStructSpec : FunSpec({
       Property("property_three", description = "Description 2"),
     )
 
-    val typeSpec = EventStruct("MyModule", event, trackable).typeSpec
+    val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
 
     typeSpec.toString() shouldBe """
       |struct EventNameEvent : MyModule.Trackable {
@@ -153,12 +154,12 @@ class EventStructSpec : FunSpec({
   test("nullable property") {
     val event = Event(
       "event_name",
-      Property("property_one", optWeb = true),
-      Property("property_two", optIos = true),
-      Property("property_three", optAndroid = true),
+      Property("property_one", "web"),
+      Property("property_two", "ios"),
+      Property("property_three", "android"),
     )
 
-    val typeSpec = EventStruct("MyModule", event, trackable).typeSpec
+    val typeSpec = EventStruct("MyModule", event, trackable, Platform("ios")).typeSpec
 
     typeSpec.toString() shouldBe """
       |struct EventNameEvent : MyModule.Trackable {

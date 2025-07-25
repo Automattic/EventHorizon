@@ -28,26 +28,29 @@ public fun parseSchema(file: Path): Result<EventHorizonSchema> = runCatching {
 private fun parseFile(file: Path): EventHorizonSchema {
   val definition = Yaml.decodeFromStream<InputDefinition>(file.inputStream())
   val enums = definition.enums.map { (name, values) -> Type.Enum(name, values.orEmpty()) }
+  val platforms = definition.platforms.mapTo(mutableSetOf(), ::Platform)
   val events = definition
-    .parseProperties(enums)
+    .parseProperties(enums, platforms)
     .map { (eventName, description, properties) -> Event(eventName, description, properties) }
   return EventHorizonSchema.create(
     schemaVersion = requireNotNull(definition.version.toULongOrNull()) {
       "Schema version must be a positive number. Is: ${definition.version}"
     },
+    availablePlatforms = platforms,
     events = Events(events),
   )
 }
 
-private fun InputDefinition.parseProperties(enums: List<Type.Enum>) = events.map { (eventName, rawProperties) ->
-  val description = rawProperties?.parseDescription()
-  val properties = rawProperties
-    ?.minus(DescriptionNode)
-    ?.mapValues { (_, rawProperty) -> Yaml.decodeFromYamlNode<EventPropertyConfiguration>(rawProperty) }
-    ?.parseProperties(enums)
-    .orEmpty()
-  Triple(eventName, description, properties)
-}
+private fun InputDefinition.parseProperties(enums: List<Type.Enum>, platforms: Set<Platform>) =
+  events.map { (eventName, rawProperties) ->
+    val description = rawProperties?.parseDescription()
+    val properties = rawProperties
+      ?.minus(DescriptionNode)
+      ?.mapValues { (_, rawProperty) -> Yaml.decodeFromYamlNode<EventPropertyConfiguration>(rawProperty) }
+      ?.parseProperties(enums, platforms)
+      .orEmpty()
+    Triple(eventName, description, properties)
+  }
 
 private fun Map<String, YamlNode>.parseDescription() = when (val yamlDescription = get(DescriptionNode)) {
   is YamlScalar -> yamlDescription.content
@@ -55,11 +58,12 @@ private fun Map<String, YamlNode>.parseDescription() = when (val yamlDescription
   else -> throw YamlException("'description' cannot be used as a property name", yamlDescription.path)
 }
 
-private fun RawProperty.parseProperties(enums: List<Type.Enum>) = map { (name, configuration) ->
-  val propertyType = configuration.type.parsePropertyType(enums)
-  val optionalPlatforms = configuration.optional?.parsePlatforms().orEmpty()
-  Property(name, propertyType, configuration.description, optionalPlatforms)
-}
+private fun RawProperty.parseProperties(enums: List<Type.Enum>, platforms: Set<Platform>) =
+  map { (name, configuration) ->
+    val propertyType = configuration.type.parsePropertyType(enums)
+    val optionalPlatforms = configuration.optional?.parsePlatforms(platforms).orEmpty()
+    Property(name, propertyType, configuration.description, optionalPlatforms)
+  }
 
 private fun YamlScalar.parsePropertyType(enums: List<Type.Enum>) = when (content) {
   "boolean" -> Type.Boolean
@@ -74,30 +78,26 @@ private fun YamlScalar.parsePropertyType(enums: List<Type.Enum>) = when (content
   }
 }
 
-private fun YamlNode.parsePlatforms() = when (this) {
-  is YamlScalar -> parsePlatforms()
+private fun YamlNode.parsePlatforms(availablePlatforms: Set<Platform>) = when (this) {
+  is YamlScalar -> parsePlatforms(availablePlatforms)
   is YamlList -> parsePlatforms()
   else -> throw YamlException("Expected element to be a scalar or a list but is ${this::class.simpleName}", path)
 }
 
-private fun YamlScalar.parsePlatforms() = when (content.toBooleanStrictOrNull()) {
-  true -> Platform.entries.toSet()
+private fun YamlScalar.parsePlatforms(availablePlatforms: Set<Platform>) = when (content.toBooleanStrictOrNull()) {
+  true -> availablePlatforms
   false -> emptySet()
   null -> throw YamlException("Value '$content' is not a valid boolean.", path)
 }
 
 private fun YamlList.parsePlatforms() = items.mapTo(mutableSetOf()) { item ->
-  when (val content = item.yamlScalar.content) {
-    "android" -> Platform.Android
-    "ios" -> Platform.Ios
-    "web" -> Platform.Web
-    else -> throw YamlException("Value '$content' must be one of android, ios, or web.", path)
-  }
+  Platform(item.yamlScalar.content)
 }
 
 @Serializable
 private data class InputDefinition(
   val version: String,
+  val platforms: Set<String> = emptySet(),
   val events: Map<String, Map<String, YamlNode>?> = emptyMap(),
   val enums: Map<String, Set<String>?> = emptyMap(),
 )

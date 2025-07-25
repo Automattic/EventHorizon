@@ -22,6 +22,7 @@ internal class EventClass(
   private val packageName: String,
   private val event: Event,
   private val trackableInterface: TrackableInterface,
+  private val platform: Platform,
 ) {
   private val classProperties
     get() = event.properties
@@ -38,7 +39,7 @@ internal class EventClass(
       is Type.Number -> NUMBER
       is Type.Text -> STRING
       is Type.Enum -> EventPropertyEnum(packageName, type).className
-    }.copy(nullable = isOptional(Platform.Android))
+    }.copy(nullable = isOptional(platform))
 
   private val eventNameProperty
     get() = PropertySpec
