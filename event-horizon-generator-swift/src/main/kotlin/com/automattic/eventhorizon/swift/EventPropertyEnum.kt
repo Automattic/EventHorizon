@@ -1,6 +1,6 @@
 package com.automattic.eventhorizon.swift
 
-import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.snakeToCamelCase
 import com.automattic.eventhorizon.snakeToPascalCase
 import io.outfoxx.swiftpoet.DeclaredTypeName
@@ -11,7 +11,7 @@ import io.outfoxx.swiftpoet.TypeSpec
 
 internal class EventPropertyEnum(
   private val moduleName: String,
-  private val enum: Type.Enum,
+  private val enum: PropertyType.Enum,
 ) {
   val typeName
     get() = DeclaredTypeName(moduleName, enum.name.snakeToPascalCase())

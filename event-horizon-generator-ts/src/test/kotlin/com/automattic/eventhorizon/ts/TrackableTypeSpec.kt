@@ -4,7 +4,7 @@ import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
-import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.PropertyType
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
@@ -25,10 +25,10 @@ class TrackableTypeSpec : FunSpec({
     val events = Events(
       Event(
         "event_name",
-        Property.test("property_one", type = Type.Text),
-        Property.test("property_two", type = Type.Number),
-        Property.test("property_three", type = Type.Boolean),
-        Property.test("property_four", type = Type.Enum.test("enum_name", "value")),
+        Property.test("property_one", type = PropertyType.Text),
+        Property.test("property_two", type = PropertyType.Number),
+        Property.test("property_three", type = PropertyType.Boolean),
+        Property.test("property_four", type = PropertyType.Enum.test("enum_name", "value")),
       ),
     )
 
@@ -110,7 +110,7 @@ class TrackableTypeSpec : FunSpec({
   test("multiple events") {
     val events = Events(
       Event("event_one", Property.test("property")),
-      Event("event_two", Property.test("property", type = Type.Boolean)),
+      Event("event_two", Property.test("property", type = PropertyType.Boolean)),
       Event("event_three"),
     )
 

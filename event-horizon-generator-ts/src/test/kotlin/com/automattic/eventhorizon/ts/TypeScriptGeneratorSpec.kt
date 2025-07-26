@@ -4,7 +4,7 @@ import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
-import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.Schema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
@@ -22,16 +22,20 @@ class TypeScriptGeneratorSpec : FunSpec({
       events = Events(
         Event(
           "event_a",
-          Property.test("property_a", type = Type.Enum.test("enum_a", "value")),
+          Property.test("property_a", type = PropertyType.Enum.test("enum_a", "value")),
           documentation = "Event documentation",
           availablePlatforms = setOf("web"),
         ),
         Event(
           "event_b",
-          Property.test("property_a", type = Type.Enum.test("enum_a", "value"), optionalPlatforms = setOf("web")),
+          Property.test(
+            "property_a",
+            type = PropertyType.Enum.test("enum_a", "value"),
+            optionalPlatforms = setOf("web"),
+          ),
           Property.test(
             "property_b",
-            type = Type.Enum.test("enum_b", "value_a", "value_b"),
+            type = PropertyType.Enum.test("enum_b", "value_a", "value_b"),
             documentation = "Property documentation",
           ),
           availablePlatforms = setOf("web"),

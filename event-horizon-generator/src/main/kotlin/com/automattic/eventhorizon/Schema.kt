@@ -1,6 +1,5 @@
 package com.automattic.eventhorizon
 
-import com.automattic.eventhorizon.Property.Type
 import java.util.function.IntFunction
 
 @ConsistentCopyVisibility
@@ -110,12 +109,12 @@ public data class Events(
 
   public constructor(vararg events: Event) : this(events.toList())
 
-  public val distinctEnums: List<Type.Enum>
+  public val distinctEnums: List<PropertyType.Enum>
     get() = flatMap(Event::properties)
       .map(Property::type)
-      .filterIsInstance<Type.Enum>()
-      .distinctBy(Type.Enum::name)
-      .sortedBy(Type.Enum::name)
+      .filterIsInstance<PropertyType.Enum>()
+      .distinctBy(PropertyType.Enum::name)
+      .sortedBy(PropertyType.Enum::name)
 
   @Deprecated("Deprecated in Kotlin", level = DeprecationLevel.HIDDEN)
   override fun <T : Any?> toArray(generator: IntFunction<Array<out T?>?>): Array<out T?> {

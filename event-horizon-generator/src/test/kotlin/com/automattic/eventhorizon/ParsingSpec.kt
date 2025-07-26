@@ -1,6 +1,5 @@
 package com.automattic.eventhorizon
 
-import com.automattic.eventhorizon.Property.Type
 import com.charleskorn.kaml.Location
 import com.charleskorn.kaml.MissingRequiredPropertyException
 import com.charleskorn.kaml.YamlException
@@ -107,7 +106,7 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe Type.Text
+    property.type shouldBe PropertyType.Text
   }
 
   test("parse event with number property") {
@@ -125,7 +124,7 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe Type.Number
+    property.type shouldBe PropertyType.Number
   }
 
   test("parse event with boolean property") {
@@ -143,7 +142,7 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe Type.Boolean
+    property.type shouldBe PropertyType.Boolean
   }
 
   test("parse event with enum property that exists") {
@@ -164,7 +163,7 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe Type.Enum.test("enum_reference", "value_1")
+    property.type shouldBe PropertyType.Enum.test("enum_reference", "value_1")
   }
 
   test("parse event with enum property that doesn't exist") {
@@ -205,7 +204,7 @@ class ParsingSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe Type.Enum.test("enum_reference", "value1", "value2", "value3")
+    property.type shouldBe PropertyType.Enum.test("enum_reference", "value1", "value2", "value3")
   }
 
   test("parse event with optional property on all platforms") {
@@ -325,10 +324,10 @@ class ParsingSpec : FunSpec({
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event.properties shouldBe
       setOf(
-        Property.test("property1", type = Type.Text, optionalPlatforms = setOf("android", "web")),
-        Property.test("property2", type = Type.Boolean, optionalPlatforms = setOf("android")),
-        Property.test("property3", type = Type.Number),
-        Property.test("property4", type = Type.Number),
+        Property.test("property1", type = PropertyType.Text, optionalPlatforms = setOf("android", "web")),
+        Property.test("property2", type = PropertyType.Boolean, optionalPlatforms = setOf("android")),
+        Property.test("property3", type = PropertyType.Number),
+        Property.test("property4", type = PropertyType.Number),
       )
   }
 

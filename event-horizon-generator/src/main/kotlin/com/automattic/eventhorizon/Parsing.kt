@@ -1,6 +1,5 @@
 package com.automattic.eventhorizon
 
-import com.automattic.eventhorizon.Property.Type
 import com.charleskorn.kaml.Yaml as YamlObject
 import com.charleskorn.kaml.YamlException
 import com.charleskorn.kaml.YamlList
@@ -28,7 +27,7 @@ public fun parseSchema(file: Path): Result<Schema> = runCatching {
 
 private fun parseFile(file: Path): Schema {
   val definition = Yaml.decodeFromStream<InputDefinition>(file.inputStream())
-  val enums = definition.enums.map { (name, values) -> Type.Enum(name, values.orEmpty()) }
+  val enums = definition.enums.map { (name, values) -> PropertyType.Enum(name, values.orEmpty()) }
   val platforms = definition.platforms.mapTo(mutableSetOf(), ::Platform)
   val events = definition.parseEvents(enums, platforms)
   return Schema.create(
@@ -40,7 +39,7 @@ private fun parseFile(file: Path): Schema {
   )
 }
 
-private fun InputDefinition.parseEvents(enums: List<Type.Enum>, platforms: Set<Platform>) =
+private fun InputDefinition.parseEvents(enums: List<PropertyType.Enum>, platforms: Set<Platform>) =
   events.map { (eventName, rawProperties) ->
     val documentation = rawProperties?.parseDocumentation()
     val optOutPlatforms = rawProperties?.parsePlatforms().orEmpty()
@@ -71,17 +70,17 @@ private fun Map<String, YamlNode>.parsePlatforms() = when (val yamlPlatforms = g
   else -> throw YamlException("'$OptOutPlatformsNode' cannot be used as a property name", yamlPlatforms.path)
 }
 
-private fun RawProperty.parseProperties(enums: List<Type.Enum>, platforms: Set<Platform>) =
+private fun RawProperty.parseProperties(enums: List<PropertyType.Enum>, platforms: Set<Platform>) =
   map { (name, configuration) ->
     val propertyType = configuration.type.parsePropertyType(enums)
     val optionalPlatforms = configuration.optional?.parsePlatforms(platforms).orEmpty()
     Property(name, propertyType, configuration.documentation, optionalPlatforms)
   }
 
-private fun YamlScalar.parsePropertyType(enums: List<Type.Enum>) = when (content) {
-  "boolean" -> Type.Boolean
-  "number" -> Type.Number
-  "text" -> Type.Text
+private fun YamlScalar.parsePropertyType(enums: List<PropertyType.Enum>) = when (content) {
+  "boolean" -> PropertyType.Boolean
+  "number" -> PropertyType.Number
+  "text" -> PropertyType.Text
   else -> {
     val enum = enums.singleOrNull { enum -> enum.name == content }
     if (enum == null) {

@@ -1,6 +1,5 @@
 package com.automattic.eventhorizon
 
-import com.automattic.eventhorizon.Property.Type
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.throwable.shouldHaveMessage
@@ -10,12 +9,12 @@ class EventSpec : FunSpec({
     val exception = shouldThrow<IllegalArgumentException> {
       Event(
         "event_name",
-        Property.test("name_a", type = Type.Text),
-        Property.test("name_a", type = Type.Boolean),
-        Property.test("name_a", type = Type.Number),
-        Property.test("name_b", type = Type.Text),
-        Property.test("name_b", type = Type.Boolean),
-        Property.test("name_c", type = Type.Boolean),
+        Property.test("name_a", type = PropertyType.Text),
+        Property.test("name_a", type = PropertyType.Boolean),
+        Property.test("name_a", type = PropertyType.Number),
+        Property.test("name_b", type = PropertyType.Text),
+        Property.test("name_b", type = PropertyType.Boolean),
+        Property.test("name_c", type = PropertyType.Boolean),
       )
     }
 

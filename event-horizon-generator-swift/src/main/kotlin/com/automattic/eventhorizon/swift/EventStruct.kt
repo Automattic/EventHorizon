@@ -3,7 +3,7 @@ package com.automattic.eventhorizon.swift
 import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
-import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.snakeToCamelCase
 import com.automattic.eventhorizon.snakeToPascalCase
 import io.outfoxx.swiftpoet.BOOL
@@ -36,10 +36,10 @@ internal class EventStruct(
   private val Property.typeName: TypeName
     get() {
       val typeName = when (val type = type) {
-        is Type.Boolean -> BOOL
-        is Type.Number -> NumericAny
-        is Type.Text -> STRING
-        is Type.Enum -> EventPropertyEnum(moduleName, type).typeName
+        is PropertyType.Boolean -> BOOL
+        is PropertyType.Number -> NumericAny
+        is PropertyType.Text -> STRING
+        is PropertyType.Enum -> EventPropertyEnum(moduleName, type).typeName
       }
       return if (isOptional(platform)) {
         // https://github.com/outfoxx/swiftpoet/issues/120
@@ -81,7 +81,7 @@ internal class EventStruct(
           if (structProperty.type.optional) {
             builder.beginControlFlow("if", "let %L = %L", structProperty.name, structProperty.name)
           }
-          if (codeGenProperty.type is Type.Enum) {
+          if (codeGenProperty.type is PropertyType.Enum) {
             builder.addStatement("props[%S] = %L.analyticsValue", codeGenProperty.name, structProperty.name)
           } else {
             builder.addStatement("props[%S] = %L", codeGenProperty.name, structProperty.name)

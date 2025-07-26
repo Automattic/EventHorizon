@@ -3,7 +3,7 @@ package com.automattic.eventhorizon.kotlin
 import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
-import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.snakeToCamelCase
 import com.automattic.eventhorizon.snakeToPascalCase
 import com.squareup.kotlinpoet.ANY
@@ -35,10 +35,10 @@ internal class EventClass(
 
   private val Property.className
     get() = when (val type = type) {
-      is Type.Boolean -> BOOLEAN
-      is Type.Number -> NUMBER
-      is Type.Text -> STRING
-      is Type.Enum -> EventPropertyEnum(packageName, type).className
+      is PropertyType.Boolean -> BOOLEAN
+      is PropertyType.Number -> NUMBER
+      is PropertyType.Text -> STRING
+      is PropertyType.Enum -> EventPropertyEnum(packageName, type).className
     }.copy(nullable = isOptional(platform))
 
   private val eventNameProperty

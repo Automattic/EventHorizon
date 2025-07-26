@@ -4,7 +4,7 @@ import com.automattic.eventhorizon.Event as InputEvent
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property as InputProperty
-import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.Schema
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
@@ -42,12 +42,12 @@ private fun InputProperty.toProperty() = Property(
   name = name,
   documentation = documentation,
   type = when (type) {
-    is Type.Text -> "text"
-    is Type.Boolean -> "boolean"
-    is Type.Number -> "number"
-    is Type.Enum -> "enum"
+    is PropertyType.Text -> "text"
+    is PropertyType.Boolean -> "boolean"
+    is PropertyType.Number -> "number"
+    is PropertyType.Enum -> "enum"
   },
-  values = (type as? Type.Enum)?.values?.toList().orEmpty(),
+  values = (type as? PropertyType.Enum)?.values?.toList().orEmpty(),
   optionalPlatforms = optionalPlatforms.map(Platform::value),
 )
 

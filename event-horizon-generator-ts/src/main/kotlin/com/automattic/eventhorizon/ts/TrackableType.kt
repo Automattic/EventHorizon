@@ -4,7 +4,7 @@ import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
-import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.PropertyType
 
 internal class TrackableType(
   private val events: Events,
@@ -83,9 +83,9 @@ internal class TrackableType(
 
   private val Property.typeName
     get() = when (val type = type) {
-      is Type.Boolean -> "boolean"
-      is Type.Number -> "number"
-      is Type.Text -> "string"
-      is Type.Enum -> EventPropertyType(type).typeName
+      is PropertyType.Boolean -> "boolean"
+      is PropertyType.Number -> "number"
+      is PropertyType.Text -> "string"
+      is PropertyType.Enum -> EventPropertyType(type).typeName
     }
 }

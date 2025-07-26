@@ -3,7 +3,7 @@ package com.automattic.eventhorizon.kotlin
 import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
-import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.PropertyType
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
@@ -32,10 +32,10 @@ class EventClassSpec : FunSpec({
   test("event with properties") {
     val event = Event(
       "event_name",
-      Property.test("property_one", type = Type.Text),
-      Property.test("property_two", type = Type.Number),
-      Property.test("property_three", type = Type.Boolean),
-      Property.test("property_four", type = Type.Enum.test("enum_name", "value")),
+      Property.test("property_one", type = PropertyType.Text),
+      Property.test("property_two", type = PropertyType.Number),
+      Property.test("property_three", type = PropertyType.Boolean),
+      Property.test("property_four", type = PropertyType.Enum.test("enum_name", "value")),
     )
 
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
