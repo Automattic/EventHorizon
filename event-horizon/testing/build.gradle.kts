@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-  api(projects.eventHorizonGenerator)
+  api(projects.eventHorizon)
   api(libs.kotest.assertions)
 }

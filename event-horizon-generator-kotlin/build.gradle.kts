@@ -1,10 +1,10 @@
 plugins { alias(libs.plugins.kotlin.jvm) }
 
 dependencies {
-  api(projects.eventHorizonGenerator)
+  api(projects.eventHorizon)
   implementation(libs.kotlinpoet)
 
-  testImplementation(projects.eventHorizonGenerator.testing)
+  testImplementation(projects.eventHorizon.testing)
   testImplementation(libs.kotest.assertions)
   testImplementation(libs.kotest.framework)
 }
