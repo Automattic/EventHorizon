@@ -1,7 +1,5 @@
 package com.automattic.eventhorizon
 
-import java.util.function.IntFunction
-
 @ConsistentCopyVisibility
 public data class Schema private constructor(
   val schemaVersion: ULong,
@@ -12,7 +10,9 @@ public data class Schema private constructor(
     public val Empty: Schema = Schema(
       schemaVersion = 0u,
       availablePlatforms = emptySet(),
-      events = Events(),
+      events = Events(
+        value = emptyList(),
+      ),
     )
 
     public fun create(schemaVersion: ULong, availablePlatforms: Set<Platform>, events: Events): Schema {
@@ -95,71 +95,5 @@ public data class Schema private constructor(
         null
       }
     }
-  }
-}
-
-public data class Events(
-  private val events: List<Event>,
-) : List<Event> by events {
-  init {
-    requireNoDuplicates(events.map(Event::name)) { duplicates ->
-      "Found duplicate events: $duplicates"
-    }
-  }
-
-  public constructor(vararg events: Event) : this(events.toList())
-
-  public val distinctEnums: List<PropertyType.Enum>
-    get() = flatMap(Event::properties)
-      .map(Property::type)
-      .filterIsInstance<PropertyType.Enum>()
-      .distinctBy(PropertyType.Enum::name)
-      .sortedBy(PropertyType.Enum::name)
-
-  @Deprecated("Deprecated in Kotlin", level = DeprecationLevel.HIDDEN)
-  override fun <T : Any?> toArray(generator: IntFunction<Array<out T?>?>): Array<out T?> {
-    @Suppress("DEPRECATION")
-    return super.toArray(generator)
-  }
-}
-
-public data class Event(
-  val name: String,
-  val documentation: String?,
-  val properties: List<Property>,
-  val availablePlatforms: Set<Platform>,
-) {
-  init {
-    requireNoDuplicates(properties.map(Property::name)) { duplicates ->
-      "Found duplicate properties for event '$name': $duplicates"
-    }
-  }
-
-  public constructor(
-    name: String,
-    vararg properties: Property,
-    documentation: String? = null,
-    availablePlatforms: Set<String> = emptySet(),
-  ) : this(
-    name = name,
-    documentation = documentation,
-    properties = properties.toList(),
-    availablePlatforms = availablePlatforms.mapTo(mutableSetOf(), ::Platform),
-  )
-}
-
-@JvmInline
-public value class Platform(
-  public val value: String,
-) {
-  public companion object {
-    public val NoPlatform: Platform = Platform("")
-  }
-}
-
-private fun <T> requireNoDuplicates(collection: Collection<T>, message: (Map<T, Int>) -> String) {
-  require(collection.distinct().size == collection.size) {
-    val duplicates = collection.groupingBy { it }.eachCount().filter { (_, count) -> count > 1 }
-    message(duplicates)
   }
 }

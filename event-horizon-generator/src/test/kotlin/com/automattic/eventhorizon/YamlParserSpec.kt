@@ -76,7 +76,7 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event shouldBe Event("event")
+    event shouldBe buildEvent("event")
   }
 
   test("parse events without schema") {
@@ -164,7 +164,7 @@ class YamlParserSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe PropertyType.Enum.test("enum_reference", "value_1")
+    property.type shouldBe buildEnumType("enum_reference", "value_1")
   }
 
   test("parse event with enum property that doesn't exist") {
@@ -205,7 +205,7 @@ class YamlParserSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe PropertyType.Enum.test("enum_reference", "value1", "value2", "value3")
+    property.type shouldBe buildEnumType("enum_reference", "value1", "value2", "value3")
   }
 
   test("parse event with optional property on all platforms") {
@@ -323,13 +323,16 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event.properties shouldBe
-      setOf(
-        Property.test("property1", type = PropertyType.Text, optionalPlatforms = setOf("android", "web")),
-        Property.test("property2", type = PropertyType.Boolean, optionalPlatforms = setOf("android")),
-        Property.test("property3", type = PropertyType.Number),
-        Property.test("property4", type = PropertyType.Number),
-      )
+    event.properties shouldBe buildProperties {
+      text("property1") {
+        optionalPlatforms("android", "web")
+      }
+      boolean("property2") {
+        optionalPlatforms("android")
+      }
+      number("property3")
+      number("property4")
+    }
   }
 
   test("parse multiple events") {
@@ -346,7 +349,11 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val events = result.shouldBeSuccess().events
-    events shouldBe Events(Event("event1"), Event("event2"), Event("event3"))
+    events shouldBe buildEvents {
+      event("event1")
+      event("event2")
+      event("event3")
+    }
   }
 
   test("parse event documentation") {
@@ -362,7 +369,9 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event shouldBe Event("event", documentation = "Some documentation")
+    event shouldBe buildEvent("event") {
+      documentation = "Some documentation"
+    }
   }
 
   test("parse event with documentation set as one of properties") {
@@ -398,7 +407,9 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event.properties shouldHaveSingleElement Property.test("property1", documentation = "Property documentation")
+    event.properties shouldHaveSingleElement buildProperty("property1") {
+      documentation = "Property documentation"
+    }
   }
 
   test("parse opt out platform events documentation") {

@@ -11,7 +11,7 @@ class SchemaSpec() : FunSpec({
       Schema.create(
         schemaVersion = 0u,
         availablePlatforms = emptySet(),
-        events = Events(),
+        events = buildEvents(),
       )
     }
     exception shouldHaveMessage "Schema version must be a positive number. Is: 0"
@@ -26,11 +26,17 @@ class SchemaSpec() : FunSpec({
       Schema.create(
         schemaVersion = 1u,
         availablePlatforms = setOf(Platform("android"), Platform("ios")),
-        events = Events(
-          Event("event1", availablePlatforms = setOf("android")),
-          Event("event2", availablePlatforms = setOf("ios", "web")),
-          Event("event3", availablePlatforms = setOf("web", "embedded")),
-        ),
+        events = buildEvents {
+          event("event1") {
+            availablePlatforms("android")
+          }
+          event("event2") {
+            availablePlatforms("ios", "web")
+          }
+          event("event3") {
+            availablePlatforms("web", "embedded")
+          }
+        },
       )
     }
     exception shouldHaveMessage """
@@ -48,21 +54,43 @@ class SchemaSpec() : FunSpec({
       Schema.create(
         schemaVersion = 1u,
         availablePlatforms = setOf(Platform("android"), Platform("ios")),
-        events = Events(
-          Event("event1", Property.test("prop1")),
-          Event("event2", Property.test("prop1", optionalPlatforms = setOf("android"))),
-          Event(
-            "event3",
-            Property.test("prop1", optionalPlatforms = setOf("web")),
-            Property.test("prop2", optionalPlatforms = setOf("android")),
-          ),
-          Event(
-            "event4",
-            Property.test("prop1", optionalPlatforms = setOf("web")),
-            Property.test("prop2", optionalPlatforms = setOf("desktop")),
-          ),
-          Event("event5", Property.test("prop1", optionalPlatforms = setOf("web", "embedded"))),
-        ),
+        events = buildEvents {
+          event("event1")
+          event("event2") {
+            properties {
+              text("prop1") {
+                optionalPlatforms("android")
+              }
+            }
+          }
+          event("event3") {
+            properties {
+              text("prop1") {
+                optionalPlatforms("web")
+              }
+              text("prop2") {
+                optionalPlatforms("android")
+              }
+            }
+          }
+          event("event4") {
+            properties {
+              text("prop1") {
+                optionalPlatforms("web")
+              }
+              text("prop2") {
+                optionalPlatforms("desktop")
+              }
+            }
+          }
+          event("event5") {
+            properties {
+              text("prop1") {
+                optionalPlatforms("web", "embedded")
+              }
+            }
+          }
+        },
       )
     }
     exception shouldHaveMessage """

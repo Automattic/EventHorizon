@@ -20,6 +20,7 @@ rootProject.name = "event-horizon-root"
 include(
   ":event-horizon-cli",
   ":event-horizon-generator",
+  ":event-horizon-generator:testing",
   ":event-horizon-generator-kotlin",
   ":event-horizon-generator-swift",
   ":event-horizon-generator-ts",

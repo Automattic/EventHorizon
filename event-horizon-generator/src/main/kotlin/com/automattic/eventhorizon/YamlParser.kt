@@ -1,5 +1,6 @@
 package com.automattic.eventhorizon
 
+import arrow.core.toNonEmptySetOrThrow
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlException
 import com.charleskorn.kaml.YamlList
@@ -29,7 +30,9 @@ public class YamlParser {
 
   private fun parseFile(file: Path): Schema {
     val definition = yaml.decodeFromStream<InputDefinition>(file.inputStream())
-    val enums = definition.enums.map { (name, values) -> PropertyType.Enum(name, values.orEmpty()) }
+    val enums = definition.enums.map { (name, values) ->
+      PropertyType.Enum(name, values.orEmpty().toNonEmptySetOrThrow())
+    }
     val platforms = definition.platforms.mapTo(mutableSetOf(), ::Platform)
     val events = definition.parseEvents(enums, platforms)
     return Schema.create(

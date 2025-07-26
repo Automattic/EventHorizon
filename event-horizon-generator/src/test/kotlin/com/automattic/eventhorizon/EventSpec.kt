@@ -8,13 +8,17 @@ class EventSpec : FunSpec({
   test("throw when creating event with duplicate property names") {
     val exception = shouldThrow<IllegalArgumentException> {
       Event(
-        "event_name",
-        Property.test("name_a", type = PropertyType.Text),
-        Property.test("name_a", type = PropertyType.Boolean),
-        Property.test("name_a", type = PropertyType.Number),
-        Property.test("name_b", type = PropertyType.Text),
-        Property.test("name_b", type = PropertyType.Boolean),
-        Property.test("name_c", type = PropertyType.Boolean),
+        name = "event_name",
+        properties = buildProperties {
+          text("name_a")
+          boolean("name_a")
+          number("name_a")
+          text("name_b")
+          enum("name_b", buildEnumType("enum_name", "value"))
+          boolean("name_c")
+        },
+        documentation = null,
+        availablePlatforms = emptySet(),
       )
     }
 

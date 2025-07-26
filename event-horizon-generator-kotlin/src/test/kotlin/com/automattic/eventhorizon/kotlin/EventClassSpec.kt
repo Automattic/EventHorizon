@@ -1,9 +1,8 @@
 package com.automattic.eventhorizon.kotlin
 
-import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Platform
-import com.automattic.eventhorizon.Property
-import com.automattic.eventhorizon.PropertyType
+import com.automattic.eventhorizon.buildEnumType
+import com.automattic.eventhorizon.buildEvent
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
@@ -11,7 +10,7 @@ class EventClassSpec : FunSpec({
   val trackable = TrackableInterface("dev.sample")
 
   test("event without properties") {
-    val event = Event("event_name")
+    val event = buildEvent("event_name")
 
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
@@ -30,13 +29,14 @@ class EventClassSpec : FunSpec({
   }
 
   test("event with properties") {
-    val event = Event(
-      "event_name",
-      Property.test("property_one", type = PropertyType.Text),
-      Property.test("property_two", type = PropertyType.Number),
-      Property.test("property_three", type = PropertyType.Boolean),
-      Property.test("property_four", type = PropertyType.Enum.test("enum_name", "value")),
-    )
+    val event = buildEvent("event_name") {
+      properties {
+        text("property_one")
+        number("property_two")
+        boolean("property_three")
+        enum("property_four", buildEnumType("enum_name", "value"))
+      }
+    }
 
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
@@ -67,7 +67,9 @@ class EventClassSpec : FunSpec({
   }
 
   test("event comment") {
-    val event = Event("event_name", documentation = "Some documentation")
+    val event = buildEvent("event_name") {
+      documentation = "Some documentation"
+    }
 
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
@@ -89,12 +91,17 @@ class EventClassSpec : FunSpec({
   }
 
   test("property_comment") {
-    val event = Event(
-      "event_name",
-      Property.test("property_one", documentation = "Documentation 1"),
-      Property.test("property_two"),
-      Property.test("property_three", documentation = "Documentation 2"),
-    )
+    val event = buildEvent("event_name") {
+      properties {
+        text("property_one") {
+          documentation = "Documentation 1"
+        }
+        text("property_two")
+        text("property_three") {
+          documentation = "Documentation 2"
+        }
+      }
+    }
 
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
@@ -129,12 +136,19 @@ class EventClassSpec : FunSpec({
   }
 
   test("nullable property") {
-    val event = Event(
-      "event_name",
-      Property.test("property_one", optionalPlatforms = setOf("web")),
-      Property.test("property_two", optionalPlatforms = setOf("ios")),
-      Property.test("property_three", optionalPlatforms = setOf("android")),
-    )
+    val event = buildEvent("event_name") {
+      properties {
+        text("property_one") {
+          optionalPlatforms("web")
+        }
+        text("property_two") {
+          optionalPlatforms("ios")
+        }
+        text("property_three") {
+          optionalPlatforms("android")
+        }
+      }
+    }
 
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 

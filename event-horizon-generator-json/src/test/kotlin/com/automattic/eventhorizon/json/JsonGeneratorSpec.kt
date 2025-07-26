@@ -1,11 +1,7 @@
 package com.automattic.eventhorizon.json
 
-import com.automattic.eventhorizon.Event
-import com.automattic.eventhorizon.Events
-import com.automattic.eventhorizon.Platform
-import com.automattic.eventhorizon.Property
-import com.automattic.eventhorizon.PropertyType
-import com.automattic.eventhorizon.Schema
+import com.automattic.eventhorizon.buildEnumType
+import com.automattic.eventhorizon.buildSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.shouldBe
@@ -16,40 +12,30 @@ class JsonGeneratorSpec : FunSpec({
   val generator = JsonGenerator(prettyPrint = true)
 
   test("generate everything") {
-    val schema = Schema.create(
-      schemaVersion = 1u,
-      availablePlatforms = setOf(
-        Platform("web"),
-        Platform("ios"),
-        Platform("android"),
-      ),
-      events = Events(
-        Event(
-          "event_a",
-          Property.test(
-            "property_a",
-            type = PropertyType.Enum.test("enum_a", "value"),
-            optionalPlatforms = setOf("web"),
-          ),
-          documentation = "Event documentation",
-          availablePlatforms = setOf("web", "ios"),
-        ),
-        Event(
-          "event_b",
-          Property.test(
-            "property_a",
-            optionalPlatforms = setOf("android", "ios"),
-            type = PropertyType.Enum.test("enum_a", "value"),
-          ),
-          Property.test(
-            "property_b",
-            type = PropertyType.Enum.test("enum_b", "value_a", "value_b"),
-            documentation = "Property documentation",
-          ),
-          availablePlatforms = emptySet(),
-        ),
-      ),
-    )
+    val schema = buildSchema {
+      platforms("web", "ios", "android")
+      events {
+        event("event_a") {
+          properties {
+            enum("property_a", buildEnumType("enuma_a", "value")) {
+              optionalPlatforms("web")
+            }
+          }
+          documentation = "Event documentation"
+          availablePlatforms("web", "ios")
+        }
+        event("event_b") {
+          properties {
+            enum("property_a", buildEnumType("enum_a", "value")) {
+              optionalPlatforms("android", "ios")
+            }
+            enum("property_b", buildEnumType("enum_b", "value_a", "value_b")) {
+              documentation = "Property documentation"
+            }
+          }
+        }
+      }
+    }
 
     val file = generator.generate(schema, tempDir)
 
