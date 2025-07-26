@@ -169,7 +169,7 @@ public class EnumPropertyBuilder internal constructor(
   )
 }
 
-public fun buildEnumType(name: String, value: String, vararg otherValues: String): PropertyType.Enum {
+public fun enumType(name: String, value: String, vararg otherValues: String): PropertyType.Enum {
   return PropertyType.Enum(name, nonEmptySetOf(value, *otherValues))
 }
 

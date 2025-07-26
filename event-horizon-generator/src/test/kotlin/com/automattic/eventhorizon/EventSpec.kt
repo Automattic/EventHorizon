@@ -14,7 +14,7 @@ class EventSpec : FunSpec({
           boolean("name_a")
           number("name_a")
           text("name_b")
-          enum("name_b", buildEnumType("enum_name", "value"))
+          enum("name_b", enumType("enum_name", "value"))
           boolean("name_c")
         },
         description = null,

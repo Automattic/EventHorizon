@@ -1,7 +1,7 @@
 package com.automattic.eventhorizon.kotlin
 
 import com.automattic.eventhorizon.Platform
-import com.automattic.eventhorizon.buildEnumType
+import com.automattic.eventhorizon.enumType
 import com.automattic.eventhorizon.buildEvent
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
@@ -34,7 +34,7 @@ class EventClassSpec : FunSpec({
         text("property_one")
         number("property_two")
         boolean("property_three")
-        enum("property_four", buildEnumType("enum_name", "value"))
+        enum("property_four", enumType("enum_name", "value"))
       }
     }
 

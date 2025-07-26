@@ -173,7 +173,7 @@ class YamlParserSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe buildEnumType("enum_reference", "value_1")
+    property.type shouldBe enumType("enum_reference", "value_1")
   }
 
   test("fail to parse an event with an enum property that doesn't exist") {
@@ -206,7 +206,6 @@ class YamlParserSpec : FunSpec({
       |  enum_reference:
       |    - value1
       |    - value2
-      |    - value3
     """
     tempFile.writeText(text.trimMargin())
 
@@ -214,7 +213,7 @@ class YamlParserSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe buildEnumType("enum_reference", "value1", "value2", "value3")
+    property.type shouldBe enumType("enum_reference", "value1", "value2")
   }
 
   test("parse an event with an optional property on all platforms") {

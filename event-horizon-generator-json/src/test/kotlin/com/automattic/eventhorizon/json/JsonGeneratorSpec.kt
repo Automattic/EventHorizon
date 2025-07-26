@@ -1,6 +1,6 @@
 package com.automattic.eventhorizon.json
 
-import com.automattic.eventhorizon.buildEnumType
+import com.automattic.eventhorizon.enumType
 import com.automattic.eventhorizon.buildSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
@@ -17,7 +17,7 @@ class JsonGeneratorSpec : FunSpec({
       events {
         event("event_a") {
           properties {
-            enum("property_a", buildEnumType("enuma_a", "value")) {
+            enum("property_a", enumType("enuma_a", "value")) {
               optionalPlatforms("web")
             }
           }
@@ -26,10 +26,10 @@ class JsonGeneratorSpec : FunSpec({
         }
         event("event_b") {
           properties {
-            enum("property_a", buildEnumType("enum_a", "value")) {
+            enum("property_a", enumType("enum_a", "value")) {
               optionalPlatforms("android", "ios")
             }
-            enum("property_b", buildEnumType("enum_b", "value_a", "value_b")) {
+            enum("property_b", enumType("enum_b", "value_a", "value_b")) {
               description = "Property description"
             }
           }
