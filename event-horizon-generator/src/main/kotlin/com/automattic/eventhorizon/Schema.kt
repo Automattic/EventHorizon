@@ -20,7 +20,7 @@ public data class Schema private constructor(
     )
 
     public fun create(version: ULong, platforms: Set<Platform>, events: Events): Schema {
-      require(version > 0u) { "Schema version must be a positive number. Is: $version" }
+      require(version > 0u) { "Schema version must not be 0" }
       requirePredeclaredEventPlatforms(events, platforms)
       requirePredeclaredPropertyPlatforms(events, platforms)
       return Schema(
@@ -30,21 +30,21 @@ public data class Schema private constructor(
       )
     }
 
-    private fun requirePredeclaredEventPlatforms(events: Events, plaforms: Set<Platform>) {
-      val invalidPlatforms = events.findInvalidEventPlatforms(plaforms)
+    private fun requirePredeclaredEventPlatforms(events: Events, platforms: Set<Platform>) {
+      val invalidPlatforms = events.findInvalidEventPlatforms(platforms)
       require(invalidPlatforms.isEmpty()) {
         buildString {
-          append("Schema must declare platforms for excluded events. Available platforms:\n")
-          val platforms = plaforms.joinToString(separator = "\n") { platform ->
-            " - ${platform.value}"
-          }
-          append(platforms)
-
-          append("\nIssues found with the following events:\n")
+          append("Found events with platforms undeclared in schema:\n")
           val eventIssues = invalidPlatforms.joinToString(separator = "\n") { (eventName, platformNames) ->
             " - $eventName: $platformNames"
           }
           append(eventIssues)
+
+          append("\nAvailable platforms:\n")
+          val platformNames = platforms.joinToString(separator = "\n") { platform ->
+            " - ${platform.value}"
+          }
+          append(platformNames)
         }
       }
     }
@@ -53,13 +53,7 @@ public data class Schema private constructor(
       val invalidPlatforms = events.findInvalidPropertyPlatforms(platforms)
       require(invalidPlatforms.isEmpty()) {
         buildString {
-          append("Schema must declare platforms for optional properties. Available platforms:\n")
-          val platformNames = platforms.joinToString(separator = "\n") { platform ->
-            " - ${platform.value}"
-          }
-          append(platformNames)
-
-          append("\nIssues found with the following events and properties:\n")
+          append("Found event properties with platforms undeclared in schema:\n")
           val eventIssues = invalidPlatforms.joinToString(separator = "\n") { (eventName, propertyNames) ->
             val propertyIssues = propertyNames.joinToString(separator = "\n") { (propertyName, platformNames) ->
               "   - $propertyName: $platformNames"
@@ -67,6 +61,12 @@ public data class Schema private constructor(
             " - $eventName:\n$propertyIssues"
           }
           append(eventIssues)
+
+          append("\nAvailable platforms:\n")
+          val platformNames = platforms.joinToString(separator = "\n") { platform ->
+            " - ${platform.value}"
+          }
+          append(platformNames)
         }
       }
     }

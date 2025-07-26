@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.throwable.shouldHaveMessage
 
 class EventSpec : FunSpec({
-  test("throw when creating event with duplicate property names") {
+  test("fail to create event with duplicate properties") {
     val exception = shouldThrow<IllegalArgumentException> {
       Event(
         name = "event_name",

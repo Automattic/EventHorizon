@@ -17,10 +17,10 @@ class KotlinGeneratorSpec : FunSpec({
       platforms("android", "ios")
       events {
         event("event_a") {
+          description = "Event description"
           properties {
             enum("property_a", enumType("enum_a", "value"))
           }
-          description = "Event description"
         }
         event("event_b") {
           properties {

@@ -16,12 +16,12 @@ class JsonGeneratorSpec : FunSpec({
       platforms("web", "ios", "android")
       events {
         event("event_a") {
+          description = "Event description"
           properties {
             enum("property_a", enumType("enuma_a", "value")) {
               optionalPlatforms("web")
             }
           }
-          description = "Event description"
           excludedPlatforms("web", "ios")
         }
         event("event_b") {

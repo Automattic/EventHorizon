@@ -6,7 +6,11 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 
 class SchemaSpec() : FunSpec({
-  test("schema with version 0") {
+  test("empty schema has version 0") {
+    Schema.Empty.version shouldBe 0u
+  }
+
+  test("fail to create schema with version 0") {
     val exception = shouldThrow<IllegalArgumentException> {
       Schema.create(
         version = 0u,
@@ -14,14 +18,10 @@ class SchemaSpec() : FunSpec({
         events = buildEvents(),
       )
     }
-    exception shouldHaveMessage "Schema version must be a positive number. Is: 0"
+    exception shouldHaveMessage "Schema version must not be 0"
   }
 
-  test("empty schema has version 0") {
-    Schema.Empty.version shouldBe 0u
-  }
-
-  test("schema with missing event platforms") {
+  test("fail to create schema with undeclared platforms used in events") {
     val exception = shouldThrow<IllegalArgumentException> {
       Schema.create(
         version = 1u,
@@ -40,16 +40,16 @@ class SchemaSpec() : FunSpec({
       )
     }
     exception shouldHaveMessage """
-      |Schema must declare platforms for excluded events. Available platforms:
-      | - android
-      | - ios
-      |Issues found with the following events:
+      |Found events with platforms undeclared in schema:
       | - event2: [web]
       | - event3: [web, embedded]
+      |Available platforms:
+      | - android
+      | - ios
     """.trimMargin()
   }
 
-  test("schema with missing property platforms") {
+  test("fail to create schema with undeclared platforms used in properties") {
     val exception = shouldThrow<IllegalArgumentException> {
       Schema.create(
         version = 1u,
@@ -94,10 +94,7 @@ class SchemaSpec() : FunSpec({
       )
     }
     exception shouldHaveMessage """
-      |Schema must declare platforms for optional properties. Available platforms:
-      | - android
-      | - ios
-      |Issues found with the following events and properties:
+      |Found event properties with platforms undeclared in schema:
       | - event3:
       |   - prop1: [web]
       | - event4:
@@ -105,6 +102,9 @@ class SchemaSpec() : FunSpec({
       |   - prop2: [desktop]
       | - event5:
       |   - prop1: [web, embedded]
+      |Available platforms:
+      | - android
+      | - ios
     """.trimMargin()
   }
 })
