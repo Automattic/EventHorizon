@@ -1,11 +1,11 @@
 package com.automattic.eventhorizon.json
 
 import com.automattic.eventhorizon.Event as InputEvent
-import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property as InputProperty
 import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.Schema
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.writeText
@@ -20,7 +20,7 @@ public class JsonGenerator(
     this.prettyPrint = prettyPrint
   }
 
-  override fun generate(schema: EventHorizonSchema, outputDir: Path): Path {
+  override fun generate(schema: Schema, outputDir: Path): Path {
     val outputEvents = schema.events.map(InputEvent::toEvent)
     val jsonText = json.encodeToString(outputEvents)
 

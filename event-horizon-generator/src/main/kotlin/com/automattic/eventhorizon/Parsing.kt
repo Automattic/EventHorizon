@@ -18,20 +18,20 @@ private const val DocumentationNode = "documentation"
 private const val OptOutPlatformsNode = "optOut"
 private val Yaml = YamlObject.default
 
-public fun parseSchema(file: Path): Result<EventHorizonSchema> = runCatching {
+public fun parseSchema(file: Path): Result<Schema> = runCatching {
   if (file.fileSize() != 0L) {
     parseFile(file)
   } else {
-    EventHorizonSchema.Empty
+    Schema.Empty
   }
 }
 
-private fun parseFile(file: Path): EventHorizonSchema {
+private fun parseFile(file: Path): Schema {
   val definition = Yaml.decodeFromStream<InputDefinition>(file.inputStream())
   val enums = definition.enums.map { (name, values) -> Type.Enum(name, values.orEmpty()) }
   val platforms = definition.platforms.mapTo(mutableSetOf(), ::Platform)
   val events = definition.parseEvents(enums, platforms)
-  return EventHorizonSchema.create(
+  return Schema.create(
     schemaVersion = requireNotNull(definition.version.toULongOrNull()) {
       "Schema version must be a positive number. Is: ${definition.version}"
     },

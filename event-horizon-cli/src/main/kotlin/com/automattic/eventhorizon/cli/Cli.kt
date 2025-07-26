@@ -1,7 +1,7 @@
 package com.automattic.eventhorizon.cli
 
-import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Platform
+import com.automattic.eventhorizon.Schema
 import com.automattic.eventhorizon.json.JsonGenerator
 import com.automattic.eventhorizon.kotlin.KotlinGenerator
 import com.automattic.eventhorizon.parseSchema
@@ -75,7 +75,7 @@ internal class Cli : CliktCommand() {
     FormatType.Json -> JsonGenerator()
   }
 
-  private fun requireDeclaredPlatform(schema: EventHorizonSchema): EventHorizonSchema {
+  private fun requireDeclaredPlatform(schema: Schema): Schema {
     if (schema.availablePlatforms.isNotEmpty()) {
       val platform = requireOption(outputPlatform) { "missing option --output-platform" }
       if (schema.availablePlatforms.isNotEmpty() && platform !in schema.availablePlatforms) {

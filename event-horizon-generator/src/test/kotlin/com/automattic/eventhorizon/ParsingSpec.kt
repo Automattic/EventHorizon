@@ -25,7 +25,7 @@ class ParsingSpec : FunSpec({
     val result = parseSchema(tempFile)
 
     val value = result.shouldBeSuccess()
-    value shouldBe EventHorizonSchema.Empty
+    value shouldBe Schema.Empty
   }
 
   test("parse schema version") {

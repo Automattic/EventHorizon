@@ -5,10 +5,10 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 
-class EventHorizonSchemaSpec() : FunSpec({
+class SchemaSpec() : FunSpec({
   test("schema with version 0") {
     val exception = shouldThrow<IllegalArgumentException> {
-      EventHorizonSchema.create(
+      Schema.create(
         schemaVersion = 0u,
         availablePlatforms = emptySet(),
         events = Events(),
@@ -18,12 +18,12 @@ class EventHorizonSchemaSpec() : FunSpec({
   }
 
   test("empty schema has version 0") {
-    EventHorizonSchema.Empty.schemaVersion shouldBe 0u
+    Schema.Empty.schemaVersion shouldBe 0u
   }
 
   test("schema with missing event platforms") {
     val exception = shouldThrow<IllegalArgumentException> {
-      EventHorizonSchema.create(
+      Schema.create(
         schemaVersion = 1u,
         availablePlatforms = setOf(Platform("android"), Platform("ios")),
         events = Events(
@@ -45,7 +45,7 @@ class EventHorizonSchemaSpec() : FunSpec({
 
   test("schema with missing property platforms") {
     val exception = shouldThrow<IllegalArgumentException> {
-      EventHorizonSchema.create(
+      Schema.create(
         schemaVersion = 1u,
         availablePlatforms = setOf(Platform("android"), Platform("ios")),
         events = Events(

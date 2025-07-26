@@ -1,11 +1,11 @@
 package com.automattic.eventhorizon.swift
 
 import com.automattic.eventhorizon.Event
-import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.Property.Type
+import com.automattic.eventhorizon.Schema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.shouldBe
@@ -16,7 +16,7 @@ class SwiftGeneratorSpec : FunSpec({
   val generator = SwiftGenerator("MyModule", Platform("ios"))
 
   test("generate everything") {
-    val schema = EventHorizonSchema.create(
+    val schema = Schema.create(
       schemaVersion = 1u,
       availablePlatforms = setOf(Platform("ios"), Platform("android")),
       events = Events(

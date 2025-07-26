@@ -1,9 +1,9 @@
 package com.automattic.eventhorizon.swift
 
-import com.automattic.eventhorizon.EventHorizonSchema
 import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
+import com.automattic.eventhorizon.Schema
 import io.outfoxx.swiftpoet.FileSpec
 import io.outfoxx.swiftpoet.TypeSpec
 import java.nio.file.Path
@@ -12,7 +12,7 @@ public class SwiftGenerator(
   private val moduleName: String,
   private val platform: Platform,
 ) : Generator {
-  override fun generate(schema: EventHorizonSchema, outputDir: Path): Path {
+  override fun generate(schema: Schema, outputDir: Path): Path {
     val platformEvents = Events(
       schema.events.filter { platform == Platform.NoPlatform || platform in it.availablePlatforms },
     )

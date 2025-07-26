@@ -4,23 +4,23 @@ import com.automattic.eventhorizon.Property.Type
 import java.util.function.IntFunction
 
 @ConsistentCopyVisibility
-public data class EventHorizonSchema private constructor(
+public data class Schema private constructor(
   val schemaVersion: ULong,
   val availablePlatforms: Set<Platform>,
   val events: Events,
 ) {
   public companion object {
-    public val Empty: EventHorizonSchema = EventHorizonSchema(
+    public val Empty: Schema = Schema(
       schemaVersion = 0u,
       availablePlatforms = emptySet(),
       events = Events(),
     )
 
-    public fun create(schemaVersion: ULong, availablePlatforms: Set<Platform>, events: Events): EventHorizonSchema {
+    public fun create(schemaVersion: ULong, availablePlatforms: Set<Platform>, events: Events): Schema {
       require(schemaVersion > 0u) { "Schema version must be a positive number. Is: $schemaVersion" }
       requirePredeclaredEventPlatforms(events, availablePlatforms)
       requirePredeclaredPropertyPlatforms(events, availablePlatforms)
-      return EventHorizonSchema(
+      return Schema(
         schemaVersion = schemaVersion,
         availablePlatforms = availablePlatforms,
         events = events,
