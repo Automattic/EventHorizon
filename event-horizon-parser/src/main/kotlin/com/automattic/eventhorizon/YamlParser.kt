@@ -61,7 +61,7 @@ public class YamlParser {
       val description = configuration.description
       val optionalPlatforms = configuration.parseOptionalPlatforms(availablePlatforms)
 
-      Property(name, type, description, optionalPlatforms)
+      Property(name.toCaseString(), type, description, optionalPlatforms)
     }
   }
 

@@ -40,7 +40,7 @@ private fun InputEvent.toEvent() = Event(
 )
 
 private fun InputProperty.toProperty() = Property(
-  name = name,
+  name = name.rawValue,
   description = description,
   type = when (type) {
     is PropertyType.Text -> "text"

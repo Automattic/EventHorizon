@@ -36,7 +36,7 @@ public data class Schema private constructor(
         buildString {
           append("Found events with platforms undeclared in schema:\n")
           val eventIssues = invalidPlatforms.joinToString(separator = "\n") { (eventName, platformNames) ->
-            " - ${eventName.rawValue}: $platformNames"
+            " - $eventName: $platformNames"
           }
           append(eventIssues)
 
@@ -58,7 +58,7 @@ public data class Schema private constructor(
             val propertyIssues = propertyNames.joinToString(separator = "\n") { (propertyName, platformNames) ->
               "   - $propertyName: $platformNames"
             }
-            " - ${eventName.rawValue}:\n$propertyIssues"
+            " - $eventName:\n$propertyIssues"
           }
           append(eventIssues)
 
@@ -76,7 +76,7 @@ public data class Schema private constructor(
         platform !in availablePlatforms
       }
       if (invalidPlatforms.isNotEmpty()) {
-        event.name to invalidPlatforms.map(Platform::value)
+        event.name.rawValue to invalidPlatforms.map(Platform::value)
       } else {
         null
       }
@@ -88,13 +88,13 @@ public data class Schema private constructor(
           platform !in availablePlatforms
         }
         if (invalidPlatforms.isNotEmpty()) {
-          property.name to invalidPlatforms.map(Platform::value)
+          property.name.rawValue to invalidPlatforms.map(Platform::value)
         } else {
           null
         }
       }
       if (invalidProperties.isNotEmpty()) {
-        event.name to invalidProperties
+        event.name.rawValue to invalidProperties
       } else {
         null
       }

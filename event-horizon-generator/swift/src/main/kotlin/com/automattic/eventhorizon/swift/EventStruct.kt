@@ -5,7 +5,6 @@ import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.PropertyType
-import com.automattic.eventhorizon.snakeToCamelCase
 import io.outfoxx.swiftpoet.BOOL
 import io.outfoxx.swiftpoet.CodeBlock
 import io.outfoxx.swiftpoet.DeclaredTypeName
@@ -28,7 +27,7 @@ internal class EventStruct(
   private val structProperties
     get() = event.properties
       .associateBy { property ->
-        PropertySpec.builder(property.name.snakeToCamelCase(), property.typeName)
+        PropertySpec.builder(property.name.toString(Case.Camel), property.typeName)
           .also { builder -> property.description?.let(builder::addDoc) }
           .build()
       }
@@ -82,9 +81,9 @@ internal class EventStruct(
             builder.beginControlFlow("if", "let %L = %L", structProperty.name, structProperty.name)
           }
           if (codeGenProperty.type is PropertyType.Enum) {
-            builder.addStatement("props[%S] = %L.analyticsValue", codeGenProperty.name, structProperty.name)
+            builder.addStatement("props[%S] = %L.analyticsValue", codeGenProperty.name.rawValue, structProperty.name)
           } else {
-            builder.addStatement("props[%S] = %L", codeGenProperty.name, structProperty.name)
+            builder.addStatement("props[%S] = %L", codeGenProperty.name.rawValue, structProperty.name)
           }
           if (structProperty.type.optional) {
             builder.endControlFlow("if")

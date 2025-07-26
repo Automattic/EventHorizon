@@ -72,7 +72,7 @@ internal class TrackableType(
   private fun StringBuilder.appendProperty(property: Property) {
     appendNewLine()
     appendIndent(count = 4)
-    append(property.name)
+    append(property.name.rawValue)
     if (property.isOptional(platform)) {
       append('?')
     }

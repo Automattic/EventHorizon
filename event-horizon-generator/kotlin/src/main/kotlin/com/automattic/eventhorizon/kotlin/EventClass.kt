@@ -5,7 +5,6 @@ import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.PropertyType
-import com.automattic.eventhorizon.snakeToCamelCase
 import com.squareup.kotlinpoet.ANY
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
@@ -28,7 +27,7 @@ internal class EventClass(
     get() = event.properties
       .associateBy { property ->
         PropertySpec
-          .builder(property.name.snakeToCamelCase(), property.className)
+          .builder(property.name.toString(Case.Camel), property.className)
           .also { builder -> property.description?.let(builder::addKdoc) }
           .build()
       }
@@ -81,7 +80,7 @@ internal class EventClass(
       if (classProperty.type.isNullable) {
         beginControlFlow("if (%N != null)", classProperty)
       }
-      addStatement("put(%S, %N)", codeGenProperty.name, classProperty)
+      addStatement("put(%S, %N)", codeGenProperty.name.rawValue, classProperty)
       if (classProperty.type.isNullable) {
         endControlFlow()
       }

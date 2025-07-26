@@ -1,7 +1,7 @@
 package com.automattic.eventhorizon
 
 public data class Property(
-  val name: String,
+  val name: CaseString,
   val type: PropertyType,
   val description: String?,
   val optionalPlatforms: Set<Platform>,

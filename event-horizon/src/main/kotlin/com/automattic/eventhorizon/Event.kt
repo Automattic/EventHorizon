@@ -7,7 +7,7 @@ public data class Event(
   val properties: List<Property>,
 ) {
   init {
-    requireNoDuplicates(properties.map(Property::name)) { duplicates ->
+    requireNoDuplicates(properties.map { it.name.rawValue }) { duplicates ->
       "Found duplicate properties for event '${name.rawValue}': $duplicates"
     }
   }

@@ -133,7 +133,7 @@ public class BasicPropertyBuilder internal constructor(
   }
 
   internal fun build() = Property(
-    name,
+    name.toCaseString(),
     type,
     description,
     optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
@@ -159,7 +159,7 @@ public class EnumPropertyBuilder internal constructor(
   }
 
   internal fun build() = Property(
-    propertyName,
+    propertyName.toCaseString(),
     enumType,
     description,
     optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
