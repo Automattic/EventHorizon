@@ -3,10 +3,10 @@ package com.automattic.eventhorizon
 import java.util.function.IntFunction
 
 public class Events(
-  private val value: List<Event>,
-) : List<Event> by value {
+  private val entries: List<Event>,
+) : List<Event> by entries {
   init {
-    requireNoDuplicates(value.map(Event::name)) { duplicates ->
+    requireNoDuplicates(entries.map(Event::name)) { duplicates ->
       "Found duplicate events: $duplicates"
     }
   }
@@ -24,9 +24,9 @@ public class Events(
     return super.toArray(generator)
   }
 
-  override fun equals(other: Any?): Boolean = other === this || (other is Events && other.value == this.value)
+  override fun equals(other: Any?): Boolean = other === this || (other is Events && other.entries == this.entries)
 
-  override fun hashCode(): Int = value.hashCode()
+  override fun hashCode(): Int = entries.hashCode()
 
-  override fun toString(): String = "Events($value)"
+  override fun toString(): String = "Events($entries)"
 }

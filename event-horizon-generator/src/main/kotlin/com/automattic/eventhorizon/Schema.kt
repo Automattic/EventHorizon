@@ -15,7 +15,7 @@ public data class Schema private constructor(
       version = 0u,
       platforms = emptySet(),
       events = Events(
-        value = emptyList(),
+        entries = emptyList(),
       ),
     )
 
