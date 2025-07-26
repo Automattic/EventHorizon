@@ -5,6 +5,7 @@ plugins {
 
 dependencies {
   api(projects.eventHorizon)
+  api(projects.eventHorizonGenerator)
   implementation(libs.kotlinx.serialization.json)
 
   testImplementation(projects.eventHorizon.testing)
