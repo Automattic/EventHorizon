@@ -15,13 +15,14 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 import kotlin.io.path.writeText
 
-class ParsingSpec : FunSpec({
+class YamlParserSpec : FunSpec({
+  val parser = YamlParser()
   val tempFile = tempfile().toPath()
 
   test("parse empty file") {
     tempFile.writeText("")
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val value = result.shouldBeSuccess()
     value shouldBe Schema.Empty
@@ -33,7 +34,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val value = result.shouldBeSuccess()
     value.schemaVersion shouldBe 1u
@@ -45,7 +46,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<IllegalArgumentException>()
     exception shouldHaveMessage "Schema version must be a positive number. Is: -1"
@@ -57,7 +58,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<IllegalArgumentException>()
     exception shouldHaveMessage "Schema version must be a positive number. Is: some text"
@@ -72,7 +73,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event shouldBe Event("event")
@@ -85,7 +86,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<MissingRequiredPropertyException>()
     exception shouldHaveMessage "Property 'version' is required but it is missing."
@@ -102,7 +103,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -120,7 +121,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -138,7 +139,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -159,7 +160,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -177,7 +178,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
     exception shouldHaveMessage "Value 'enum_reference' must be one of boolean, number, text, or a predefined enum."
@@ -200,7 +201,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -222,7 +223,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -241,7 +242,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -264,7 +265,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -289,7 +290,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     val property = event.properties.shouldHaveSingleElement()
@@ -319,7 +320,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event.properties shouldBe
@@ -342,7 +343,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val events = result.shouldBeSuccess().events
     events shouldBe Events(Event("event1"), Event("event2"), Event("event3"))
@@ -358,7 +359,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event shouldBe Event("event", documentation = "Some documentation")
@@ -375,7 +376,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
     exception shouldHaveMessage "'documentation' cannot be used as a property name"
@@ -394,7 +395,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event.properties shouldHaveSingleElement Property.test("property1", documentation = "Property documentation")
@@ -415,7 +416,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event.availablePlatforms shouldContainExactly setOf(Platform("android"), Platform("web"))
@@ -432,7 +433,7 @@ class ParsingSpec : FunSpec({
     """
     tempFile.writeText(text.trimMargin())
 
-    val result = parseSchema(tempFile)
+    val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
     exception shouldHaveMessage "'optOut' cannot be used as a property name"

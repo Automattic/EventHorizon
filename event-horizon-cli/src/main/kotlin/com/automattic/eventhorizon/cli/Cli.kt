@@ -2,9 +2,9 @@ package com.automattic.eventhorizon.cli
 
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Schema
+import com.automattic.eventhorizon.YamlParser
 import com.automattic.eventhorizon.json.JsonGenerator
 import com.automattic.eventhorizon.kotlin.KotlinGenerator
-import com.automattic.eventhorizon.parseSchema
 import com.automattic.eventhorizon.swift.SwiftGenerator
 import com.automattic.eventhorizon.ts.TypeScriptGenerator
 import com.github.ajalt.clikt.core.CliktCommand
@@ -53,7 +53,8 @@ internal class Cli : CliktCommand() {
   }
 
   private fun verify() {
-    parseSchema(inputFile)
+    YamlParser()
+      .parseSchema(inputFile)
       .onSuccess { echo("No issues found in $inputFile file") }
       .getOrThrow()
   }
@@ -61,7 +62,8 @@ internal class Cli : CliktCommand() {
   private fun generate() {
     val format = requireOption(outputFormat) { "missing option --output-format" }
     val dir = requireOption(outputDir) { "missing option --output-dir" }
-    parseSchema(inputFile)
+    YamlParser()
+      .parseSchema(inputFile)
       .mapCatching(::requireDeclaredPlatform)
       .map { schema -> createGenerator(format, outputPlatform ?: Platform.Companion.NoPlatform).generate(schema, dir) }
       .onSuccess { file -> echo("$file file generated successfully") }
