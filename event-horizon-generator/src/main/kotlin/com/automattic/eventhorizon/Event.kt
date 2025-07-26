@@ -3,8 +3,8 @@ package com.automattic.eventhorizon
 public data class Event(
   val name: String,
   val description: String?,
-  val properties: List<Property>,
   val excludedPlatforms: Set<Platform>,
+  val properties: List<Property>,
 ) {
   init {
     requireNoDuplicates(properties.map(Property::name)) { duplicates ->

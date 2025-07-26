@@ -71,8 +71,8 @@ public class EventBuilder internal constructor(
   internal fun build() = Event(
     name = name,
     description = description,
-    properties = properties,
     excludedPlatforms = excludedPlatforms.mapTo(mutableSetOf(), ::Platform),
+    properties = properties,
   )
 }
 

@@ -68,7 +68,7 @@ class CliSpec : FunSpec({
   test("require schema-declared output platform") {
     inputFile.writeText(
       """
-        |version: 1
+        |schemaVersion: 1
         |platforms:
         |  - android
       """.trimMargin(),
@@ -83,7 +83,7 @@ class CliSpec : FunSpec({
   test("do not require schema-declared output platform when none is defined") {
     inputFile.writeText(
       """
-        |version: 1
+        |schemaVersion: 1
       """.trimMargin(),
     )
 

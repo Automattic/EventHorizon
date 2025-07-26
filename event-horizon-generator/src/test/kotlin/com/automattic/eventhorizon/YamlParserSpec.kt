@@ -19,7 +19,7 @@ class YamlParserSpec : FunSpec({
   val parser = YamlParser()
   val tempFile = tempfile().toPath()
 
-  test("parse empty file") {
+  test("parse an empty file") {
     tempFile.writeText("")
 
     val result = parser.parseSchema(tempFile)
@@ -28,9 +28,18 @@ class YamlParserSpec : FunSpec({
     value shouldBe Schema.Empty
   }
 
-  test("parse schema version") {
+  test("parse a blank file") {
+    tempFile.writeText(" \n ")
+
+    val result = parser.parseSchema(tempFile)
+
+    val value = result.shouldBeSuccess()
+    value shouldBe Schema.Empty
+  }
+
+  test("parse a schema version") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
     """
     tempFile.writeText(text.trimMargin())
 
@@ -40,33 +49,46 @@ class YamlParserSpec : FunSpec({
     value.version shouldBe 1u
   }
 
-  test("parse negative schema version") {
+  test("fail to parse a negative schema version") {
     val text = """
-      |version: -1
+      |schemaVersion: -1
     """
     tempFile.writeText(text.trimMargin())
 
     val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<IllegalArgumentException>()
-    exception shouldHaveMessage "Schema version must be a positive number. Is: -1"
+    exception shouldHaveMessage "Value for 'schemaVersion' must be a number between 1 and 18446744073709551615. Found: '-1'"
   }
 
-  test("parse non-numeric schema version") {
+  test("fail to parse a non-numeric schema version") {
     val text = """
-      |version: some text
+      |schemaVersion: foo
     """
     tempFile.writeText(text.trimMargin())
 
     val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<IllegalArgumentException>()
-    exception shouldHaveMessage "Schema version must be a positive number. Is: some text"
+    exception shouldHaveMessage "Value for 'schemaVersion' must be a number between 1 and 18446744073709551615. Found: 'foo'"
   }
 
-  test("parse event without properties") {
+  test("fail to parse events without a schema version") {
     val text = """
-      |version: 1
+      |events:
+      |  event:
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val exception = result.shouldBeFailure<MissingRequiredPropertyException>()
+    exception shouldHaveMessage "Property 'schemaVersion' is required but it is missing."
+  }
+
+  test("parse an event without properties") {
+    val text = """
+      |schemaVersion: 1
       |
       |events:
       |  event:
@@ -79,22 +101,9 @@ class YamlParserSpec : FunSpec({
     event shouldBe buildEvent("event")
   }
 
-  test("parse events without schema") {
+  test("parse an event with a text property") {
     val text = """
-      |events:
-      |  event:
-    """
-    tempFile.writeText(text.trimMargin())
-
-    val result = parser.parseSchema(tempFile)
-
-    val exception = result.shouldBeFailure<MissingRequiredPropertyException>()
-    exception shouldHaveMessage "Property 'version' is required but it is missing."
-  }
-
-  test("parse event with text property") {
-    val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
@@ -110,9 +119,9 @@ class YamlParserSpec : FunSpec({
     property.type shouldBe PropertyType.Text
   }
 
-  test("parse event with number property") {
+  test("parse an event with a number property") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
@@ -128,9 +137,9 @@ class YamlParserSpec : FunSpec({
     property.type shouldBe PropertyType.Number
   }
 
-  test("parse event with boolean property") {
+  test("parse event with a boolean property") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
@@ -146,9 +155,9 @@ class YamlParserSpec : FunSpec({
     property.type shouldBe PropertyType.Boolean
   }
 
-  test("parse event with enum property that exists") {
+  test("parse an event with an enum property that exists") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
@@ -167,9 +176,9 @@ class YamlParserSpec : FunSpec({
     property.type shouldBe buildEnumType("enum_reference", "value_1")
   }
 
-  test("parse event with enum property that doesn't exist") {
+  test("fail to parse an event with an enum property that doesn't exist") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
@@ -181,13 +190,13 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
-    exception shouldHaveMessage "Value 'enum_reference' must be one of boolean, number, text, or a predefined enum."
+    exception shouldHaveMessage "Value 'enum_reference' must be one of 'boolean', 'number', 'text', or a predefined enum."
     exception.location shouldBe Location(line = 6, column = 13)
   }
 
   test("parse enum values") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
@@ -208,9 +217,9 @@ class YamlParserSpec : FunSpec({
     property.type shouldBe buildEnumType("enum_reference", "value1", "value2", "value3")
   }
 
-  test("parse event with optional property on all platforms") {
+  test("parse an event with an optional property on all platforms") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |platforms:
       |  - android
       |  - ios
@@ -230,9 +239,9 @@ class YamlParserSpec : FunSpec({
     property.optionalPlatforms shouldContainExactly setOf(Platform("android"), Platform("ios"))
   }
 
-  test("parse event with non-optional property") {
+  test("parse an event with a non-optional property") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
@@ -249,9 +258,9 @@ class YamlParserSpec : FunSpec({
     property.optionalPlatforms.shouldBeEmpty()
   }
 
-  test("parse event with optional property on a single platform") {
+  test("parse an event with an optional property on a single platform") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |platforms:
       |  - android
       |  - ios
@@ -272,9 +281,9 @@ class YamlParserSpec : FunSpec({
     property.optionalPlatforms shouldHaveSingleElement Platform("android")
   }
 
-  test("parse event with optional property on multiple platforms") {
+  test("parse an event with an optional property on multiple platforms") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |platforms:
       |  - android
       |  - ios
@@ -297,9 +306,56 @@ class YamlParserSpec : FunSpec({
     property.optionalPlatforms shouldBe setOf(Platform("android"), Platform("ios"))
   }
 
-  test("parse event with multiple properties") {
+  test("fail to parse an event with a null optional property") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
+      |platforms:
+      |  - android
+      |  - ios
+      |  - web
+      |
+      |events:
+      |  event:
+      |    property:
+      |      type: text
+      |      optional: null
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val exception = result.shouldBeFailure<YamlException>()
+    exception shouldHaveMessage "Expected element to be YamlScalar or YamlList but is YamlNull"
+    exception.location shouldBe Location(line = 11, column = 17)
+  }
+
+  test("fail to parse an event with a map optional property") {
+    val text = """
+      |schemaVersion: 1
+      |platforms:
+      |  - android
+      |  - ios
+      |  - web
+      |
+      |events:
+      |  event:
+      |    property:
+      |      type: text
+      |      optional:
+      |        key: value
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val exception = result.shouldBeFailure<YamlException>()
+    exception shouldHaveMessage "Expected element to be YamlScalar or YamlList but is YamlMap"
+    exception.location shouldBe Location(line = 12, column = 9)
+  }
+
+  test("parse an event with multiple properties") {
+    val text = """
+      |schemaVersion: 1
       |platforms:
       |  - android
       |  - web
@@ -315,8 +371,6 @@ class YamlParserSpec : FunSpec({
       |        - android
       |    property3:
       |      type: number
-      |    property4:
-      |      type: number
     """
     tempFile.writeText(text.trimMargin())
 
@@ -331,13 +385,12 @@ class YamlParserSpec : FunSpec({
         optionalPlatforms("android")
       }
       number("property3")
-      number("property4")
     }
   }
 
   test("parse multiple events") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event1:
@@ -356,13 +409,14 @@ class YamlParserSpec : FunSpec({
     }
   }
 
-  test("parse event description") {
+  test("parse an event's description") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
-      |    description: Some description
+      |    _metadata:
+      |      description: Some description
     """
     tempFile.writeText(text.trimMargin())
 
@@ -374,47 +428,9 @@ class YamlParserSpec : FunSpec({
     }
   }
 
-  test("parse event with description set as one of properties") {
+  test("parse an event's excluded platforms") {
     val text = """
-      |version: 1
-      |
-      |events:
-      |  event:
-      |    description:
-      |      type: text
-    """
-    tempFile.writeText(text.trimMargin())
-
-    val result = parser.parseSchema(tempFile)
-
-    val exception = result.shouldBeFailure<YamlException>()
-    exception shouldHaveMessage "'description' cannot be used as a property name"
-    exception.location shouldBe Location(line = 6, column = 7)
-  }
-
-  test("parse property description") {
-    val text = """
-      |version: 1
-      |
-      |events:
-      |  event:
-      |    property1:
-      |      type: text
-      |      description: Property description
-    """
-    tempFile.writeText(text.trimMargin())
-
-    val result = parser.parseSchema(tempFile)
-
-    val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event.properties shouldHaveSingleElement buildProperty("property1") {
-      description = "Property description"
-    }
-  }
-
-  test("parse opt out platform events description") {
-    val text = """
-      |version: 1
+      |schemaVersion: 1
       |platforms:
       |  - android
       |  - ios
@@ -422,24 +438,26 @@ class YamlParserSpec : FunSpec({
       |
       |events:
       |  event:
-      |    optOut:
-      |      - ios
+      |    _metadata:
+      |      excludedPlatforms:
+      |        - ios
+      |        - web
     """
     tempFile.writeText(text.trimMargin())
 
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event.excludedPlatforms shouldContainExactly setOf(Platform("ios"))
+    event.excludedPlatforms shouldContainExactly setOf(Platform("ios"), Platform("web"))
   }
 
-  test("parse event with optOut set as one of properties") {
+  test("fail to parse metadata as an event") {
     val text = """
-      |version: 1
+      |schemaVersion: 1
       |
       |events:
       |  event:
-      |    optOut:
+      |    _metadata:
       |      type: text
     """
     tempFile.writeText(text.trimMargin())
@@ -447,8 +465,28 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
-    exception shouldHaveMessage "'optOut' cannot be used as a property name"
+    exception shouldHaveMessage "Unknown property 'type'. Known properties are: description, excludedPlatforms"
     exception.location shouldBe Location(line = 6, column = 7)
+  }
+
+  test("parse a property's description") {
+    val text = """
+      |schemaVersion: 1
+      |
+      |events:
+      |  event:
+      |    property1:
+      |      type: text
+      |      description: Some description
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
+    event.properties shouldHaveSingleElement buildProperty("property1") {
+      description = "Some description"
+    }
   }
 })
 
