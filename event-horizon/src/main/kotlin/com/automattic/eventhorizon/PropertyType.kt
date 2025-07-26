@@ -12,7 +12,7 @@ public sealed interface PropertyType {
   public data object Boolean : Basic
 
   public data class Enum(
-    val name: String,
+    val name: CaseString,
     val values: NonEmptySet<String>,
   ) : PropertyType
 }

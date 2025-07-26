@@ -1,6 +1,7 @@
 package com.automattic.eventhorizon
 
 import arrow.core.nonEmptySetOf
+import com.automattic.eventhorizon.CaseString.Companion.toCaseString
 
 public fun buildSchema(builderAction: SchemaBuilder.() -> Unit): Schema {
   val builder = SchemaBuilder()
@@ -166,7 +167,10 @@ public class EnumPropertyBuilder internal constructor(
 }
 
 public fun enumType(name: String, value: String, vararg otherValues: String): PropertyType.Enum {
-  return PropertyType.Enum(name, nonEmptySetOf(value, *otherValues))
+  return PropertyType.Enum(
+    name.toCaseString(),
+    nonEmptySetOf(value, *otherValues),
+  )
 }
 
 @DslMarker

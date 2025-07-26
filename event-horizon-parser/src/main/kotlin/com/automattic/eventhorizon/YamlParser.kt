@@ -1,6 +1,7 @@
 package com.automattic.eventhorizon
 
 import arrow.core.toNonEmptySetOrThrow
+import com.automattic.eventhorizon.CaseString.Companion.toCaseString
 import com.charleskorn.kaml.EmptyYamlDocumentException
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlException
@@ -45,7 +46,7 @@ public class YamlParser {
 
   private fun RawSchema.parseEnums(): Set<PropertyType.Enum> {
     return enums.mapTo(mutableSetOf()) { (name, values) ->
-      PropertyType.Enum(name, values.orEmpty().toNonEmptySetOrThrow())
+      PropertyType.Enum(name.toCaseString(), values.orEmpty().toNonEmptySetOrThrow())
     }
   }
 
@@ -69,7 +70,7 @@ public class YamlParser {
       "text" -> PropertyType.Text
       "number" -> PropertyType.Number
       "boolean" -> PropertyType.Boolean
-      else -> availableEnums.find { enum -> enum.name == typeText } ?: run {
+      else -> availableEnums.find { enum -> enum.name.rawValue == typeText } ?: run {
         throw YamlException(
           "Value '$typeText' must be one of 'boolean', 'number', 'text', or a predefined enum.",
           type.path,

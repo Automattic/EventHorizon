@@ -1,5 +1,6 @@
 package com.automattic.eventhorizon.kotlin
 
+import com.automattic.eventhorizon.Case
 import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.snakeToPascalCase
 import com.squareup.kotlinpoet.ClassName
@@ -13,7 +14,7 @@ internal class EventPropertyEnum(
   private val enum: PropertyType.Enum,
 ) {
   val className
-    get() = ClassName(packageName, enum.name.snakeToPascalCase())
+    get() = ClassName(packageName, enum.name.toString(Case.Pascal))
 
   val typeSpec
     get() = TypeSpec

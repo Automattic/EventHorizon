@@ -1,13 +1,13 @@
 package com.automattic.eventhorizon.ts
 
+import com.automattic.eventhorizon.Case
 import com.automattic.eventhorizon.PropertyType
-import com.automattic.eventhorizon.snakeToPascalCase
 
 internal class EventPropertyType(
   private val enum: PropertyType.Enum,
 ) {
   val typeName
-    get() = enum.name.snakeToPascalCase()
+    get() = enum.name.toString(Case.Pascal)
 
   val typeSpec
     get() = buildString {
