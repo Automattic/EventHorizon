@@ -50,7 +50,7 @@ class TrackableTypeSpec : FunSpec({
   test("event comment") {
     val events = buildEvents {
       event("event_name") {
-        documentation = "Some documentation"
+        description = "Some description"
       }
     }
 
@@ -58,7 +58,7 @@ class TrackableTypeSpec : FunSpec({
 
     typeSpec shouldBe """
       |export type Trackable = {
-      |  // Some documentation
+      |  // Some description
       |  "event_name": undefined;
       |};
     """.trimMargin()
@@ -69,11 +69,11 @@ class TrackableTypeSpec : FunSpec({
       event("event_name") {
         properties {
           text("property_one") {
-            documentation = "Documentation 1"
+            description = "Description 1"
           }
           text("property_two")
           text("property_three") {
-            documentation = "Documentation 2"
+            description = "Description 2"
           }
         }
       }
@@ -84,10 +84,10 @@ class TrackableTypeSpec : FunSpec({
     typeSpec shouldBe """
       |export type Trackable = {
       |  "event_name": {
-      |    // Documentation 1
+      |    // Description 1
       |    property_one: string;
       |    property_two: string;
-      |    // Documentation 2
+      |    // Description 2
       |    property_three: string;
       |  };
       |};

@@ -356,13 +356,13 @@ class YamlParserSpec : FunSpec({
     }
   }
 
-  test("parse event documentation") {
+  test("parse event description") {
     val text = """
       |version: 1
       |
       |events:
       |  event:
-      |    documentation: Some documentation
+      |    description: Some description
     """
     tempFile.writeText(text.trimMargin())
 
@@ -370,17 +370,17 @@ class YamlParserSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event shouldBe buildEvent("event") {
-      documentation = "Some documentation"
+      description = "Some description"
     }
   }
 
-  test("parse event with documentation set as one of properties") {
+  test("parse event with description set as one of properties") {
     val text = """
       |version: 1
       |
       |events:
       |  event:
-      |    documentation:
+      |    description:
       |      type: text
     """
     tempFile.writeText(text.trimMargin())
@@ -388,11 +388,11 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val exception = result.shouldBeFailure<YamlException>()
-    exception shouldHaveMessage "'documentation' cannot be used as a property name"
+    exception shouldHaveMessage "'description' cannot be used as a property name"
     exception.location shouldBe Location(line = 6, column = 7)
   }
 
-  test("parse property documentation") {
+  test("parse property description") {
     val text = """
       |version: 1
       |
@@ -400,7 +400,7 @@ class YamlParserSpec : FunSpec({
       |  event:
       |    property1:
       |      type: text
-      |      documentation: Property documentation
+      |      description: Property description
     """
     tempFile.writeText(text.trimMargin())
 
@@ -408,11 +408,11 @@ class YamlParserSpec : FunSpec({
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
     event.properties shouldHaveSingleElement buildProperty("property1") {
-      documentation = "Property documentation"
+      description = "Property description"
     }
   }
 
-  test("parse opt out platform events documentation") {
+  test("parse opt out platform events description") {
     val text = """
       |version: 1
       |platforms:

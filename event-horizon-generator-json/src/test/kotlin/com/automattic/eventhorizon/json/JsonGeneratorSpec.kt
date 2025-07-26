@@ -21,7 +21,7 @@ class JsonGeneratorSpec : FunSpec({
               optionalPlatforms("web")
             }
           }
-          documentation = "Event documentation"
+          description = "Event description"
           excludedPlatforms("web", "ios")
         }
         event("event_b") {
@@ -30,7 +30,7 @@ class JsonGeneratorSpec : FunSpec({
               optionalPlatforms("android", "ios")
             }
             enum("property_b", buildEnumType("enum_b", "value_a", "value_b")) {
-              documentation = "Property documentation"
+              description = "Property description"
             }
           }
         }
@@ -43,7 +43,7 @@ class JsonGeneratorSpec : FunSpec({
       |[
       |    {
       |        "name": "event_a",
-      |        "documentation": "Event documentation",
+      |        "description": "Event description",
       |        "excludedPlatforms": [
       |            "web",
       |            "ios"
@@ -78,7 +78,7 @@ class JsonGeneratorSpec : FunSpec({
       |            },
       |            {
       |                "name": "property_b",
-      |                "documentation": "Property documentation",
+      |                "description": "Property description",
       |                "type": "enum",
       |                "values": [
       |                    "value_a",

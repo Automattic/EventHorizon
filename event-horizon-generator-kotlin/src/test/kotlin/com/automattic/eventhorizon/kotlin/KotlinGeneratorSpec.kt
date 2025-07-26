@@ -20,7 +20,7 @@ class KotlinGeneratorSpec : FunSpec({
           properties {
             enum("property_a", buildEnumType("enum_a", "value"))
           }
-          documentation = "Event documentation"
+          description = "Event description"
         }
         event("event_b") {
           properties {
@@ -28,7 +28,7 @@ class KotlinGeneratorSpec : FunSpec({
               optionalPlatforms("android")
             }
             enum("property_b", buildEnumType("enum_b", "value_a", "value_b")) {
-              documentation = "Property documentation"
+              description = "Property description"
             }
           }
           excludedPlatforms("ios")
@@ -65,7 +65,7 @@ class KotlinGeneratorSpec : FunSpec({
       |}
       |
       |/**
-      | * Event documentation
+      | * Event description
       | */
       |public data class EventAEvent(
       |  public val propertyA: EnumA,
@@ -86,7 +86,7 @@ class KotlinGeneratorSpec : FunSpec({
       |public data class EventBEvent(
       |  public val propertyA: EnumA?,
       |  /**
-      |   * Property documentation
+      |   * Property description
       |   */
       |  public val propertyB: EnumB,
       |) : Trackable {

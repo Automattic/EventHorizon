@@ -33,14 +33,14 @@ public class JsonGenerator(
 
 private fun InputEvent.toEvent() = Event(
   name = name,
-  documentation = documentation,
+  description = description,
   excludedPlatforms = excludedPlatforms.map(Platform::value),
   properties = properties.map(InputProperty::toProperty),
 )
 
 private fun InputProperty.toProperty() = Property(
   name = name,
-  documentation = documentation,
+  description = description,
   type = when (type) {
     is PropertyType.Text -> "text"
     is PropertyType.Boolean -> "boolean"
@@ -54,7 +54,7 @@ private fun InputProperty.toProperty() = Property(
 @Serializable
 private class Event(
   val name: String,
-  val documentation: String?,
+  val description: String?,
   val excludedPlatforms: List<String>,
   val properties: List<Property>,
 )
@@ -62,7 +62,7 @@ private class Event(
 @Serializable
 private class Property(
   val name: String,
-  val documentation: String?,
+  val description: String?,
   val type: String,
   val values: List<String>,
   val optionalPlatforms: List<String>,

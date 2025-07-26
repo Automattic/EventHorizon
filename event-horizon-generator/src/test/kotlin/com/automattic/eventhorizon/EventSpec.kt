@@ -17,7 +17,7 @@ class EventSpec : FunSpec({
           enum("name_b", buildEnumType("enum_name", "value"))
           boolean("name_c")
         },
-        documentation = null,
+        description = null,
         excludedPlatforms = emptySet(),
       )
     }

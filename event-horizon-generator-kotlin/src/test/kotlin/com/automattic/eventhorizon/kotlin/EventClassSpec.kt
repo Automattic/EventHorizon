@@ -68,14 +68,14 @@ class EventClassSpec : FunSpec({
 
   test("event comment") {
     val event = buildEvent("event_name") {
-      documentation = "Some documentation"
+      description = "Some description"
     }
 
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
     typeSpec.toString() shouldBe """
       |/**
-      | * Some documentation
+      | * Some description
       | */
       |public data object EventNameEvent : dev.sample.Trackable {
       |  public const val EventName: kotlin.String = "event_name"
@@ -94,11 +94,11 @@ class EventClassSpec : FunSpec({
     val event = buildEvent("event_name") {
       properties {
         text("property_one") {
-          documentation = "Documentation 1"
+          description = "Description 1"
         }
         text("property_two")
         text("property_three") {
-          documentation = "Documentation 2"
+          description = "Description 2"
         }
       }
     }
@@ -108,12 +108,12 @@ class EventClassSpec : FunSpec({
     typeSpec.toString() shouldBe """
       |public data class EventNameEvent(
       |  /**
-      |   * Documentation 1
+      |   * Description 1
       |   */
       |  public val propertyOne: kotlin.String,
       |  public val propertyTwo: kotlin.String,
       |  /**
-      |   * Documentation 2
+      |   * Description 2
       |   */
       |  public val propertyThree: kotlin.String,
       |) : dev.sample.Trackable {

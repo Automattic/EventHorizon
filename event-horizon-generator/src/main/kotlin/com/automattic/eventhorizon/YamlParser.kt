@@ -46,25 +46,25 @@ public class YamlParser {
 
   private fun InputDefinition.parseEvents(enums: List<PropertyType.Enum>, platforms: Set<Platform>) =
     events.map { (eventName, rawProperties) ->
-      val documentation = rawProperties?.parseDocumentation()
+      val description = rawProperties?.parseDescription()
       val optOutPlatforms = rawProperties?.parsePlatforms().orEmpty()
       val properties = rawProperties
-        ?.minus(setOf(DocumentationNode, OptOutPlatformsNode))
+        ?.minus(setOf(DescriptionNode, OptOutPlatformsNode))
         ?.mapValues { (_, rawProperty) -> yaml.decodeFromYamlNode<EventPropertyConfiguration>(rawProperty) }
         ?.parseProperties(enums, platforms)
         .orEmpty()
       Event(
         name = eventName,
-        documentation = documentation,
+        description = description,
         properties = properties,
         excludedPlatforms = optOutPlatforms,
       )
     }
 
-  private fun Map<String, YamlNode>.parseDocumentation() = when (val yamlDocumentation = get(DocumentationNode)) {
-    is YamlScalar -> yamlDocumentation.content
+  private fun Map<String, YamlNode>.parseDescription() = when (val yamlDescription = get(DescriptionNode)) {
+    is YamlScalar -> yamlDescription.content
     is YamlNull, null -> null
-    else -> throw YamlException("'$DocumentationNode' cannot be used as a property name", yamlDocumentation.path)
+    else -> throw YamlException("'$DescriptionNode' cannot be used as a property name", yamlDescription.path)
   }
 
   private fun Map<String, YamlNode>.parsePlatforms() = when (val yamlPlatforms = get(OptOutPlatformsNode)) {
@@ -79,7 +79,7 @@ public class YamlParser {
     map { (name, configuration) ->
       val propertyType = configuration.type.parsePropertyType(enums)
       val optionalPlatforms = configuration.optional?.parsePlatforms(availablePlatforms).orEmpty()
-      Property(name, propertyType, configuration.documentation, optionalPlatforms)
+      Property(name, propertyType, configuration.description, optionalPlatforms)
     }
 
   private fun YamlScalar.parsePropertyType(enums: List<PropertyType.Enum>) = when (content) {
@@ -124,10 +124,10 @@ private data class InputDefinition(
 private data class EventPropertyConfiguration(
   val type: YamlScalar,
   val optional: YamlNode? = null,
-  val documentation: String? = null,
+  val description: String? = null,
 )
 
-private const val DocumentationNode = "documentation"
+private const val DescriptionNode = "description"
 private const val OptOutPlatformsNode = "optOut"
 
 private typealias RawProperty = Map<String, EventPropertyConfiguration>

@@ -19,8 +19,8 @@ platforms:
 events:
   user_signup:
     # Optional key.
-    # 'documentation' is a reserved key word and cannot be used as a property
-    documentation: Some description
+    # 'description' is a reserved key word and cannot be used as a property
+    description: Some description
     # Optional key.
     # List of platforms for which event should not be generated. Must be one of predeclared platforms.
     # If key is not present event will be generated for all platforms.
@@ -34,14 +34,14 @@ events:
       # Must be one of [text, boolean, number, <predeclared enum reference>].
       type: text
       # Optional key.
-      documentation: Some description
+      description: Some description
       # Optional key.
       # Defines if a property can be null. Must be either a boolean or a list of predeclared platforms.
       # If key is not present property is assumed to be not null.
       optional: true
     signup_provider:
       type: signup_type
-      documentation: Some description
+      description: Some description
       optional:
         - android
         - ios

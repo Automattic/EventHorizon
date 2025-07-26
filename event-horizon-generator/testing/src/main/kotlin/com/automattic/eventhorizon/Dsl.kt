@@ -56,7 +56,7 @@ public fun buildEvent(name: String, builderAction: EventBuilder.() -> Unit = {})
 public class EventBuilder internal constructor(
   private val name: String,
 ) {
-  public var documentation: String? = null
+  public var description: String? = null
   private var properties = emptyList<Property>()
   private var excludedPlatforms: Set<String> = emptySet()
 
@@ -70,7 +70,7 @@ public class EventBuilder internal constructor(
 
   internal fun build() = Event(
     name = name,
-    documentation = documentation,
+    description = description,
     properties = properties,
     excludedPlatforms = excludedPlatforms.mapTo(mutableSetOf(), ::Platform),
   )
@@ -124,7 +124,7 @@ public class BasicPropertyBuilder internal constructor(
   private val name: String,
   private val type: PropertyType.Basic,
 ) {
-  public var documentation: String? = null
+  public var description: String? = null
   private var optionalPlatforms: Set<String> = emptySet()
 
   public fun optionalPlatforms(vararg platforms: String) {
@@ -134,7 +134,7 @@ public class BasicPropertyBuilder internal constructor(
   internal fun build() = Property(
     name,
     type,
-    documentation,
+    description,
     optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
   )
 }
@@ -154,7 +154,7 @@ public class EnumPropertyBuilder internal constructor(
   private val propertyName: String,
   private val enumType: PropertyType.Enum,
 ) {
-  public var documentation: String? = null
+  public var description: String? = null
   private var optionalPlatforms: Set<String> = emptySet()
 
   public fun optionalPlatforms(vararg platforms: String) {
@@ -164,7 +164,7 @@ public class EnumPropertyBuilder internal constructor(
   internal fun build() = Property(
     propertyName,
     enumType,
-    documentation,
+    description,
     optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
   )
 }

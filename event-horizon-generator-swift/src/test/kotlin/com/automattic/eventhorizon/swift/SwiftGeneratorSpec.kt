@@ -20,7 +20,7 @@ class SwiftGeneratorSpec : FunSpec({
           properties {
             enum("property_a", buildEnumType("enum_a", "value"))
           }
-          documentation = "Event documentation"
+          description = "Event description"
         }
         event("event_b") {
           properties {
@@ -28,7 +28,7 @@ class SwiftGeneratorSpec : FunSpec({
               optionalPlatforms("ios")
             }
             enum("property_b", buildEnumType("enum_b", "value_a", "value_b")) {
-              documentation = "Property documentation"
+              description = "Property description"
             }
           }
           excludedPlatforms("android")
@@ -64,7 +64,7 @@ class SwiftGeneratorSpec : FunSpec({
       |}
       |
       |/**
-      | * Event documentation */
+      | * Event description */
       |struct EventAEvent : Trackable {
       |
       |  static let eventName: String = "event_a"
@@ -89,7 +89,7 @@ class SwiftGeneratorSpec : FunSpec({
       |  static let eventName: String = "event_b"
       |  let propertyA: EnumA?
       |  /**
-      |   * Property documentation */
+      |   * Property description */
       |  let propertyB: EnumB
       |  var trackableName: String {
       |    return EventBEvent.eventName

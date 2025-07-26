@@ -2,7 +2,7 @@ package com.automattic.eventhorizon
 
 public data class Event(
   val name: String,
-  val documentation: String?,
+  val description: String?,
   val properties: List<Property>,
   val excludedPlatforms: Set<Platform>,
 ) {

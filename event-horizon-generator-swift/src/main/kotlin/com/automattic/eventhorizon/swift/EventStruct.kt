@@ -29,7 +29,7 @@ internal class EventStruct(
     get() = event.properties
       .associateBy { property ->
         PropertySpec.builder(property.name.snakeToCamelCase(), property.typeName)
-          .also { builder -> property.documentation?.let(builder::addDoc) }
+          .also { builder -> property.description?.let(builder::addDoc) }
           .build()
       }
 
@@ -99,7 +99,7 @@ internal class EventStruct(
       .structBuilder(type)
       .addProperty(eventNameProperty)
       .addProperties(structProperties.keys)
-      .also { builder -> event.documentation?.let(builder::addDoc) }
+      .also { builder -> event.description?.let(builder::addDoc) }
       .also { builder ->
         if (structProperties.isNotEmpty()) {
           builder.addFunction(constructor)
