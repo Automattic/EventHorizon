@@ -2,7 +2,6 @@ package com.automattic.eventhorizon.kotlin
 
 import com.automattic.eventhorizon.Case
 import com.automattic.eventhorizon.PropertyType
-import com.automattic.eventhorizon.snakeToPascalCase
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -21,7 +20,7 @@ internal class EventPropertyEnum(
       .enumBuilder(className)
       .also { builder ->
         enum.values.forEach { value ->
-          builder.addEnumConstant(value.snakeToPascalCase(), createEnumConstantSpec(value))
+          builder.addEnumConstant(value.toString(Case.Pascal), createEnumConstantSpec(value.rawValue))
         }
       }
       .build()

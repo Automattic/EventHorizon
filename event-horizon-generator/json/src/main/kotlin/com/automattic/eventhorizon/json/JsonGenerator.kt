@@ -1,5 +1,6 @@
 package com.automattic.eventhorizon.json
 
+import com.automattic.eventhorizon.CaseString
 import com.automattic.eventhorizon.Event as InputEvent
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
@@ -47,7 +48,7 @@ private fun InputProperty.toProperty() = Property(
     is PropertyType.Number -> "number"
     is PropertyType.Enum -> "enum"
   },
-  values = (type as? PropertyType.Enum)?.values?.toList().orEmpty(),
+  values = (type as? PropertyType.Enum)?.values?.map(CaseString::rawValue).orEmpty(),
   optionalPlatforms = optionalPlatforms.map(Platform::value),
 )
 

@@ -19,7 +19,7 @@ internal class EventPropertyType(
         appendIndent(count = 4)
         append("| ")
         append('"')
-        append(value)
+        append(value.rawValue)
         append('"')
       }
       append(";")

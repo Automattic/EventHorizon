@@ -46,7 +46,7 @@ public class YamlParser {
 
   private fun RawSchema.parseEnums(): Set<PropertyType.Enum> {
     return enums.mapTo(mutableSetOf()) { (name, values) ->
-      PropertyType.Enum(name.toCaseString(), values.orEmpty().toNonEmptySetOrThrow())
+      PropertyType.Enum(name.toCaseString(), values.orEmpty().map { it.toCaseString() }.toNonEmptySetOrThrow())
     }
   }
 

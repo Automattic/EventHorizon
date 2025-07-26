@@ -13,6 +13,6 @@ public sealed interface PropertyType {
 
   public data class Enum(
     val name: CaseString,
-    val values: NonEmptySet<String>,
+    val values: NonEmptySet<CaseString>,
   ) : PropertyType
 }

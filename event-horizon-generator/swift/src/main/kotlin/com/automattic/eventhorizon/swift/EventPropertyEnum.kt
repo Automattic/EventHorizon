@@ -2,7 +2,6 @@ package com.automattic.eventhorizon.swift
 
 import com.automattic.eventhorizon.Case
 import com.automattic.eventhorizon.PropertyType
-import com.automattic.eventhorizon.snakeToCamelCase
 import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.PropertySpec
@@ -28,7 +27,7 @@ internal class EventPropertyEnum(
       .addSuperType(STRING)
       .also { builder ->
         enum.values.forEach { value ->
-          builder.addEnumCase(value.snakeToCamelCase(), value)
+          builder.addEnumCase(value.toString(Case.Camel), value.rawValue)
         }
       }
       .addProperty(analyticsValueProperty)

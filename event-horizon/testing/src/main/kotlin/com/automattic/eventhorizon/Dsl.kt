@@ -169,7 +169,7 @@ public class EnumPropertyBuilder internal constructor(
 public fun enumType(name: String, value: String, vararg otherValues: String): PropertyType.Enum {
   return PropertyType.Enum(
     name.toCaseString(),
-    nonEmptySetOf(value, *otherValues),
+    nonEmptySetOf(value.toCaseString(), *otherValues.map { it.toCaseString() }.toTypedArray()),
   )
 }
 
