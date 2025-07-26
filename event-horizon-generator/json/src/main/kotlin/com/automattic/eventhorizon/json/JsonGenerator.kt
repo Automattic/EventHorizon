@@ -32,7 +32,7 @@ public class JsonGenerator(
 }
 
 private fun InputEvent.toEvent() = Event(
-  name = name,
+  name = name.rawValue,
   description = description,
   excludedPlatforms = excludedPlatforms.map(Platform::value),
   properties = properties.map(InputProperty::toProperty),

@@ -1,11 +1,11 @@
 package com.automattic.eventhorizon.swift
 
+import com.automattic.eventhorizon.Case
 import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.snakeToCamelCase
-import com.automattic.eventhorizon.snakeToPascalCase
 import io.outfoxx.swiftpoet.BOOL
 import io.outfoxx.swiftpoet.CodeBlock
 import io.outfoxx.swiftpoet.DeclaredTypeName
@@ -23,7 +23,7 @@ internal class EventStruct(
   private val platform: Platform,
 ) {
   private val type
-    get() = DeclaredTypeName(moduleName, "${event.name.snakeToPascalCase()}Event")
+    get() = DeclaredTypeName(moduleName, "${event.name.toString(Case.Pascal)}Event")
 
   private val structProperties
     get() = event.properties
@@ -52,7 +52,7 @@ internal class EventStruct(
   private val eventNameProperty
     get() = PropertySpec
       .builder("eventName", STRING, Modifier.STATIC)
-      .initializer("%S", event.name)
+      .initializer("%S", event.name.rawValue)
       .build()
 
   private val constructor

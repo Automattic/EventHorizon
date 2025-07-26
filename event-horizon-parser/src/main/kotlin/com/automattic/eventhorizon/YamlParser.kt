@@ -39,7 +39,7 @@ public class YamlParser {
       val excludedPlatforms = metadata?.excludedPlatforms?.mapTo(mutableSetOf(), ::Platform).orEmpty()
       val properties = mappings?.parseProperties(enums, availablePlatforms).orEmpty()
 
-      Event(name, description, excludedPlatforms, properties)
+      Event(name.toCaseString(), description, excludedPlatforms, properties)
     }
     return Events(events)
   }

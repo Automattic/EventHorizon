@@ -43,7 +43,7 @@ internal class TrackableType(
   private fun StringBuilder.appendEventName(event: Event) {
     appendIndent()
     append('"')
-    append(event.name)
+    append(event.name.rawValue)
     append("\": ")
   }
 

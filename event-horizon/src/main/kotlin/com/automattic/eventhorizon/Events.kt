@@ -6,7 +6,7 @@ public class Events(
   private val entries: List<Event>,
 ) : List<Event> by entries {
   init {
-    requireNoDuplicates(entries.map(Event::name)) { duplicates ->
+    requireNoDuplicates(entries.map { event -> event.name.rawValue }) { duplicates ->
       "Found duplicate events: $duplicates"
     }
   }

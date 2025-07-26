@@ -36,7 +36,7 @@ public data class Schema private constructor(
         buildString {
           append("Found events with platforms undeclared in schema:\n")
           val eventIssues = invalidPlatforms.joinToString(separator = "\n") { (eventName, platformNames) ->
-            " - $eventName: $platformNames"
+            " - ${eventName.rawValue}: $platformNames"
           }
           append(eventIssues)
 
@@ -58,7 +58,7 @@ public data class Schema private constructor(
             val propertyIssues = propertyNames.joinToString(separator = "\n") { (propertyName, platformNames) ->
               "   - $propertyName: $platformNames"
             }
-            " - $eventName:\n$propertyIssues"
+            " - ${eventName.rawValue}:\n$propertyIssues"
           }
           append(eventIssues)
 

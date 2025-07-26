@@ -1,11 +1,11 @@
 package com.automattic.eventhorizon.kotlin
 
+import com.automattic.eventhorizon.Case
 import com.automattic.eventhorizon.Event
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.snakeToCamelCase
-import com.automattic.eventhorizon.snakeToPascalCase
 import com.squareup.kotlinpoet.ANY
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
@@ -44,7 +44,7 @@ internal class EventClass(
   private val eventNameProperty
     get() = PropertySpec
       .builder("EventName", STRING, KModifier.CONST)
-      .initializer("%S", event.name)
+      .initializer("%S", event.name.rawValue)
       .build()
 
   private val companionObject
@@ -95,7 +95,7 @@ internal class EventClass(
 
   val typeSpec: TypeSpec
     get() {
-      val className = ClassName(packageName, "${event.name.snakeToPascalCase()}Event")
+      val className = ClassName(packageName, "${event.name.toString(Case.Pascal)}Event")
       val baseType = if (classProperties.isNotEmpty()) {
         TypeSpec
           .classBuilder(className)

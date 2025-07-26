@@ -70,7 +70,7 @@ public class EventBuilder internal constructor(
   }
 
   internal fun build() = Event(
-    name = name,
+    name = name.toCaseString(),
     description = description,
     excludedPlatforms = excludedPlatforms.mapTo(mutableSetOf(), ::Platform),
     properties = properties,
