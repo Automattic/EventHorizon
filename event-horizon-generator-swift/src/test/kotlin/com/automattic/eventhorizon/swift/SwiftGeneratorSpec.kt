@@ -6,7 +6,6 @@ import com.automattic.eventhorizon.buildSchema
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.shouldBe
-import kotlin.collections.plus
 import kotlin.io.path.readText
 
 class SwiftGeneratorSpec : FunSpec({
@@ -22,7 +21,6 @@ class SwiftGeneratorSpec : FunSpec({
             enum("property_a", buildEnumType("enum_a", "value"))
           }
           documentation = "Event documentation"
-          availablePlatforms("ios")
         }
         event("event_b") {
           properties {
@@ -33,10 +31,10 @@ class SwiftGeneratorSpec : FunSpec({
               documentation = "Property documentation"
             }
           }
-          availablePlatforms("ios")
+          excludedPlatforms("android")
         }
         event("event_c") {
-          availablePlatforms("android")
+          excludedPlatforms("ios")
         }
       }
     }

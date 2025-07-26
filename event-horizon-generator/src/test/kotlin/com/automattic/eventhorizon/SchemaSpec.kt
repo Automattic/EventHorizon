@@ -9,8 +9,8 @@ class SchemaSpec() : FunSpec({
   test("schema with version 0") {
     val exception = shouldThrow<IllegalArgumentException> {
       Schema.create(
-        schemaVersion = 0u,
-        availablePlatforms = emptySet(),
+        version = 0u,
+        platforms = emptySet(),
         events = buildEvents(),
       )
     }
@@ -18,29 +18,29 @@ class SchemaSpec() : FunSpec({
   }
 
   test("empty schema has version 0") {
-    Schema.Empty.schemaVersion shouldBe 0u
+    Schema.Empty.version shouldBe 0u
   }
 
   test("schema with missing event platforms") {
     val exception = shouldThrow<IllegalArgumentException> {
       Schema.create(
-        schemaVersion = 1u,
-        availablePlatforms = setOf(Platform("android"), Platform("ios")),
+        version = 1u,
+        platforms = setOf(Platform("android"), Platform("ios")),
         events = buildEvents {
           event("event1") {
-            availablePlatforms("android")
+            excludedPlatforms("android")
           }
           event("event2") {
-            availablePlatforms("ios", "web")
+            excludedPlatforms("ios", "web")
           }
           event("event3") {
-            availablePlatforms("web", "embedded")
+            excludedPlatforms("web", "embedded")
           }
         },
       )
     }
     exception shouldHaveMessage """
-      |Schema must declare platforms for optional events. Available platforms:
+      |Schema must declare platforms for excluded events. Available platforms:
       | - android
       | - ios
       |Issues found with the following events:
@@ -52,8 +52,8 @@ class SchemaSpec() : FunSpec({
   test("schema with missing property platforms") {
     val exception = shouldThrow<IllegalArgumentException> {
       Schema.create(
-        schemaVersion = 1u,
-        availablePlatforms = setOf(Platform("android"), Platform("ios")),
+        version = 1u,
+        platforms = setOf(Platform("android"), Platform("ios")),
         events = buildEvents {
           event("event1")
           event("event2") {

@@ -22,7 +22,7 @@ class JsonGeneratorSpec : FunSpec({
             }
           }
           documentation = "Event documentation"
-          availablePlatforms("web", "ios")
+          excludedPlatforms("web", "ios")
         }
         event("event_b") {
           properties {
@@ -44,7 +44,7 @@ class JsonGeneratorSpec : FunSpec({
       |    {
       |        "name": "event_a",
       |        "documentation": "Event documentation",
-      |        "availablePlatforms": [
+      |        "excludedPlatforms": [
       |            "web",
       |            "ios"
       |        ],
@@ -63,7 +63,7 @@ class JsonGeneratorSpec : FunSpec({
       |    },
       |    {
       |        "name": "event_b",
-      |        "availablePlatforms": [],
+      |        "excludedPlatforms": [],
       |        "properties": [
       |            {
       |                "name": "property_a",

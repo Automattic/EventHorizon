@@ -2,36 +2,40 @@ package com.automattic.eventhorizon
 
 @ConsistentCopyVisibility
 public data class Schema private constructor(
-  val schemaVersion: ULong,
-  val availablePlatforms: Set<Platform>,
+  val version: ULong,
+  val platforms: Set<Platform>,
   val events: Events,
 ) {
+  public fun platformEvents(platform: Platform): Events {
+    return Events(events.filter { event -> platform !in event.excludedPlatforms })
+  }
+
   public companion object {
     public val Empty: Schema = Schema(
-      schemaVersion = 0u,
-      availablePlatforms = emptySet(),
+      version = 0u,
+      platforms = emptySet(),
       events = Events(
         value = emptyList(),
       ),
     )
 
-    public fun create(schemaVersion: ULong, availablePlatforms: Set<Platform>, events: Events): Schema {
-      require(schemaVersion > 0u) { "Schema version must be a positive number. Is: $schemaVersion" }
-      requirePredeclaredEventPlatforms(events, availablePlatforms)
-      requirePredeclaredPropertyPlatforms(events, availablePlatforms)
+    public fun create(version: ULong, platforms: Set<Platform>, events: Events): Schema {
+      require(version > 0u) { "Schema version must be a positive number. Is: $version" }
+      requirePredeclaredEventPlatforms(events, platforms)
+      requirePredeclaredPropertyPlatforms(events, platforms)
       return Schema(
-        schemaVersion = schemaVersion,
-        availablePlatforms = availablePlatforms,
+        version = version,
+        platforms = platforms,
         events = events,
       )
     }
 
-    private fun requirePredeclaredEventPlatforms(events: Events, availablePlatforms: Set<Platform>) {
-      val invalidPlatforms = events.findInvalidEventPlatforms(availablePlatforms)
+    private fun requirePredeclaredEventPlatforms(events: Events, plaforms: Set<Platform>) {
+      val invalidPlatforms = events.findInvalidEventPlatforms(plaforms)
       require(invalidPlatforms.isEmpty()) {
         buildString {
-          append("Schema must declare platforms for optional events. Available platforms:\n")
-          val platforms = availablePlatforms.joinToString(separator = "\n") { platform ->
+          append("Schema must declare platforms for excluded events. Available platforms:\n")
+          val platforms = plaforms.joinToString(separator = "\n") { platform ->
             " - ${platform.value}"
           }
           append(platforms)
@@ -45,15 +49,15 @@ public data class Schema private constructor(
       }
     }
 
-    private fun requirePredeclaredPropertyPlatforms(events: Events, availablePlatforms: Set<Platform>) {
-      val invalidPlatforms = events.findInvalidPropertyPlatforms(availablePlatforms)
+    private fun requirePredeclaredPropertyPlatforms(events: Events, platforms: Set<Platform>) {
+      val invalidPlatforms = events.findInvalidPropertyPlatforms(platforms)
       require(invalidPlatforms.isEmpty()) {
         buildString {
           append("Schema must declare platforms for optional properties. Available platforms:\n")
-          val platforms = availablePlatforms.joinToString(separator = "\n") { platform ->
+          val platformNames = platforms.joinToString(separator = "\n") { platform ->
             " - ${platform.value}"
           }
-          append(platforms)
+          append(platformNames)
 
           append("\nIssues found with the following events and properties:\n")
           val eventIssues = invalidPlatforms.joinToString(separator = "\n") { (eventName, propertyNames) ->
@@ -68,7 +72,7 @@ public data class Schema private constructor(
     }
 
     private fun Events.findInvalidEventPlatforms(availablePlatforms: Set<Platform>) = mapNotNull { event ->
-      val invalidPlatforms = event.availablePlatforms.filter { platform ->
+      val invalidPlatforms = event.excludedPlatforms.filter { platform ->
         platform !in availablePlatforms
       }
       if (invalidPlatforms.isNotEmpty()) {

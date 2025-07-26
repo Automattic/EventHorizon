@@ -18,7 +18,7 @@ class EventSpec : FunSpec({
           boolean("name_c")
         },
         documentation = null,
-        availablePlatforms = emptySet(),
+        excludedPlatforms = emptySet(),
       )
     }
 

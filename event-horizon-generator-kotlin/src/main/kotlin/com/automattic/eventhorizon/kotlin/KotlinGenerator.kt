@@ -1,6 +1,5 @@
 package com.automattic.eventhorizon.kotlin
 
-import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Schema
@@ -12,9 +11,7 @@ public class KotlinGenerator(
   private val platform: Platform,
 ) : Generator {
   override fun generate(schema: Schema, outputDir: Path): Path {
-    val platformEvents = Events(
-      schema.events.filter { platform == Platform.NoPlatform || platform in it.availablePlatforms },
-    )
+    val platformEvents = schema.platformEvents(platform)
     val trackable = TrackableInterface(packageName)
     val eventHorizonType = EventHorizonClass(packageName, trackable).typeSpec
     val eventTypes = platformEvents.map { event -> EventClass(packageName, event, trackable, platform).typeSpec }

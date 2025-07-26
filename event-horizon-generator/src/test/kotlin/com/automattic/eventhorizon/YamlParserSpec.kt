@@ -37,7 +37,7 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val value = result.shouldBeSuccess()
-    value.schemaVersion shouldBe 1u
+    value.version shouldBe 1u
   }
 
   test("parse negative schema version") {
@@ -430,7 +430,7 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event.availablePlatforms shouldContainExactly setOf(Platform("android"), Platform("web"))
+    event.excludedPlatforms shouldContainExactly setOf(Platform("ios"))
   }
 
   test("parse event with optOut set as one of properties") {

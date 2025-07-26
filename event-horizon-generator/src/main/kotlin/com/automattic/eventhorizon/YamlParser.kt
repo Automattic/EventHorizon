@@ -36,10 +36,10 @@ public class YamlParser {
     val platforms = definition.platforms.mapTo(mutableSetOf(), ::Platform)
     val events = definition.parseEvents(enums, platforms)
     return Schema.create(
-      schemaVersion = requireNotNull(definition.version.toULongOrNull()) {
+      version = requireNotNull(definition.version.toULongOrNull()) {
         "Schema version must be a positive number. Is: ${definition.version}"
       },
-      availablePlatforms = platforms,
+      platforms = platforms,
       events = Events(events),
     )
   }
@@ -57,7 +57,7 @@ public class YamlParser {
         name = eventName,
         documentation = documentation,
         properties = properties,
-        availablePlatforms = platforms - optOutPlatforms,
+        excludedPlatforms = optOutPlatforms,
       )
     }
 
@@ -75,10 +75,10 @@ public class YamlParser {
     else -> throw YamlException("'$OptOutPlatformsNode' cannot be used as a property name", yamlPlatforms.path)
   }
 
-  private fun RawProperty.parseProperties(enums: List<PropertyType.Enum>, platforms: Set<Platform>) =
+  private fun RawProperty.parseProperties(enums: List<PropertyType.Enum>, availablePlatforms: Set<Platform>) =
     map { (name, configuration) ->
       val propertyType = configuration.type.parsePropertyType(enums)
-      val optionalPlatforms = configuration.optional?.parsePlatforms(platforms).orEmpty()
+      val optionalPlatforms = configuration.optional?.parsePlatforms(availablePlatforms).orEmpty()
       Property(name, propertyType, configuration.documentation, optionalPlatforms)
     }
 

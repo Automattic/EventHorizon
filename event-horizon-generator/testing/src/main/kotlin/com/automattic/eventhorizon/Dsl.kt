@@ -58,10 +58,10 @@ public class EventBuilder internal constructor(
 ) {
   public var documentation: String? = null
   private var properties = emptyList<Property>()
-  private var availablePlatforms: Set<String> = emptySet()
+  private var excludedPlatforms: Set<String> = emptySet()
 
-  public fun availablePlatforms(vararg platforms: String) {
-    availablePlatforms = platforms.toSet()
+  public fun excludedPlatforms(vararg platforms: String) {
+    excludedPlatforms = platforms.toSet()
   }
 
   public fun properties(builderAction: PropertyListBuilder.() -> Unit) {
@@ -72,7 +72,7 @@ public class EventBuilder internal constructor(
     name = name,
     documentation = documentation,
     properties = properties,
-    availablePlatforms = availablePlatforms.mapTo(mutableSetOf(), ::Platform),
+    excludedPlatforms = excludedPlatforms.mapTo(mutableSetOf(), ::Platform),
   )
 }
 

@@ -1,6 +1,5 @@
 package com.automattic.eventhorizon.ts
 
-import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Schema
@@ -12,9 +11,7 @@ public class TypeScriptGenerator(
   private val platform: Platform,
 ) : Generator {
   override fun generate(schema: Schema, outputDir: Path): Path {
-    val platformEvents = Events(
-      schema.events.filter { platform == Platform.NoPlatform || platform in it.availablePlatforms },
-    )
+    val platformEvents = schema.platformEvents(platform)
     val trackableType = TrackableType(platformEvents, platform)
     val enumTypes = platformEvents.distinctEnums.map(::EventPropertyType)
 

@@ -1,5 +1,6 @@
 package com.automattic.eventhorizon.cli
 
+import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Schema
 import com.automattic.eventhorizon.YamlParser
@@ -65,30 +66,37 @@ internal class Cli : CliktCommand() {
     YamlParser()
       .parseSchema(inputFile)
       .mapCatching(::requireDeclaredPlatform)
-      .map { schema -> createGenerator(format, outputPlatform ?: Platform.Companion.NoPlatform).generate(schema, dir) }
+      .map { (schema, platform) -> createGenerator(format, platform).generate(schema, dir) }
       .onSuccess { file -> echo("$file file generated successfully") }
       .getOrThrow()
   }
 
-  private fun createGenerator(formatType: FormatType, platform: Platform) = when (formatType) {
-    FormatType.Kotlin -> KotlinGenerator(namespace, platform)
-    FormatType.Swift -> SwiftGenerator(namespace, platform)
-    FormatType.TypeScript -> TypeScriptGenerator(platform)
-    FormatType.Json -> JsonGenerator()
+  private fun createGenerator(formatType: FormatType, platform: Platform): Generator {
+    return when (formatType) {
+      FormatType.Kotlin -> KotlinGenerator(namespace, platform)
+      FormatType.Swift -> SwiftGenerator(namespace, platform)
+      FormatType.TypeScript -> TypeScriptGenerator(platform)
+      FormatType.Json -> JsonGenerator()
+    }
   }
 
-  private fun requireDeclaredPlatform(schema: Schema): Schema {
-    if (schema.availablePlatforms.isNotEmpty()) {
+  private fun requireDeclaredPlatform(schema: Schema): Pair<Schema, Platform> {
+    val platform = if (schema.platforms.isNotEmpty()) {
       val platform = requireOption(outputPlatform) { "missing option --output-platform" }
-      if (schema.availablePlatforms.isNotEmpty() && platform !in schema.availablePlatforms) {
+      if (schema.platforms.isNotEmpty() && platform !in schema.platforms) {
         throw UsageError(
-          "Invalid value for --output-platform: ${platform.value}. It must be one of the schema-declared values: ${schema.availablePlatforms}",
+          "Invalid value for --output-platform: ${platform.value}. It must be one of the schema-declared values: ${schema.platforms}",
         )
       }
+      platform
+    } else {
+      NoPlatform
     }
-    return schema
+    return schema to platform
   }
 }
+
+private val NoPlatform = Platform("")
 
 private fun <T : Any> requireOption(value: T?, message: () -> String): T {
   if (value == null) {

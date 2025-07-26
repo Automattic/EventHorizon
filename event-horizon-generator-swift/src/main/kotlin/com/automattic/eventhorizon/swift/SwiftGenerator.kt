@@ -1,6 +1,5 @@
 package com.automattic.eventhorizon.swift
 
-import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Schema
@@ -13,9 +12,7 @@ public class SwiftGenerator(
   private val platform: Platform,
 ) : Generator {
   override fun generate(schema: Schema, outputDir: Path): Path {
-    val platformEvents = Events(
-      schema.events.filter { platform == Platform.NoPlatform || platform in it.availablePlatforms },
-    )
+    val platformEvents = schema.platformEvents(platform)
     val trackable = TrackableProtocol(moduleName)
     val eventHorizonType = EventHorizonClass(moduleName, trackable).typeSpec
     val eventTypes = platformEvents.map { event -> EventStruct(moduleName, event, trackable, platform).typeSpec }
