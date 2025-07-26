@@ -98,12 +98,8 @@ public class PropertyListBuilder internal constructor() {
     properties += buildProperty(name, PropertyType.Boolean, builderAction)
   }
 
-  public fun enum(
-    propertyName: String,
-    enumType: PropertyType.Enum,
-    builderAction: EnumPropertyBuilder.() -> Unit = {},
-  ) {
-    properties += buildEnumProperty(propertyName, enumType, builderAction)
+  public fun enum(propertyName: String, enumType: PropertyType.Enum, builderAction: EnumPropertyBuilder.() -> Unit = {}) {
+    properties += buildProperty(propertyName, enumType, builderAction)
   }
 
   internal fun build() = properties.toList()
@@ -127,8 +123,12 @@ public class BasicPropertyBuilder internal constructor(
   public var description: String? = null
   private var optionalPlatforms: Set<String> = emptySet()
 
-  public fun optionalPlatforms(vararg platforms: String) {
-    optionalPlatforms = platforms.toSet()
+  public fun optionalPlatforms(platform: String, vararg platforms: String) {
+    optionalPlatforms = setOf(platform) + platforms.toSet()
+  }
+
+  public fun noOptionalPlatforms() {
+    optionalPlatforms = emptySet()
   }
 
   internal fun build() = Property(
@@ -139,11 +139,7 @@ public class BasicPropertyBuilder internal constructor(
   )
 }
 
-public fun buildEnumProperty(
-  propertyName: String,
-  enumType: PropertyType.Enum,
-  builderAction: EnumPropertyBuilder.() -> Unit = {},
-): Property {
+public fun buildProperty(propertyName: String, enumType: PropertyType.Enum, builderAction: EnumPropertyBuilder.() -> Unit = {}): Property {
   val builder = EnumPropertyBuilder(propertyName, enumType)
   builder.builderAction()
   return builder.build()

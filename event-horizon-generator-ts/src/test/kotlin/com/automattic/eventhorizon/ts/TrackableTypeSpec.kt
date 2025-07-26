@@ -1,8 +1,8 @@
 package com.automattic.eventhorizon.ts
 
 import com.automattic.eventhorizon.Platform
-import com.automattic.eventhorizon.enumType
 import com.automattic.eventhorizon.buildEvents
+import com.automattic.eventhorizon.enumType
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 

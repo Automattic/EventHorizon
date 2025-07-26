@@ -1,8 +1,8 @@
 package com.automattic.eventhorizon.kotlin
 
 import com.automattic.eventhorizon.Platform
-import com.automattic.eventhorizon.enumType
 import com.automattic.eventhorizon.buildSchema
+import com.automattic.eventhorizon.enumType
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempdir
 import io.kotest.matchers.shouldBe

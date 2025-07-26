@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
   api(projects.eventHorizonGenerator)
+  api(libs.kotest.assertions)
 }

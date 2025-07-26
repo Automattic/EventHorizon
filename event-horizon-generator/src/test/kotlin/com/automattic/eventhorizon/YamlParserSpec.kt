@@ -5,8 +5,6 @@ import com.charleskorn.kaml.MissingRequiredPropertyException
 import com.charleskorn.kaml.YamlException
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.engine.spec.tempfile
-import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldBeSingleton
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.result.shouldBeFailure
@@ -24,8 +22,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val value = result.shouldBeSuccess()
-    value shouldBe Schema.Empty
+    result shouldBeSuccess Schema.Empty
   }
 
   test("parse a blank file") {
@@ -33,8 +30,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val value = result.shouldBeSuccess()
-    value shouldBe Schema.Empty
+    result shouldBeSuccess Schema.Empty
   }
 
   test("parse a schema version") {
@@ -45,8 +41,8 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val value = result.shouldBeSuccess()
-    value.version shouldBe 1u
+    val schema = result.shouldBeSuccess()
+    schema.version shouldBe 1u
   }
 
   test("fail to parse a negative schema version") {
@@ -97,8 +93,8 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event shouldBe buildEvent("event")
+    val schema = result.shouldBeSuccess()
+    schema.events shouldHaveSingleElement buildEvent("event")
   }
 
   test("parse an event with a text property") {
@@ -115,8 +111,7 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe PropertyType.Text
+    event.properties shouldHaveSingleElement buildProperty("property", PropertyType.Text)
   }
 
   test("parse an event with a number property") {
@@ -133,8 +128,7 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe PropertyType.Number
+    event.properties shouldHaveSingleElement buildProperty("property", PropertyType.Number)
   }
 
   test("parse event with a boolean property") {
@@ -151,8 +145,7 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe PropertyType.Boolean
+    event.properties shouldHaveSingleElement buildProperty("property", PropertyType.Boolean)
   }
 
   test("parse an event with an enum property that exists") {
@@ -166,14 +159,14 @@ class YamlParserSpec : FunSpec({
       |enums:
       |  enum_reference:
       |    - value_1
+      |    - value_2
     """
     tempFile.writeText(text.trimMargin())
 
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe enumType("enum_reference", "value_1")
+    event.properties shouldHaveSingleElement buildProperty("property", enumType("enum_reference", "value_1", "value_2"))
   }
 
   test("fail to parse an event with an enum property that doesn't exist") {
@@ -194,28 +187,6 @@ class YamlParserSpec : FunSpec({
     exception.location shouldBe Location(line = 6, column = 13)
   }
 
-  test("parse enum values") {
-    val text = """
-      |schemaVersion: 1
-      |
-      |events:
-      |  event:
-      |    property:
-      |      type: enum_reference
-      |enums:
-      |  enum_reference:
-      |    - value1
-      |    - value2
-    """
-    tempFile.writeText(text.trimMargin())
-
-    val result = parser.parseSchema(tempFile)
-
-    val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.type shouldBe enumType("enum_reference", "value1", "value2")
-  }
-
   test("parse an event with an optional property on all platforms") {
     val text = """
       |schemaVersion: 1
@@ -234,8 +205,9 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms shouldContainExactly setOf(Platform("android"), Platform("ios"))
+    event.properties shouldHaveSingleElement buildProperty("property") {
+      optionalPlatforms("android", "ios")
+    }
   }
 
   test("parse an event with a non-optional property") {
@@ -253,8 +225,9 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms.shouldBeEmpty()
+    event.properties shouldHaveSingleElement buildProperty("property") {
+      noOptionalPlatforms()
+    }
   }
 
   test("parse an event with an optional property on a single platform") {
@@ -276,8 +249,9 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms shouldHaveSingleElement Platform("android")
+    event.properties shouldHaveSingleElement buildProperty("property") {
+      optionalPlatforms("android")
+    }
   }
 
   test("parse an event with an optional property on multiple platforms") {
@@ -301,8 +275,9 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    val property = event.properties.shouldHaveSingleElement()
-    property.optionalPlatforms shouldBe setOf(Platform("android"), Platform("ios"))
+    event.properties shouldHaveSingleElement buildProperty("property") {
+      optionalPlatforms("android", "ios")
+    }
   }
 
   test("fail to parse an event with a null optional property") {
@@ -488,9 +463,3 @@ class YamlParserSpec : FunSpec({
     }
   }
 })
-
-@Suppress("NOTHING_TO_INLINE")
-private inline fun <T> Collection<T>.shouldHaveSingleElement(): T {
-  shouldBeSingleton()
-  return first()
-}
