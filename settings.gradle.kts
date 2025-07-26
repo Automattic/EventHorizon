@@ -21,8 +21,9 @@ include(
   ":event-horizon",
   ":event-horizon:testing",
   ":event-horizon-cli",
-  ":event-horizon-generator-kotlin",
-  ":event-horizon-generator-swift",
-  ":event-horizon-generator-ts",
-  ":event-horizon-generator-json",
+  ":event-horizon-generator",
+  ":event-horizon-generator:kotlin",
+  ":event-horizon-generator:swift",
+  ":event-horizon-generator:ts",
+  ":event-horizon-generator:json",
 )

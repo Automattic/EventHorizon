@@ -9,10 +9,10 @@ application {
 }
 
 dependencies {
-  implementation(projects.eventHorizonGeneratorKotlin)
-  implementation(projects.eventHorizonGeneratorSwift)
-  implementation(projects.eventHorizonGeneratorTs)
-  implementation(projects.eventHorizonGeneratorJson)
+  implementation(projects.eventHorizonGenerator.kotlin)
+  implementation(projects.eventHorizonGenerator.swift)
+  implementation(projects.eventHorizonGenerator.ts)
+  implementation(projects.eventHorizonGenerator.json)
   implementation(libs.clikit)
 
   testImplementation(libs.kotest.assertions)
