@@ -1,14 +1,5 @@
 package com.automattic.eventhorizon
 
-public fun String.snakeToPascalCase(): String {
-  return lowercase()
-    .split("_")
-    .fold(StringBuilder()) { builder, word ->
-      builder.append(word.replaceFirstChar(Char::uppercase))
-    }
-    .toString()
-}
-
 public fun String.snakeToCamelCase(): String {
   return lowercase()
     .split("_")
