@@ -2,6 +2,7 @@ package com.automattic.eventhorizon
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.throwable.shouldHaveMessage
 
@@ -19,6 +20,50 @@ class SchemaSpec() : FunSpec({
       )
     }
     exception shouldHaveMessage "Schema version must not be 0"
+  }
+
+  test("create schema with positive version number") {
+    val schema = Schema.create(
+      version = 100u,
+      platforms = emptySet(),
+      events = buildEvents(),
+    )
+
+    schema.version shouldBe 100u
+  }
+
+  test("get platform specific events") {
+    val schema = buildSchema {
+      platforms("android", "ios", "web")
+      events {
+        event("event1") {
+          excludedPlatforms("android")
+        }
+        event("event2") {
+          excludedPlatforms("ios")
+        }
+        event("event3") {
+          excludedPlatforms("android", "ios")
+        }
+      }
+    }
+
+    schema.platformEvents(Platform("android")) shouldContainExactly buildEvents {
+      event("event2") {
+        excludedPlatforms("ios")
+      }
+    }
+    schema.platformEvents(Platform("web")) shouldContainExactly buildEvents {
+      event("event1") {
+        excludedPlatforms("android")
+      }
+      event("event2") {
+        excludedPlatforms("ios")
+      }
+      event("event3") {
+        excludedPlatforms("android", "ios")
+      }
+    }
   }
 
   test("fail to create schema with undeclared platforms used in events") {
