@@ -2,6 +2,7 @@ package com.automattic.eventhorizon.cli
 
 import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
+import com.automattic.eventhorizon.Problem
 import com.automattic.eventhorizon.Schema
 import com.automattic.eventhorizon.YamlParser
 import com.automattic.eventhorizon.json.JsonGenerator
@@ -9,7 +10,10 @@ import com.automattic.eventhorizon.kotlin.KotlinGenerator
 import com.automattic.eventhorizon.swift.SwiftGenerator
 import com.automattic.eventhorizon.ts.TypeScriptGenerator
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
+import com.github.ajalt.clikt.core.ProgramResult
 import com.github.ajalt.clikt.core.UsageError
+import com.github.ajalt.clikt.core.theme
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
@@ -19,7 +23,7 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
 
-internal class Cli : CliktCommand() {
+internal class Cli : CliktCommand("event-horizon") {
   private val inputFile by option("-i", "--input-file")
     .help("Input file with events definitions")
     .path(canBeDir = false, mustExist = true, mustBeReadable = true)
@@ -30,7 +34,7 @@ internal class Cli : CliktCommand() {
     .path(canBeFile = false)
 
   private val outputPlatform by option("-p", "--output-platform")
-    .help("Output platform for code generation")
+    .help("Platform used for code generation")
     .convert { Platform(it) }
 
   private val outputFormat by option("-f", "--output-format")
@@ -45,6 +49,10 @@ internal class Cli : CliktCommand() {
     .help("Only run input file verification")
     .flag()
 
+  override fun help(context: Context): String {
+    return context.theme.info("This is a command")
+  }
+
   override fun run() {
     if (onlyVerify) {
       verify()
@@ -54,10 +62,9 @@ internal class Cli : CliktCommand() {
   }
 
   private fun verify() {
-    YamlParser()
-      .parseSchema(inputFile)
-      .onSuccess { echo("No issues found in $inputFile file") }
-      .getOrThrow()
+    YamlParser().parseSchema(inputFile)
+      .onRight { echoSuccess("$inputFile file is a valid schema") }
+      .onLeft(::echoProblemsAndExit)
   }
 
   private fun generate() {
@@ -65,10 +72,13 @@ internal class Cli : CliktCommand() {
     val dir = requireOption(outputDir) { "missing option --output-dir" }
     YamlParser()
       .parseSchema(inputFile)
-      .mapCatching(::requireDeclaredPlatform)
-      .map { (schema, platform) -> createGenerator(format, platform).generate(schema, dir) }
-      .onSuccess { file -> echo("$file file generated successfully") }
-      .getOrThrow()
+      .map(::requireDeclaredPlatform)
+      .map { (schema, platform) ->
+        echo("ELO: $platform")
+        createGenerator(format, platform).generate(schema, dir)
+      }
+      .onRight { file -> echoSuccess("$file generated successfully.") }
+      .onLeft(::echoProblemsAndExit)
   }
 
   private fun createGenerator(formatType: FormatType, platform: Platform): Generator {
@@ -84,8 +94,9 @@ internal class Cli : CliktCommand() {
     val platform = if (schema.platforms.isNotEmpty()) {
       val platform = requireOption(outputPlatform) { "missing option --output-platform" }
       if (schema.platforms.isNotEmpty() && platform !in schema.platforms) {
+        val platformValues = schema.platforms.map(Platform::value)
         throw UsageError(
-          "Invalid value for --output-platform: ${platform.value}. It must be one of the schema-declared values: ${schema.platforms}",
+          "Invalid value for --output-platform: ${platform.value}. Must be one of the schema-declared values: $platformValues",
         )
       }
       platform
@@ -93,6 +104,16 @@ internal class Cli : CliktCommand() {
       NoPlatform
     }
     return schema to platform
+  }
+
+  private fun echoSuccess(message: String) {
+    echo(currentContext.theme.success(message))
+  }
+
+  private fun echoProblemsAndExit(problems: List<Problem>) {
+    val message = problems.joinToString(separator = "\n\n") { problem -> problem.print() }
+    echo(message, err = true)
+    throw ProgramResult(1)
   }
 }
 

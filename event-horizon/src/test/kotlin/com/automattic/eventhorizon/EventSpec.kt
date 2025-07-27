@@ -12,7 +12,7 @@ class EventSpec : FunSpec({
   val excludedPlatforms = platforms("android", "ios")
 
   test("create an event") {
-    val event = Event("name", description, properties, excludedPlatforms).shouldBeRight()
+    val event = Event("name", properties, description, excludedPlatforms).shouldBeRight()
 
     event.name shouldBe caseString("name")
     event.properties shouldHaveSingleElement buildProperty("property")
@@ -21,13 +21,13 @@ class EventSpec : FunSpec({
   }
 
   test("fail to create an event with an empty name") {
-    val result = Event("", description, properties, excludedPlatforms)
+    val result = Event("", properties, description, excludedPlatforms)
 
     result shouldBeLeft EventProblem.BlankName
   }
 
   test("fail to create an event with a blank name") {
-    val result = Event(" \n ", description, properties, excludedPlatforms)
+    val result = Event(" \n ", properties, description, excludedPlatforms)
 
     result shouldBeLeft EventProblem.BlankName
   }
@@ -41,7 +41,7 @@ class EventSpec : FunSpec({
       enum("name_b", enumType("enum_name", "value"))
       boolean("name_c")
     }
-    val result = Event("event_name", description, properties, excludedPlatforms)
+    val result = Event("event_name", properties, description, excludedPlatforms)
 
     result shouldBeLeft EventProblem.DuplicateProperties("event_name", mapOf("name_a" to 3, "name_b" to 2))
   }

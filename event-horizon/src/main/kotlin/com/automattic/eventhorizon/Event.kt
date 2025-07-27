@@ -9,21 +9,21 @@ import com.automattic.eventhorizon.utils.ensureNoDuplicatesBy
 @ConsistentCopyVisibility
 public data class Event private constructor(
   val name: CaseString,
-  val description: String?,
   val properties: List<Property>,
+  val description: String?,
   val excludedPlatforms: Set<Platform>,
 ) {
   public companion object {
     public operator fun invoke(
       name: String,
-      description: String?,
       properties: List<Property>,
+      description: String?,
       excludedPlatforms: Set<Platform>,
     ): Either<EventProblem, Event> = either {
       val caseName = ensureValidName(name)
       ensureValidProperties(name, properties)
 
-      Event(caseName, description, properties, excludedPlatforms)
+      Event(caseName, properties, description, excludedPlatforms)
     }
   }
 }
