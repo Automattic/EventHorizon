@@ -422,7 +422,7 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeSuccess().events.shouldHaveSingleElement()
-    event.excludedPlatforms shouldContainExactly setOf(Platform("ios"), Platform("web"))
+    event.excludedPlatforms shouldContainExactly platforms("ios", "web")
   }
 
   test("fail to parse metadata as an event") {

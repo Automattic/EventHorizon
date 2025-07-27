@@ -1,7 +1,7 @@
 package com.automattic.eventhorizon
 
-import arrow.core.nonEmptySetOf
-import com.automattic.eventhorizon.CaseString.Companion.toCaseString
+import arrow.core.Either
+import arrow.core.getOrElse
 
 public fun buildSchema(builderAction: SchemaBuilder.() -> Unit): Schema {
   val builder = SchemaBuilder()
@@ -11,9 +11,9 @@ public fun buildSchema(builderAction: SchemaBuilder.() -> Unit): Schema {
 
 @SchemaDsl
 public class SchemaBuilder internal constructor() {
-  public var version: ULong = 1u
-  private var platforms: Set<String> = emptySet()
-  private var events = buildEvents()
+  public var version: ULong = 1uL
+  private var platforms = emptySet<String>()
+  private var events = emptyList<Event>()
 
   public fun platforms(vararg platforms: String) {
     this.platforms = platforms.toSet()
@@ -23,14 +23,14 @@ public class SchemaBuilder internal constructor() {
     events = buildEvents(builderAction)
   }
 
-  internal fun build() = Schema.create(
+  internal fun build() = Schema(
     version,
     platforms.mapTo(mutableSetOf(), ::Platform),
     events,
-  )
+  ).getOrThrow()
 }
 
-public fun buildEvents(builderAction: EventsBuilder.() -> Unit = {}): Events {
+public fun buildEvents(builderAction: EventsBuilder.() -> Unit = {}): List<Event> {
   val builder = EventsBuilder()
   builder.builderAction()
   return builder.build()
@@ -44,7 +44,7 @@ public class EventsBuilder internal constructor() {
     events += buildEvent(name, builderAction)
   }
 
-  internal fun build(): Events = Events(events)
+  internal fun build(): List<Event> = events.toList()
 }
 
 public fun buildEvent(name: String, builderAction: EventBuilder.() -> Unit = {}): Event {
@@ -70,11 +70,11 @@ public class EventBuilder internal constructor(
   }
 
   internal fun build() = Event(
-    name = name.toCaseString(),
+    name = name,
     description = description,
     excludedPlatforms = excludedPlatforms.mapTo(mutableSetOf(), ::Platform),
     properties = properties,
-  )
+  ).getOrThrow()
 }
 
 public fun buildProperties(builderAction: PropertyListBuilder.() -> Unit): List<Property> {
@@ -133,11 +133,11 @@ public class BasicPropertyBuilder internal constructor(
   }
 
   internal fun build() = Property(
-    name.toCaseString(),
+    name,
     type,
     description,
     optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
-  )
+  ).getOrThrow()
 }
 
 public fun buildProperty(propertyName: String, enumType: PropertyType.Enum, builderAction: EnumPropertyBuilder.() -> Unit = {}): Property {
@@ -159,19 +159,27 @@ public class EnumPropertyBuilder internal constructor(
   }
 
   internal fun build() = Property(
-    propertyName.toCaseString(),
+    propertyName,
     enumType,
     description,
     optionalPlatforms.mapTo(mutableSetOf(), ::Platform),
-  )
+  ).getOrThrow()
 }
 
 public fun enumType(name: String, value: String, vararg otherValues: String): PropertyType.Enum {
   return PropertyType.Enum(
-    name.toCaseString(),
-    nonEmptySetOf(value.toCaseString(), *otherValues.map { it.toCaseString() }.toTypedArray()),
-  )
+    name = name,
+    values = setOf(value) + otherValues,
+  ).getOrThrow()
 }
+
+public fun caseString(value: String): CaseString = CaseString(value).getOrElse {
+  throw AssertionError("'$value' cannot be converted to CaseString")
+}
+
+public fun platforms(vararg platforms: String): Set<Platform> = platforms.mapTo(mutableSetOf(), ::Platform)
 
 @DslMarker
 internal annotation class SchemaDsl
+
+private fun <L, R> Either<L, R>.getOrThrow(): R = getOrElse { throw AssertionError(it) }

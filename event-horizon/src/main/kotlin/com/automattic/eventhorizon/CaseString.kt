@@ -1,5 +1,11 @@
 package com.automattic.eventhorizon
 
+import arrow.core.Either
+import arrow.core.EitherNel
+import arrow.core.Option
+import arrow.core.mapOrAccumulate
+import arrow.core.toOption
+
 @ConsistentCopyVisibility
 public data class CaseString private constructor(
   val rawValue: String,
@@ -11,27 +17,42 @@ public data class CaseString private constructor(
   }
 
   public companion object {
-    public fun String.toCaseString(): CaseString = CaseString(this, Case.detectCase(this))
+    public operator fun invoke(value: String): Either<String, CaseString> {
+      return Case
+        .detectCase(value)
+        .map { case -> CaseString(value, case) }
+        .toEither { value }
+    }
+
+    public fun fromAll(values: Iterable<String>): EitherNel<String, List<CaseString>> {
+      return values.mapOrAccumulate { value -> CaseString(value).bind() }
+    }
   }
 }
 
 public enum class Case(
   internal val wordSeparator: Char?,
+  private val supportedChars: List<String>,
 ) {
   Camel(
     wordSeparator = null,
+    supportedChars = listOf("alphanumeric"),
   ),
   Pascal(
     wordSeparator = null,
+    supportedChars = listOf("alphanumeric"),
   ),
   Snake(
     wordSeparator = '_',
+    supportedChars = listOf("alphanumeric", "'_'"),
   ),
   Kebab(
     wordSeparator = '-',
+    supportedChars = listOf("alphanumeric", "'-'"),
   ),
   Dot(
     wordSeparator = '.',
+    supportedChars = listOf("alphanumeric", "'.'"),
   ),
   ;
 
@@ -95,24 +116,22 @@ public enum class Case(
     }
   }
 
-  internal companion object {
-    fun detectCase(string: String): Case {
-      val possibleCases = Case.entries.toMutableSet()
+  public companion object {
+    public val SupportedConventionsMessage: String = buildString {
+      append("Supported conventions:\n")
+      append(entries.joinToString(separator = "\n") { case -> " - $case: ${case.supportedChars}" })
+    }
+
+    internal fun detectCase(string: String): Option<Case> {
+      val possibleCases = entries.toMutableSet()
       string.forEachIndexed { index, char ->
         possibleCases.removeIf { case -> !case.isCharAllowed(index, char) }
       }
       return when {
         Camel in possibleCases -> Camel
         Pascal in possibleCases -> Pascal
-        else -> requireNotNull(possibleCases.singleOrNull()) {
-          buildString {
-            append("Failed to detect case of '")
-            append(string)
-            append("' string. Supported cases:")
-            append(Case.entries.joinToString(prefix = "\n", separator = "\n") { case -> " - $case" })
-          }
-        }
-      }
+        else -> possibleCases.singleOrNull()
+      }.toOption()
     }
   }
 }

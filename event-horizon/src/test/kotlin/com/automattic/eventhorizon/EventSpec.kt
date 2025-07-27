@@ -1,28 +1,48 @@
 package com.automattic.eventhorizon
 
-import com.automattic.eventhorizon.CaseString.Companion.toCaseString
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.arrow.core.shouldBeLeft
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.throwable.shouldHaveMessage
+import io.kotest.matchers.collections.shouldHaveSingleElement
+import io.kotest.matchers.shouldBe
 
 class EventSpec : FunSpec({
-  test("fail to create event with duplicate properties") {
-    val exception = shouldThrow<IllegalArgumentException> {
-      Event(
-        name = "event_name".toCaseString(),
-        properties = buildProperties {
-          text("name_a")
-          boolean("name_a")
-          number("name_a")
-          text("name_b")
-          enum("name_b", enumType("enum_name", "value"))
-          boolean("name_c")
-        },
-        description = null,
-        excludedPlatforms = emptySet(),
-      )
-    }
+  val description = "Description"
+  val properties = buildProperties { text("property") }
+  val excludedPlatforms = platforms("android", "ios")
 
-    exception shouldHaveMessage "Found duplicate properties for event 'event_name': {name_a=3, name_b=2}"
+  test("create an event") {
+    val event = Event("name", description, properties, excludedPlatforms).shouldBeRight()
+
+    event.name shouldBe caseString("name")
+    event.properties shouldHaveSingleElement buildProperty("property")
+    event.description shouldBe description
+    event.excludedPlatforms shouldBe excludedPlatforms
+  }
+
+  test("fail to create an event with an empty name") {
+    val result = Event("", description, properties, excludedPlatforms)
+
+    result shouldBeLeft EventProblem.BlankName
+  }
+
+  test("fail to create an event with a blank name") {
+    val result = Event(" \n ", description, properties, excludedPlatforms)
+
+    result shouldBeLeft EventProblem.BlankName
+  }
+
+  test("fail to create an event with duplicate properties") {
+    val properties = buildProperties {
+      text("name_a")
+      boolean("name_a")
+      number("name_a")
+      text("name_b")
+      enum("name_b", enumType("enum_name", "value"))
+      boolean("name_c")
+    }
+    val result = Event("event_name", description, properties, excludedPlatforms)
+
+    result shouldBeLeft EventProblem.DuplicateProperties("event_name", mapOf("name_a" to 3, "name_b" to 2))
   }
 })

@@ -15,7 +15,7 @@ public class KotlinGenerator(
     val trackable = TrackableInterface(packageName)
     val eventHorizonType = EventHorizonClass(packageName, trackable).typeSpec
     val eventTypes = platformEvents.map { event -> EventClass(packageName, event, trackable, platform).typeSpec }
-    val enumTypes = platformEvents.distinctEnums.map { enum -> EventPropertyEnum(packageName, enum).typeSpec }
+    val enumTypes = schema.platformEnums(platform).map { enum -> EventPropertyEnum(packageName, enum).typeSpec }
 
     return FileSpec
       .builder(packageName, "EventHorizon")

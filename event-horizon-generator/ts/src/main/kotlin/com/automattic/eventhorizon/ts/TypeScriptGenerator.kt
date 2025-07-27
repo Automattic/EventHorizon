@@ -13,7 +13,7 @@ public class TypeScriptGenerator(
   override fun generate(schema: Schema, outputDir: Path): Path {
     val platformEvents = schema.platformEvents(platform)
     val trackableType = TrackableType(platformEvents, platform)
-    val enumTypes = platformEvents.distinctEnums.map(::EventPropertyType)
+    val enumTypes = schema.platformEnums(platform).map(::EventPropertyType)
 
     val tsText = buildString {
       append(trackableType.typeSpec)

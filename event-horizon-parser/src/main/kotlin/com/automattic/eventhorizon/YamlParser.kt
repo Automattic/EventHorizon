@@ -1,7 +1,5 @@
 package com.automattic.eventhorizon
 
-import arrow.core.toNonEmptySetOrThrow
-import com.automattic.eventhorizon.CaseString.Companion.toCaseString
 import com.charleskorn.kaml.EmptyYamlDocumentException
 import com.charleskorn.kaml.Yaml
 import com.charleskorn.kaml.YamlException
@@ -28,25 +26,24 @@ public class YamlParser {
     val platforms = rawSchema.platforms.mapTo(mutableSetOf(), ::Platform)
     val events = rawSchema.parseEvents(platforms)
 
-    Schema.create(version, platforms, events)
+    Schema(version, platforms, events).require()
   }.recoverCatching(::emptySchemaOrRethrow)
 
-  private fun RawSchema.parseEvents(availablePlatforms: Set<Platform>): Events {
+  private fun RawSchema.parseEvents(availablePlatforms: Set<Platform>): List<Event> {
     val enums = parseEnums()
-    val events = events.map { (name, mappings) ->
+    return events.map { (name, mappings) ->
       val metadata = mappings?.parseMetadata()
       val description = metadata?.description
       val excludedPlatforms = metadata?.excludedPlatforms?.mapTo(mutableSetOf(), ::Platform).orEmpty()
       val properties = mappings?.parseProperties(enums, availablePlatforms).orEmpty()
 
-      Event(name.toCaseString(), description, excludedPlatforms, properties)
+      Event.invoke(name, description, properties, excludedPlatforms).require()
     }
-    return Events(events)
   }
 
   private fun RawSchema.parseEnums(): Set<PropertyType.Enum> {
     return enums.mapTo(mutableSetOf()) { (name, values) ->
-      PropertyType.Enum(name.toCaseString(), values.orEmpty().map { it.toCaseString() }.toNonEmptySetOrThrow())
+      PropertyType.Enum(name, values.orEmpty()).require()
     }
   }
 
@@ -61,7 +58,7 @@ public class YamlParser {
       val description = configuration.description
       val optionalPlatforms = configuration.parseOptionalPlatforms(availablePlatforms)
 
-      Property(name.toCaseString(), type, description, optionalPlatforms)
+      Property(name, type, description, optionalPlatforms).require()
     }
   }
 

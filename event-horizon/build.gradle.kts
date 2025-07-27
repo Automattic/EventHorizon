@@ -8,6 +8,7 @@ dependencies {
   implementation(libs.kaml)
 
   testImplementation(projects.eventHorizon.testing)
+  testImplementation(libs.kotest.arrow)
   testImplementation(libs.kotest.assertions)
   testImplementation(libs.kotest.framework)
 }

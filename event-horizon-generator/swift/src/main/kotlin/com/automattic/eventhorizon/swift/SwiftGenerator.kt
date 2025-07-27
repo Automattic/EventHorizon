@@ -16,7 +16,7 @@ public class SwiftGenerator(
     val trackable = TrackableProtocol(moduleName)
     val eventHorizonType = EventHorizonClass(moduleName, trackable).typeSpec
     val eventTypes = platformEvents.map { event -> EventStruct(moduleName, event, trackable, platform).typeSpec }
-    val enumTypes = platformEvents.distinctEnums.map { enum -> EventPropertyEnum(moduleName, enum).typeSpec }
+    val enumTypes = schema.platformEnums(platform).map { enum -> EventPropertyEnum(moduleName, enum).typeSpec }
 
     val fileSpec = FileSpec
       .builder(moduleName, "EventHorizon")

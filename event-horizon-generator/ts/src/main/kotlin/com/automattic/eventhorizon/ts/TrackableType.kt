@@ -1,13 +1,12 @@
 package com.automattic.eventhorizon.ts
 
 import com.automattic.eventhorizon.Event
-import com.automattic.eventhorizon.Events
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.PropertyType
 
 internal class TrackableType(
-  private val events: Events,
+  private val events: List<Event>,
   private val platform: Platform,
 ) {
   val typeSpec

@@ -1,94 +1,93 @@
 package com.automattic.eventhorizon
 
-import com.automattic.eventhorizon.CaseString.Companion.toCaseString
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.arrow.core.shouldBeLeft
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.throwable.shouldHaveMessage
 
 class CaseStringSpec : FunSpec({
-  test("create cameCase string") {
-    val string = "thisIsSomeText1".toCaseString()
+  test("create camelCase string") {
+    val string = CaseString("thisIsSomeText1").shouldBeRight()
 
     string.rawValue shouldBe "thisIsSomeText1"
     string.case shouldBe Case.Camel
   }
 
   test("create pascalCase string") {
-    val string = "ThisIsSomeText1".toCaseString()
+    val string = CaseString("ThisIsSomeText1").shouldBeRight()
 
     string.rawValue shouldBe "ThisIsSomeText1"
     string.case shouldBe Case.Pascal
   }
 
   test("create snake_case string") {
-    val string = "this_is_some_text1".toCaseString()
+    val string = CaseString("this_is_some_text1").shouldBeRight()
 
     string.rawValue shouldBe "this_is_some_text1"
     string.case shouldBe Case.Snake
   }
 
   test("create kebab-case string") {
-    val string = "this-is-some-text1".toCaseString()
+    val string = CaseString("this-is-some-text1").shouldBeRight()
 
     string.rawValue shouldBe "this-is-some-text1"
     string.case shouldBe Case.Kebab
   }
 
   test("create dot.case string") {
-    val string = "this.is.some.text1".toCaseString()
+    val string = CaseString("this.is.some.text1").shouldBeRight()
 
     string.rawValue shouldBe "this.is.some.text1"
     string.case shouldBe Case.Dot
   }
 
   test("use camelCase for lowercase string") {
-    val string = "thisissometext1".toCaseString()
+    val string = CaseString("thisissometext1").shouldBeRight()
 
     string.case shouldBe Case.Camel
   }
 
   test("use PascalCase for lowercase string") {
-    val string = "THISISSOMETEXT1".toCaseString()
+    val string = CaseString("THISISSOMETEXT1").shouldBeRight()
 
     string.case shouldBe Case.Pascal
   }
 
   test("ignore character case for snake_case string") {
-    val string = "THIS_IS_SOME_TEXT1".toCaseString()
+    val string = CaseString("THIS_IS_SOME_TEXT1").shouldBeRight()
 
     string.case shouldBe Case.Snake
   }
 
   test("ignore character case for kebab-case string") {
-    val string = "THIS-IS-SOME-TEXT1".toCaseString()
+    val string = CaseString("THIS-IS-SOME-TEXT1").shouldBeRight()
 
     string.case shouldBe Case.Kebab
   }
 
   test("keep surrounding separator characters for snake_case string") {
-    val string = "_this_is_some_text_".toCaseString()
+    val string = CaseString("_this_is_some_text_").shouldBeRight()
 
     string.rawValue shouldBe "_this_is_some_text_"
     string.case shouldBe Case.Snake
   }
 
   test("keep surrounding separator characters for kebab-case string") {
-    val string = "-this-is-some-text-".toCaseString()
+    val string = CaseString("-this-is-some-text-").shouldBeRight()
 
     string.rawValue shouldBe "-this-is-some-text-"
     string.case shouldBe Case.Kebab
   }
 
   test("keep surrounding separator characters for dot.case string") {
-    val string = ".this.is.some.text.".toCaseString()
+    val string = CaseString(".this.is.some.text.").shouldBeRight()
 
     string.rawValue shouldBe ".this.is.some.text."
     string.case shouldBe Case.Dot
   }
 
-  test("tokenize cameCase string") {
+  test("tokenize camelCase string") {
     val tokens = Case.Camel.tokenize("thisIsSomeText")
 
     tokens shouldContainExactly listOf("this", "is", "some", "text")
@@ -118,8 +117,8 @@ class CaseStringSpec : FunSpec({
     tokens shouldContainExactly listOf("this", "is", "some", "text")
   }
 
-  test("convert to cameCase string") {
-    val caseString = "someString".toCaseString()
+  test("convert to camelCase string") {
+    val caseString = CaseString("someString").shouldBeRight()
 
     val string = caseString.toString(Case.Camel)
 
@@ -127,7 +126,7 @@ class CaseStringSpec : FunSpec({
   }
 
   test("convert to pascalCase string") {
-    val caseString = "someString".toCaseString()
+    val caseString = CaseString("someString").shouldBeRight()
 
     val string = caseString.toString(Case.Pascal)
 
@@ -135,7 +134,7 @@ class CaseStringSpec : FunSpec({
   }
 
   test("convert to snake_case string") {
-    val caseString = "someString".toCaseString()
+    val caseString = CaseString("someString").shouldBeRight()
 
     val string = caseString.toString(Case.Snake)
 
@@ -143,7 +142,7 @@ class CaseStringSpec : FunSpec({
   }
 
   test("convert to kebab-case string") {
-    val caseString = "someString".toCaseString()
+    val caseString = CaseString("someString").shouldBeRight()
 
     val string = caseString.toString(Case.Kebab)
 
@@ -151,7 +150,7 @@ class CaseStringSpec : FunSpec({
   }
 
   test("convert to dot.case string") {
-    val caseString = "someString".toCaseString()
+    val caseString = CaseString("someString").shouldBeRight()
 
     val string = caseString.toString(Case.Dot)
 
@@ -159,30 +158,10 @@ class CaseStringSpec : FunSpec({
   }
 
   test("fail to create unknown case string") {
-    val exception = shouldThrow<IllegalArgumentException> {
-      "some&string".toCaseString()
-    }
-    exception shouldHaveMessage """
-      |Failed to detect case of 'some&string' string. Supported cases:
-      | - Camel
-      | - Pascal
-      | - Snake
-      | - Kebab
-      | - Dot
-    """.trimMargin()
+    CaseString("some&string") shouldBeLeft "some&string"
   }
 
   test("fail to create mixed case string") {
-    val exception = shouldThrow<IllegalArgumentException> {
-      "this.is_text".toCaseString()
-    }
-    exception shouldHaveMessage """
-      |Failed to detect case of 'this.is_text' string. Supported cases:
-      | - Camel
-      | - Pascal
-      | - Snake
-      | - Kebab
-      | - Dot
-    """.trimMargin()
+    CaseString("this.is_text") shouldBeLeft "this.is_text"
   }
 })

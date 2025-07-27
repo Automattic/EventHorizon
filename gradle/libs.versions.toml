@@ -8,6 +8,7 @@ jdk = "21"
 jvmTarget = "11"
 kaml = "0.83.0"
 kotest = "5.9.1"
+kotest-arrow = "2.0.0"
 kotlin = "2.2.0"
 kotlinpoet = "2.2.0"
 kotlinx-serialization = "1.9.0"
@@ -29,6 +30,7 @@ clikit = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
 # Included to be picked up by dependencies update automation
 ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint"}
+kotest-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-arrow" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotest-framework = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
