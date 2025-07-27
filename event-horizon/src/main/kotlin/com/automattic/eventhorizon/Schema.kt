@@ -32,6 +32,10 @@ public data class Schema private constructor(
       events = emptyList(),
     )
 
+    internal val SupportedVersions = listOf<ULong>(
+      1u,
+    )
+
     public operator fun invoke(version: ULong, platforms: Set<Platform>, events: List<Event>): Either<SchemaProblem, Schema> = either {
       ensureSchemaVersion(version)
       ensureUniqueEvents(events)
@@ -47,7 +51,7 @@ public data class Schema private constructor(
 public sealed interface SchemaProblem : Problem {
   public data class InvalidSchemaVersion(val version: ULong) : SchemaProblem {
     override fun print(): String {
-      return "Schema version must be between 1 and ${ULong.MAX_VALUE}. Found: $version"
+      return "Unsupported schema version '$version'. Must be one of: ${Schema.SupportedVersions}"
     }
   }
 
@@ -118,7 +122,7 @@ public sealed interface SchemaProblem : Problem {
 }
 
 private fun Raise<SchemaProblem>.ensureSchemaVersion(version: ULong) {
-  ensure(version > 0u) { raise(SchemaProblem.InvalidSchemaVersion(version)) }
+  ensure(version in Schema.SupportedVersions) { raise(SchemaProblem.InvalidSchemaVersion(version)) }
 }
 
 private fun Raise<SchemaProblem>.ensureUniqueEvents(events: List<Event>) {

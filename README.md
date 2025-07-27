@@ -5,7 +5,7 @@ A multi-language code generation tool for type-safe event tracking. The system t
 ## Input Schema
 
 ```yaml
-# Required key defining schema's format version. Must be a positive number.
+# Required key defining schema's format version.
 schemaVersion: 1
 
 # List of platforms that are available for code generation.

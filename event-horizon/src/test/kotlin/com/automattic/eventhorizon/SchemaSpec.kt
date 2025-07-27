@@ -101,6 +101,13 @@ class SchemaSpec() : FunSpec({
     result shouldBeLeft SchemaProblem.InvalidSchemaVersion(0u)
   }
 
+  test("fail to create a schema with unsupported version") {
+    val version = Schema.SupportedVersions.max() + 1u
+    val result = Schema(version, platforms(), buildEvents())
+
+    result shouldBeLeft SchemaProblem.InvalidSchemaVersion(version)
+  }
+
   test("fail to create a schema with duplicate events") {
     val events = buildEvents {
       event("event1")
