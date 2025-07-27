@@ -5,8 +5,8 @@ A multi-language code generation tool for type-safe event tracking. The system t
 ## Input Schema
 
 ```yaml
-# Required key defining schema version. Must be a positive number.
-version: 1
+# Required key defining schema's format version. Must be a positive number.
+schemaVersion: 1
 
 # List of platforms that are available for code generation.
 platforms:
@@ -19,15 +19,16 @@ platforms:
 events:
   user_signup:
     # Optional key.
-    # 'description' is a reserved key word and cannot be used as a property
-    description: Some description
-    # Optional key.
-    # List of platforms for which event should not be generated. Must be one of predeclared platforms.
-    # If key is not present event will be generated for all platforms.
-    optOut:
-      - android
-      - web
-
+    # '_metadata' is a reserved key word and cannot be used as a property
+    _metadata:
+      # Optional key.
+      description: Some description
+      # Optional key.
+      # List of platforms for which event should not be generated. Must use predeclared platforms.
+      # If key is not present event will be generated for all platforms.
+      excludedPlatforms:
+        - android
+        - web
     # Optional properties used with an event
     user_id:
       # Required. Type of the property for the generated code.
@@ -68,6 +69,7 @@ The CLI supports two primary operation modes:
 | `--output-format`   | `-f`  | Format: `kotlin`, `swift`, `ts`, `json`   | Yes (for generation) |
 | `--namespace`       | `-n`  | Namespace used for generated code         | No                   |
 | `--verify`          | `-v`  | Only run input file verification          | No                   |
+| `--help`            | `-h`  | Show help message and exit                | No                   |
 
 *Required for generation when schema declares `availablePlatforms` and format is not `json`.
 
