@@ -1,10 +1,13 @@
-agents:
-  queue: "android"
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
 
 common_params:
   - &test_collector_common_params
     files: "buildkite-test-analytics/*.xml"
     format: "junit"
+
+agents:
+  queue: "android"
 
 steps:
   #################
@@ -23,8 +26,8 @@ steps:
     plugins:
       - $CI_TOOLKIT
       - $TEST_COLLECTOR:
-        <<: *test_collector_common_params
-        api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS_DAY_ONE"
+          <<: *test_collector_common_params
+          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS_DAY_ONE"
 
     artifact_paths:
       - "**/build/test-results/**/*.xml"
