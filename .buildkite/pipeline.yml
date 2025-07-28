@@ -1,6 +1,11 @@
 agents:
   queue: "android"
 
+common_params:
+  - &test_collector_common_params
+    files: "buildkite-test-analytics/*.xml"
+    format: "junit"
+
 steps:
   #################
   # Gradle Wrapper Validation
@@ -15,7 +20,12 @@ steps:
 
   - label: "🧪 Tests"
     command: ./gradlew test
-    plugins: [ $CI_TOOLKIT ]
+    plugins:
+      - $CI_TOOLKIT
+      - $TEST_COLLECTOR:
+        <<: *test_collector_common_params
+        api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS_DAY_ONE"
+
     artifact_paths:
       - "**/build/test-results/**/*.xml"
     notify:

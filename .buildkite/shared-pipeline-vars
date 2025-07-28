@@ -4,3 +4,5 @@
  # to set up some variables that will be interpolated in the `.yml` pipeline before uploading it.
 
 export CI_TOOLKIT="automattic/a8c-ci-toolkit#5.5.0"
+export TEST_COLLECTOR="test-collector#v1.11.0"
+
