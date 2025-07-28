@@ -8,6 +8,14 @@ application {
   mainClass.set("com.automattic.eventhorizon.cli.MainKt")
 }
 
+graalvmNative {
+  binaries {
+    named("main"){
+      buildArgs.add("--initialize-at-build-time")
+    }
+  }
+}
+
 dependencies {
   implementation(projects.eventHorizonGenerator.kotlin)
   implementation(projects.eventHorizonGenerator.swift)
