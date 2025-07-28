@@ -19,7 +19,7 @@ platforms:
 events:
   user_signup:
     # Optional key.
-    # '_metadata' is a reserved key word and cannot be used as a property
+    # '_metadata' is a reserved keyword and cannot be used as a property
     _metadata:
       # Optional key.
       description: Some description
