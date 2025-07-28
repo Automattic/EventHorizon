@@ -17,7 +17,7 @@ steps:
     command: ./gradlew test
     plugins: [ $CI_TOOLKIT ]
     artifact_paths:
-      - "**/build/test-results/*.xml"
+      - "**/build/test-results/**/*.xml"
     notify:
       - github_commit_status:
           context: Tests
