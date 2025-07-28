@@ -3,7 +3,7 @@
 
 common_params:
   - &test_collector_common_params
-    files: "buildkite-test-analytics/*.xml"
+    files: "*.xml"
     format: "junit"
 
 agents:
