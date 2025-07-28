@@ -35,7 +35,7 @@ steps:
           context: Tests
 
   - label: "🧰 Build CLI"
-    command: ./gradlew :event-horizon-cli:nativeCompile
+    command: ./gradlew :event-horizon-cli:nativeCompile -Dorg.graalvm.buildargs=--initialize-at-build-time
     plugins:
       - docker#v5.13.0:
           image: ghcr.io/graalvm/graalvm-community:21
