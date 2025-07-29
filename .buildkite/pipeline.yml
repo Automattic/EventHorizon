@@ -65,3 +65,6 @@ steps:
           queue: "mac"
         artifact_paths:
           - "event-horizon-cli/build/native/nativeCompile/event-horizon-cli"
+    notify:
+      - github_commit_status:
+          context: "Build native CLIs"
