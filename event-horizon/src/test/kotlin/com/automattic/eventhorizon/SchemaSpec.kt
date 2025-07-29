@@ -6,7 +6,7 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 
-class SchemaSpec() : FunSpec({
+class SchemaSpec : FunSpec({
   test("create a schema") {
     val version = 1uL
     val platforms = platforms("android", "ios")
@@ -92,7 +92,7 @@ class SchemaSpec() : FunSpec({
   }
 
   test("empty schema has version 0") {
-    Schema.Empty.version shouldBe 0u
+    Schema.empty.version shouldBe 0u
   }
 
   test("fail to create a schema with version 0") {
@@ -102,7 +102,7 @@ class SchemaSpec() : FunSpec({
   }
 
   test("fail to create a schema with unsupported version") {
-    val version = Schema.SupportedVersions.max() + 1u
+    val version = Schema.supportedVersions.max() + 1u
     val result = Schema(version, platforms(), buildEvents())
 
     result shouldBeLeft SchemaProblem.InvalidSchemaVersion(version)

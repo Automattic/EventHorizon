@@ -26,13 +26,13 @@ public data class Schema private constructor(
   }
 
   public companion object {
-    public val Empty: Schema = Schema(
+    public val empty: Schema = Schema(
       version = 0u,
       platforms = emptySet(),
       events = emptyList(),
     )
 
-    internal val SupportedVersions = listOf<ULong>(
+    internal val supportedVersions = listOf<ULong>(
       1u,
     )
 
@@ -51,7 +51,7 @@ public data class Schema private constructor(
 public sealed interface SchemaProblem : Problem {
   public data class InvalidSchemaVersion(val version: ULong) : SchemaProblem {
     override fun print(): String {
-      return "Unsupported schema version '$version'. Must be one of: ${Schema.SupportedVersions}"
+      return "Unsupported schema version '$version'. Must be one of: ${Schema.supportedVersions}"
     }
   }
 
@@ -122,7 +122,7 @@ public sealed interface SchemaProblem : Problem {
 }
 
 private fun Raise<SchemaProblem>.ensureSchemaVersion(version: ULong) {
-  ensure(version in Schema.SupportedVersions) { raise(SchemaProblem.InvalidSchemaVersion(version)) }
+  ensure(version in Schema.supportedVersions) { raise(SchemaProblem.InvalidSchemaVersion(version)) }
 }
 
 private fun Raise<SchemaProblem>.ensureUniqueEvents(events: List<Event>) {

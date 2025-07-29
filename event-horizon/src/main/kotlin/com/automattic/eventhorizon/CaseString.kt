@@ -117,7 +117,7 @@ public enum class Case(
   }
 
   public companion object {
-    public val SupportedConventionsMessage: String = buildString {
+    public val supportedConventionsMessage: String = buildString {
       append("Supported conventions:\n")
       append(entries.joinToString(separator = "\n") { case -> " - $case: ${case.supportedChars}" })
     }

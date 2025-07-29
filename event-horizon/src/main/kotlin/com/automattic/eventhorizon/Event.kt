@@ -37,7 +37,7 @@ public sealed interface EventProblem : Problem {
 
   public data class UnknownNameCase(val name: String) : EventProblem {
     override fun print(): String {
-      return "Event '$name' uses unsupported naming convention. ${Case.SupportedConventionsMessage}"
+      return "Event '$name' uses unsupported naming convention. ${Case.supportedConventionsMessage}"
     }
   }
 

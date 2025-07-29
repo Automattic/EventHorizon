@@ -25,7 +25,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    result shouldBeRight Schema.Empty
+    result shouldBeRight Schema.empty
   }
 
   test("parse a blank file") {
@@ -33,7 +33,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    result shouldBeRight Schema.Empty
+    result shouldBeRight Schema.empty
   }
 
   test("parse a schema version") {

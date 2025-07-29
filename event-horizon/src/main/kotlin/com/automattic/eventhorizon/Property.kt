@@ -37,7 +37,7 @@ public sealed interface PropertyProblem : Problem {
 
   public data class UnknownNameCase(val name: String) : PropertyProblem {
     override fun print(): String {
-      return "Property '$name' uses unsupported naming convention. ${Case.SupportedConventionsMessage}"
+      return "Property '$name' uses unsupported naming convention. ${Case.supportedConventionsMessage}"
     }
   }
 }
