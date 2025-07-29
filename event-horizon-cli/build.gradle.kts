@@ -10,7 +10,7 @@ application {
 
 graalvmNative {
   binaries {
-    named("main"){
+    named("main") {
       buildArgs.add("--initialize-at-build-time")
     }
   }
