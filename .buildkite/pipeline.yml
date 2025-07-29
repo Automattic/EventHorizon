@@ -40,26 +40,28 @@ steps:
       - github_commit_status:
           context: Tests
 
-  - label: "🧰 Build CLI (Linux x64)"
-    command: ./gradlew :event-horizon-cli:nativeCompile
-    plugins:
-      - docker#v5.13.0:
-          image: ghcr.io/graalvm/graalvm-community:21
-          platform: linux/amd64
-          mount-buildkite-agent: true
-    artifact_paths:
-      - "event-horizon-cli/build/native/nativeCompile/event-horizon-cli"
+  - group: "🧰 Build native CLIs"
+    steps:
+      - label: "🧰 Build CLI (Linux x64)"
+        command: ./gradlew :event-horizon-cli:nativeCompile
+        plugins:
+          - docker#v5.13.0:
+              image: ghcr.io/graalvm/graalvm-community:21
+              platform: linux/amd64
+              mount-buildkite-agent: true
+        artifact_paths:
+          - "event-horizon-cli/build/native/nativeCompile/event-horizon-cli"
 
-  - label: "🧰 Build CLI (macOS ARM64)"
-    env:
-      IMAGE_ID: "xcode-16.4"
-    commands: |
-        echo "Installing GraalVM..."
-        brew install --cask graalvm-jdk@21
-        export JAVA_HOME="/Library/Java/JavaVirtualMachines/graalvm-21.jdk/Contents/Home"
-        export PATH="$$JAVA_HOME/bin:$$PATH"
-        ./gradlew :event-horizon-cli:nativeCompile
-    agents:
-      queue: "mac"
-    artifact_paths:
-      - "event-horizon-cli/build/native/nativeCompile/event-horizon-cli"
+      - label: "🧰 Build CLI (macOS ARM64)"
+        env:
+          IMAGE_ID: "xcode-16.4"
+        commands: |
+            echo "Installing GraalVM..."
+            brew install --cask graalvm-jdk@21
+            export JAVA_HOME="/Library/Java/JavaVirtualMachines/graalvm-21.jdk/Contents/Home"
+            export PATH="$$JAVA_HOME/bin:$$PATH"
+            ./gradlew :event-horizon-cli:nativeCompile
+        agents:
+          queue: "mac"
+        artifact_paths:
+          - "event-horizon-cli/build/native/nativeCompile/event-horizon-cli"
