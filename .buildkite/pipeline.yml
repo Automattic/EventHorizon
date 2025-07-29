@@ -21,6 +21,12 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: "🔍 Code formatting"
+    command: ./gradlew spotlessCheck
+    notify:
+      - github_commit_status:
+          context: Code formatting
+
   - label: "🧪 Tests"
     command: ./gradlew test
     plugins:
@@ -28,9 +34,37 @@ steps:
       - $TEST_COLLECTOR:
           <<: *test_collector_common_params
           api-token-env-name: "BUILDKITE_TEST_SUITE_API_TOKEN"
-
     artifact_paths:
       - "**/build/test-results/**/*.xml"
     notify:
       - github_commit_status:
           context: Tests
+
+  - group: "🧰 Build native CLIs"
+    steps:
+      - label: "🧰 Build CLI (Linux x64)"
+        command: ./gradlew :event-horizon-cli:nativeCompile
+        plugins:
+          - docker#v5.13.0:
+              image: ghcr.io/graalvm/graalvm-community:21
+              platform: linux/amd64
+              mount-buildkite-agent: true
+        artifact_paths:
+          - "event-horizon-cli/build/native/nativeCompile/event-horizon-cli"
+
+      - label: "🧰 Build CLI (macOS ARM64)"
+        env:
+          IMAGE_ID: "xcode-16.4"
+        commands: |
+            echo "Installing GraalVM..."
+            brew install --cask graalvm-jdk@21
+            export JAVA_HOME="/Library/Java/JavaVirtualMachines/graalvm-21.jdk/Contents/Home"
+            export PATH="$$JAVA_HOME/bin:$$PATH"
+            ./gradlew :event-horizon-cli:nativeCompile
+        agents:
+          queue: "mac"
+        artifact_paths:
+          - "event-horizon-cli/build/native/nativeCompile/event-horizon-cli"
+    notify:
+      - github_commit_status:
+          context: "Build native CLIs"
