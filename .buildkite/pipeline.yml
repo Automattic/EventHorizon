@@ -21,7 +21,7 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
-  - label: "✅ Assert correct code formatting"
+  - label: "🔍 Code formatting"
     command: ./gradlew spotlessCheck
     notify:
       - github_commit_status:
