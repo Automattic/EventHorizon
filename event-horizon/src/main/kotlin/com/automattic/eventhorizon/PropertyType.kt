@@ -45,7 +45,7 @@ public sealed interface EnumTypeProblem : Problem {
 
   public data class UnknownNameCase(val name: String) : EnumTypeProblem {
     override fun print(): String {
-      return "Enum '$name' uses unsupported naming convention. ${Case.SupportedConventionsMessage}"
+      return "Enum '$name' uses unsupported naming convention. ${Case.supportedConventionsMessage}"
     }
   }
 
@@ -63,7 +63,7 @@ public sealed interface EnumTypeProblem : Problem {
 
   public data class UnknownValueCases(val enumName: String, val values: Nel<String>) : EnumTypeProblem {
     override fun print(): String {
-      return "Enum '$enumName' has values with unsupported naming conventions: $values. ${Case.SupportedConventionsMessage}"
+      return "Enum '$enumName' has values with unsupported naming conventions: $values. ${Case.supportedConventionsMessage}"
     }
   }
 }

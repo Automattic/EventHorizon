@@ -159,7 +159,7 @@ private fun Raise<Problem>.raiseYamlProblem(error: Throwable): Nothing {
 private fun Raise<Nel<Problem>>.recoverEmptySchema(problems: Nel<Problem>): Schema {
   val singleProblem = problems.singleOrNull()
   ensure(singleProblem is GenericProblem && singleProblem.error is EmptyYamlDocumentException) { problems }
-  return Schema.Empty
+  return Schema.empty
 }
 
 @Serializable

@@ -27,6 +27,12 @@ steps:
       - github_commit_status:
           context: Code formatting
 
+  - label: "🔍 Static code analysis"
+    command: ./gradlew detekt
+    notify:
+      - github_commit_status:
+          context: Static code analysis
+
   - label: "🧪 Tests"
     command: ./gradlew test
     plugins:
