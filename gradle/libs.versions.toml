@@ -27,6 +27,7 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 clikit = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
 kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
 # Included to be picked up by dependencies update automation
+#noinspection UnusedVersionCatalogEntry
 ktlint = { module = "com.pinterest.ktlint:ktlint-cli", version.ref = "ktlint"}
 kotest-arrow = { module = "io.kotest.extensions:kotest-assertions-arrow", version.ref = "kotest-arrow" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
