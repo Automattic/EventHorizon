@@ -11,7 +11,7 @@ kotest-arrow = "2.0.0"
 kotlin = "2.2.0"
 kotlinpoet = "2.2.0"
 kotlinx-serialization = "1.9.0"
-ktlint = "1.6.0"
+ktlint = "1.7.1"
 spotless = "7.0.4"
 swiftpoet = "1.6.6"
 
