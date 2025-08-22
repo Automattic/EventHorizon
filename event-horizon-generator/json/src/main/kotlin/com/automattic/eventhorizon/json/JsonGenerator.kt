@@ -9,6 +9,7 @@ import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.Schema
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
+import kotlin.io.path.isDirectory
 import kotlin.io.path.writeText
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -21,14 +22,18 @@ public class JsonGenerator(
     this.prettyPrint = prettyPrint
   }
 
-  override fun generate(schema: Schema, outputDir: Path): Path {
+  override fun generate(schema: Schema, outputPath: Path): Path {
     val outputEvents = schema.events.map(InputEvent::toEvent)
     val jsonText = json.encodeToString(outputEvents)
 
-    val outputPath = outputDir.resolve("event-horizon.json")
-    outputPath.parent.createDirectories()
-    outputPath.writeText(jsonText)
-    return outputPath
+    val outputFile = if (outputPath.isDirectory()) {
+      outputPath.resolve("event-horizon.json")
+    } else {
+      outputPath
+    }
+    outputFile.parent.createDirectories()
+    outputFile.writeText(jsonText)
+    return outputFile
   }
 }
 

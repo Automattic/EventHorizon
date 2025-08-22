@@ -10,7 +10,7 @@ public class KotlinGenerator(
   private val packageName: String,
   private val platform: Platform,
 ) : Generator {
-  override fun generate(schema: Schema, outputDir: Path): Path {
+  override fun generate(schema: Schema, outputPath: Path): Path {
     val platformEvents = schema.platformEvents(platform)
     val trackable = TrackableInterface(packageName)
     val eventHorizonType = EventHorizonClass(packageName, trackable).typeSpec
@@ -24,6 +24,6 @@ public class KotlinGenerator(
       .addTypes(eventTypes)
       .addTypes(enumTypes)
       .build()
-      .writeTo(outputDir)
+      .writeTo(outputPath)
   }
 }

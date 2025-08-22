@@ -10,7 +10,7 @@ import kotlin.io.path.writeText
 public class TypeScriptGenerator(
   private val platform: Platform,
 ) : Generator {
-  override fun generate(schema: Schema, outputDir: Path): Path {
+  override fun generate(schema: Schema, outputPath: Path): Path {
     val platformEvents = schema.platformEvents(platform)
     val trackableType = TrackableType(platformEvents, platform)
     val enumTypes = schema.platformEnums(platform).map(::EventPropertyType)
@@ -25,9 +25,9 @@ public class TypeScriptGenerator(
       }
     }
 
-    val outputPath = outputDir.resolve("eventHorizon.ts")
-    outputPath.parent.createDirectories()
-    outputPath.writeText(tsText)
-    return outputPath
+    val outputFile = outputPath.resolve("eventHorizon.ts")
+    outputFile.parent.createDirectories()
+    outputFile.writeText(tsText)
+    return outputFile
   }
 }
