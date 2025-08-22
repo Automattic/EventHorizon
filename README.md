@@ -61,15 +61,15 @@ The CLI supports two primary operation modes:
 - Verification Mode: Validates input YAML schema without generating code.
 - Generation Mode: Parses input and generates code using the specified format and platform.
 
-| Option              | Short | Description                               | Required             |
-|---------------------|-------|-------------------------------------------|----------------------|
-| `--input-file`      | `-i`  | Input schema file                         | Yes                  |
-| `--output-dir`      | `-o`  | Output directory used for generated files | Yes (for generation) |
-| `--output-platform` | `-p`  | Output platform for code generation       | Conditional*         |
-| `--output-format`   | `-f`  | Format: `kotlin`, `swift`, `ts`, `json`   | Yes (for generation) |
-| `--namespace`       | `-n`  | Namespace used for generated code         | No                   |
-| `--verify`          | `-v`  | Only run input file verification          | No                   |
-| `--help`            | `-h`  | Show help message and exit                | No                   |
+| Option              | Short | Description                             | Required             |
+|---------------------|-------|-----------------------------------------|----------------------|
+| `--input-file`      | `-i`  | Input schema file                       | Yes                  |
+| `--output-path`     | `-o`  | Output path used for generated files    | Yes (for generation) |
+| `--output-platform` | `-p`  | Output platform for code generation     | Conditional*         |
+| `--output-format`   | `-f`  | Format: `kotlin`, `swift`, `ts`, `json` | Yes (for generation) |
+| `--namespace`       | `-n`  | Namespace used for generated code       | No                   |
+| `--verify`          | `-v`  | Only run input file verification        | No                   |
+| `--help`            | `-h`  | Show help message and exit              | No                   |
 
 *Required for generation when schema declares `availablePlatforms` and format is not `json`.
 

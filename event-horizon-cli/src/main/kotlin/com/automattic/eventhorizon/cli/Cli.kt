@@ -22,6 +22,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
+import java.nio.file.Path
+import kotlin.io.path.isDirectory
 
 internal class Cli : CliktCommand("event-horizon") {
   private val inputFile by option("-i", "--input-file")
@@ -29,9 +31,9 @@ internal class Cli : CliktCommand("event-horizon") {
     .path(canBeDir = false, mustExist = true, mustBeReadable = true)
     .required()
 
-  private val outputDir by option("-o", "--output-dir")
-    .help("Output directory used for generated files")
-    .path(canBeFile = false)
+  private val outputPath by option("-o", "--output-path")
+    .help("Output path used for generated files. Code generation must use a directory. It can be a file for JSON generation.")
+    .path()
 
   private val outputPlatform by option("-p", "--output-platform")
     .help("Platform used for code generation")
@@ -69,13 +71,14 @@ internal class Cli : CliktCommand("event-horizon") {
 
   private fun generate() {
     val format = requireOption(outputFormat) { "missing option --output-format" }
-    val dir = requireOption(outputDir) { "missing option --output-dir" }
+    val path = requireOption(outputPath) { "missing option --output-path" }
+    requireCorrectOutput(path, format)
+
     YamlParser()
       .parseSchema(inputFile)
       .map(::requireDeclaredPlatform)
       .map { (schema, platform) ->
-        echo("ELO: $platform")
-        createGenerator(format, platform).generate(schema, dir)
+        createGenerator(format, platform).generate(schema, path)
       }
       .onRight { file -> echoSuccess("$file generated successfully.") }
       .onLeft(::echoProblemsAndExit)
@@ -87,6 +90,17 @@ internal class Cli : CliktCommand("event-horizon") {
       FormatType.Swift -> SwiftGenerator(namespace, platform)
       FormatType.TypeScript -> TypeScriptGenerator(platform)
       FormatType.Json -> JsonGenerator()
+    }
+  }
+
+  private fun requireCorrectOutput(outputDir: Path, format: FormatType) {
+    when (format) {
+      FormatType.Kotlin, FormatType.Swift, FormatType.TypeScript -> {
+        if (!outputDir.isDirectory()) {
+          throw UsageError("--output-path option must be a file in combination with $format format")
+        }
+      }
+      FormatType.Json -> Unit
     }
   }
 

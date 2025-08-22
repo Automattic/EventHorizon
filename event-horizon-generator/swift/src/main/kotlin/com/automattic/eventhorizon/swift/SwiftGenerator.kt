@@ -11,7 +11,7 @@ public class SwiftGenerator(
   private val moduleName: String,
   private val platform: Platform,
 ) : Generator {
-  override fun generate(schema: Schema, outputDir: Path): Path {
+  override fun generate(schema: Schema, outputPath: Path): Path {
     val platformEvents = schema.platformEvents(platform)
     val trackable = TrackableProtocol(moduleName)
     val eventHorizonType = EventHorizonClass(moduleName, trackable).typeSpec
@@ -25,8 +25,8 @@ public class SwiftGenerator(
       .addTypes(eventTypes)
       .addTypes(enumTypes)
       .build()
-    fileSpec.writeTo(outputDir)
-    return outputDir.resolve("${fileSpec.name}.swift")
+    fileSpec.writeTo(outputPath)
+    return outputPath.resolve("${fileSpec.name}.swift")
   }
 }
 
