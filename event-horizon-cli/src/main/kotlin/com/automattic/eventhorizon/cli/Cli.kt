@@ -23,6 +23,7 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
 import java.nio.file.Path
+import java.text.Format
 import kotlin.io.path.isDirectory
 
 internal class Cli : CliktCommand("event-horizon") {
@@ -76,7 +77,7 @@ internal class Cli : CliktCommand("event-horizon") {
 
     YamlParser()
       .parseSchema(inputFile)
-      .map(::requireDeclaredPlatform)
+      .map { schema -> requireDeclaredPlatform(schema, format) }
       .map { (schema, platform) ->
         createGenerator(format, platform).generate(schema, path)
       }
@@ -104,8 +105,8 @@ internal class Cli : CliktCommand("event-horizon") {
     }
   }
 
-  private fun requireDeclaredPlatform(schema: Schema): Pair<Schema, Platform> {
-    val platform = if (schema.platforms.isNotEmpty()) {
+  private fun requireDeclaredPlatform(schema: Schema, format: FormatType): Pair<Schema, Platform> {
+    val platform = if (format != FormatType.Json && schema.platforms.isNotEmpty()) {
       val platform = requireOption(outputPlatform) { "missing option --output-platform" }
       if (schema.platforms.isNotEmpty() && platform !in schema.platforms) {
         val platformValues = schema.platforms.map(Platform::value)
