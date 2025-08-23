@@ -157,6 +157,22 @@ class CaseStringSpec : FunSpec({
     string shouldBe "some.string"
   }
 
+  test("covert to uppercased human readable string") {
+    val caseString = CaseString("someString").shouldBeRight()
+
+    val string = caseString.toHumanReadableString(uppercaseWords = true)
+
+    string shouldBe "Some String"
+  }
+
+  test("covert to not uppercased human readable string") {
+    val caseString = CaseString("someString").shouldBeRight()
+
+    val string = caseString.toHumanReadableString(uppercaseWords = false)
+
+    string shouldBe "some string"
+  }
+
   test("fail to create unknown case string") {
     CaseString("some&string") shouldBeLeft "some&string"
   }

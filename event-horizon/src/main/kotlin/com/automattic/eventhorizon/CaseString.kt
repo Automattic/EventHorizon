@@ -16,6 +16,22 @@ public data class CaseString private constructor(
     return case.joinToString(tokens)
   }
 
+  public fun toHumanReadableString(uppercaseWords: Boolean = false): String {
+    val tokens = case.tokenize(rawValue)
+    return buildString {
+      tokens.forEachIndexed { index, token ->
+        if (uppercaseWords) {
+          append(token.replaceFirstChar(Char::uppercase))
+        } else {
+          append(token)
+        }
+        if (index != tokens.lastIndex) {
+          append(' ')
+        }
+      }
+    }
+  }
+
   public companion object {
     public operator fun invoke(value: String): Either<String, CaseString> {
       return Case
