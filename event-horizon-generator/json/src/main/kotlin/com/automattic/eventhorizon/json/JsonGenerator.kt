@@ -42,14 +42,15 @@ public class JsonGenerator(
 }
 
 private fun InputEvent.toEvent() = Event(
-  name = name.rawValue,
+  key = name.rawValue,
+  name = name.toHumanReadableString(uppercaseWords = true),
   description = description,
   excludedPlatforms = excludedPlatforms.map(Platform::value),
-  properties = properties.map(InputProperty::toProperty).sortedBy(Property::name),
+  properties = properties.map(InputProperty::toProperty).sortedBy(Property::key),
 )
 
 private fun InputProperty.toProperty() = Property(
-  name = name.rawValue,
+  key = name.rawValue,
   description = description,
   type = when (type) {
     is PropertyType.Text -> "text"
@@ -69,6 +70,7 @@ private class Schema(
 
 @Serializable
 private class Event(
+  val key: String,
   val name: String,
   val description: String?,
   val excludedPlatforms: List<String>,
@@ -77,7 +79,7 @@ private class Event(
 
 @Serializable
 private class Property(
-  val name: String,
+  val key: String,
   val description: String?,
   val type: String,
   val values: List<String>,

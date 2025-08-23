@@ -48,7 +48,8 @@ class JsonGeneratorSpec : FunSpec({
       |    ],
       |    "events": [
       |        {
-      |            "name": "event_a",
+      |            "key": "event_a",
+      |            "name": "Event A",
       |            "description": "Event description",
       |            "excludedPlatforms": [
       |                "web",
@@ -56,7 +57,7 @@ class JsonGeneratorSpec : FunSpec({
       |            ],
       |            "properties": [
       |                {
-      |                    "name": "property_a",
+      |                    "key": "property_a",
       |                    "type": "enum",
       |                    "values": [
       |                        "value"
@@ -68,11 +69,12 @@ class JsonGeneratorSpec : FunSpec({
       |            ]
       |        },
       |        {
-      |            "name": "event_b",
+      |            "key": "event_b",
+      |            "name": "Event B",
       |            "excludedPlatforms": [],
       |            "properties": [
       |                {
-      |                    "name": "property_a",
+      |                    "key": "property_a",
       |                    "type": "enum",
       |                    "values": [
       |                        "value"
@@ -83,7 +85,7 @@ class JsonGeneratorSpec : FunSpec({
       |                    ]
       |                },
       |                {
-      |                    "name": "property_b",
+      |                    "key": "property_b",
       |                    "description": "Property description",
       |                    "type": "enum",
       |                    "values": [
