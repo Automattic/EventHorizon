@@ -6,7 +6,7 @@ import com.automattic.eventhorizon.Generator
 import com.automattic.eventhorizon.Platform
 import com.automattic.eventhorizon.Property as InputProperty
 import com.automattic.eventhorizon.PropertyType
-import com.automattic.eventhorizon.Schema
+import com.automattic.eventhorizon.Schema as InputSchema
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.isDirectory
@@ -22,9 +22,13 @@ public class JsonGenerator(
     this.prettyPrint = prettyPrint
   }
 
-  override fun generate(schema: Schema, outputPath: Path): Path {
+  override fun generate(schema: InputSchema, outputPath: Path): Path {
     val outputEvents = schema.events.map(InputEvent::toEvent)
-    val jsonText = json.encodeToString(outputEvents)
+    val outputSchema = Schema(
+      platforms = schema.platforms.map(Platform::value).sorted(),
+      events = outputEvents.sortedBy(Event::name),
+    )
+    val jsonText = json.encodeToString(outputSchema)
 
     val outputFile = if (outputPath.isDirectory()) {
       outputPath.resolve("event-horizon.json")
@@ -41,7 +45,7 @@ private fun InputEvent.toEvent() = Event(
   name = name.rawValue,
   description = description,
   excludedPlatforms = excludedPlatforms.map(Platform::value),
-  properties = properties.map(InputProperty::toProperty),
+  properties = properties.map(InputProperty::toProperty).sortedBy(Property::name),
 )
 
 private fun InputProperty.toProperty() = Property(
@@ -55,6 +59,12 @@ private fun InputProperty.toProperty() = Property(
   },
   values = (type as? PropertyType.Enum)?.values?.map(CaseString::rawValue).orEmpty(),
   optionalPlatforms = optionalPlatforms.map(Platform::value),
+)
+
+@Serializable
+private class Schema(
+  val platforms: List<String>,
+  val events: List<Event>,
 )
 
 @Serializable
