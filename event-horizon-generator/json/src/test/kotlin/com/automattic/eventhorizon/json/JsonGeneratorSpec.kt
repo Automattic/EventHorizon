@@ -40,55 +40,62 @@ class JsonGeneratorSpec : FunSpec({
     val file = generator.generate(schema, tempDir)
 
     file.readText() shouldBe """
-      |[
-      |    {
-      |        "name": "event_a",
-      |        "description": "Event description",
-      |        "excludedPlatforms": [
-      |            "web",
-      |            "ios"
-      |        ],
-      |        "properties": [
-      |            {
-      |                "name": "property_a",
-      |                "type": "enum",
-      |                "values": [
-      |                    "value"
-      |                ],
-      |                "optionalPlatforms": [
-      |                    "web"
-      |                ]
-      |            }
-      |        ]
-      |    },
-      |    {
-      |        "name": "event_b",
-      |        "excludedPlatforms": [],
-      |        "properties": [
-      |            {
-      |                "name": "property_a",
-      |                "type": "enum",
-      |                "values": [
-      |                    "value"
-      |                ],
-      |                "optionalPlatforms": [
-      |                    "android",
-      |                    "ios"
-      |                ]
-      |            },
-      |            {
-      |                "name": "property_b",
-      |                "description": "Property description",
-      |                "type": "enum",
-      |                "values": [
-      |                    "value_a",
-      |                    "value_b"
-      |                ],
-      |                "optionalPlatforms": []
-      |            }
-      |        ]
-      |    }
-      |]
+      |{
+      |    "platforms": [
+      |        "android",
+      |        "ios",
+      |        "web"
+      |    ],
+      |    "events": [
+      |        {
+      |            "name": "event_a",
+      |            "description": "Event description",
+      |            "excludedPlatforms": [
+      |                "web",
+      |                "ios"
+      |            ],
+      |            "properties": [
+      |                {
+      |                    "name": "property_a",
+      |                    "type": "enum",
+      |                    "values": [
+      |                        "value"
+      |                    ],
+      |                    "optionalPlatforms": [
+      |                        "web"
+      |                    ]
+      |                }
+      |            ]
+      |        },
+      |        {
+      |            "name": "event_b",
+      |            "excludedPlatforms": [],
+      |            "properties": [
+      |                {
+      |                    "name": "property_a",
+      |                    "type": "enum",
+      |                    "values": [
+      |                        "value"
+      |                    ],
+      |                    "optionalPlatforms": [
+      |                        "android",
+      |                        "ios"
+      |                    ]
+      |                },
+      |                {
+      |                    "name": "property_b",
+      |                    "description": "Property description",
+      |                    "type": "enum",
+      |                    "values": [
+      |                        "value_a",
+      |                        "value_b"
+      |                    ],
+      |                    "optionalPlatforms": []
+      |                }
+      |            ]
+      |        }
+      |    ]
+      |}
     """.trimMargin()
   }
 })
