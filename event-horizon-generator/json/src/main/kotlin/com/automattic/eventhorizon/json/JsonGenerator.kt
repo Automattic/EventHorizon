@@ -46,7 +46,9 @@ private fun InputEvent.toEvent() = Event(
   name = name.toHumanReadableString(uppercaseWords = true),
   description = description,
   excludedPlatforms = excludedPlatforms.map(Platform::value),
-  properties = properties.map(InputProperty::toProperty).sortedBy(Property::key),
+  properties = properties
+    .map(InputProperty::toProperty)
+    .sortedWith(compareBy({ it.optionalPlatforms.isNotEmpty() }, Property::key)),
 )
 
 private fun InputProperty.toProperty() = Property(
