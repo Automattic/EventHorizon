@@ -74,6 +74,16 @@ class JsonGeneratorSpec : FunSpec({
       |            "excludedPlatforms": [],
       |            "properties": [
       |                {
+      |                    "key": "property_b",
+      |                    "description": "Property description",
+      |                    "type": "enum",
+      |                    "values": [
+      |                        "value_a",
+      |                        "value_b"
+      |                    ],
+      |                    "optionalPlatforms": []
+      |                },
+      |                {
       |                    "key": "property_a",
       |                    "type": "enum",
       |                    "values": [
@@ -83,16 +93,6 @@ class JsonGeneratorSpec : FunSpec({
       |                        "android",
       |                        "ios"
       |                    ]
-      |                },
-      |                {
-      |                    "key": "property_b",
-      |                    "description": "Property description",
-      |                    "type": "enum",
-      |                    "values": [
-      |                        "value_a",
-      |                        "value_b"
-      |                    ],
-      |                    "optionalPlatforms": []
       |                }
       |            ]
       |        }
