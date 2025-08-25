@@ -52,8 +52,8 @@ class JsonGeneratorSpec : FunSpec({
       |            "name": "Event A",
       |            "description": "Event description",
       |            "excludedPlatforms": [
-      |                "web",
-      |                "ios"
+      |                "ios",
+      |                "web"
       |            ],
       |            "properties": [
       |                {
