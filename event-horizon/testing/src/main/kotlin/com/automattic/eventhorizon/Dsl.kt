@@ -14,6 +14,7 @@ public class SchemaBuilder internal constructor() {
   public var version: ULong = 1uL
   private var platforms = emptySet<String>()
   private var events = emptyList<Event>()
+  private var groups = emptyList<Group>()
 
   public fun platforms(vararg platforms: String) {
     this.platforms = platforms.toSet()
@@ -23,9 +24,14 @@ public class SchemaBuilder internal constructor() {
     events = buildEvents(builderAction)
   }
 
+  public fun groups(builderAction: GroupsBuilder.() -> Unit) {
+    groups = buildGroups(builderAction)
+  }
+
   internal fun build() = Schema(
     version,
     platforms.mapTo(mutableSetOf(), ::Platform),
+    groups,
     events,
   ).getOrThrow()
 }
@@ -181,6 +187,30 @@ public fun caseString(value: String): CaseString = CaseString(value).getOrElse {
 
 public fun platforms(vararg platforms: String): Set<Platform> = platforms.mapTo(mutableSetOf(), ::Platform)
 
+public fun buildGroups(builderAction: GroupsBuilder.() -> Unit = {}): List<Group> {
+  val builder = GroupsBuilder()
+  builder.builderAction()
+  return builder.build()
+}
+
+@SchemaDsl
+public class GroupsBuilder internal constructor() {
+  private val groups = mutableListOf<Group>()
+
+  public fun group(key: String, builderAction: GroupBuilder.() -> Unit = {}) {
+    groups += buildGroup(key, builderAction)
+  }
+
+  internal fun build(): List<Group> = groups.toList()
+}
+
+public fun buildGroup(key: String, builderAction: GroupBuilder.() -> Unit = {}): Group {
+  val builder = GroupBuilder(key)
+  builder.builderAction()
+  return builder.build()
+}
+
+@SchemaDsl
 public class GroupBuilder internal constructor(
   private val key: String,
 ) {
@@ -192,12 +222,6 @@ public class GroupBuilder internal constructor(
     name = name,
     description = description,
   ).getOrThrow()
-}
-
-public fun buildGroup(key: String, builderAction: GroupBuilder.() -> Unit = {}): Group {
-  val builder = GroupBuilder(key)
-  builder.builderAction()
-  return builder.build()
 }
 
 @DslMarker

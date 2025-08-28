@@ -105,6 +105,40 @@ class YamlParserSpec : FunSpec({
     error.location shouldBe Location(line = 1, column = 1)
   }
 
+  test("parse groups") {
+    val text = """
+      |schemaVersion: 1
+      |
+      |groups:
+      |  group_a:
+      |    name: Custom name A
+      |    description: Some description A
+      |  group_b:
+      |  group_c:
+      |    description: Some description C
+      |  group_d:
+      |    name: Custom name D
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val schema = result.shouldBeRight()
+    schema.groups shouldBe buildGroups {
+      group("group_a") {
+        name = "Custom name A"
+        description = "Some description A"
+      }
+      group("group_b")
+      group("group_c") {
+        description = "Some description C"
+      }
+      group("group_d") {
+        name = "Custom name D"
+      }
+    } + Group.empty
+  }
+
   test("parse an event without properties") {
     val text = """
       |schemaVersion: 1
@@ -443,6 +477,9 @@ class YamlParserSpec : FunSpec({
   test("parse an event's group") {
     val text = """
       |schemaVersion: 1
+      |
+      |groups:
+      |  my_key:
       |
       |events:
       |  event:

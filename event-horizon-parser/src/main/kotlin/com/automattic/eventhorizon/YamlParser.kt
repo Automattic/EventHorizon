@@ -34,9 +34,10 @@ public class YamlParser {
     val rawSchema = decodeRawSchema(file.inputStream())
     val version = parseSchemaVersion(rawSchema.schemaVersion)
     val platforms = rawSchema.platforms.mapTo(mutableSetOf(), ::Platform)
+    val groups = parseGroups(rawSchema)
     val events = parseEvents(rawSchema, platforms)
 
-    Schema(version, platforms, events).mapLeft { nonEmptyListOf(it) }.bind()
+    Schema(version, platforms, groups, events).mapLeft { nonEmptyListOf(it) }.bind()
   }.recover { problems -> recoverEmptySchema(problems) }
 
   private fun Raise<Nel<Problem>>.parseSchemaVersion(rawVersion: YamlScalar): ULong {
@@ -49,6 +50,14 @@ public class YamlParser {
       )
       raise(nonEmptyListOf(GenericProblem(exception)))
     }
+  }
+
+  private fun Raise<Nel<Problem>>.parseGroups(schema: RawSchema): List<Group> {
+    return schema.groups.orEmpty().toList()
+      .mapOrAccumulate { (key, groupConfiguration) ->
+        Group(key, groupConfiguration?.name, groupConfiguration?.description).bind()
+      }
+      .bind()
   }
 
   private fun Raise<Nel<Problem>>.parseEvents(schema: RawSchema, availablePlatforms: Set<Platform>): List<Event> {

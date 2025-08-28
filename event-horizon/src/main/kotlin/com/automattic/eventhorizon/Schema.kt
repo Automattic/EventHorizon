@@ -5,11 +5,14 @@ import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import com.automattic.eventhorizon.utils.ensureNoDuplicatesBy
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 @ConsistentCopyVisibility
 public data class Schema private constructor(
   val version: ULong,
   val platforms: Set<Platform>,
+  val groups: List<Group>,
   val events: List<Event>,
 ) {
   public fun platformEvents(platform: Platform): List<Event> {
@@ -29,6 +32,7 @@ public data class Schema private constructor(
     public val empty: Schema = Schema(
       version = 0u,
       platforms = emptySet(),
+      groups = listOf(Group.empty),
       events = emptyList(),
     )
 
@@ -36,14 +40,23 @@ public data class Schema private constructor(
       1u,
     )
 
-    public operator fun invoke(version: ULong, platforms: Set<Platform>, events: List<Event>): Either<SchemaProblem, Schema> = either {
+    public operator fun invoke(
+      version: ULong,
+      platforms: Set<Platform>,
+      groups: List<Group>,
+      events: List<Event>,
+    ): Either<SchemaProblem, Schema> = either {
       ensureSchemaVersion(version)
       ensureUniqueEvents(events)
       ensureEventPlatforms(events, platforms)
       ensurePropertyPlatforms(events, platforms)
+      ensureNoUngroupedGroup(groups)
+      ensureUniqueGroups(groups)
+      val groups = groups + Group.empty
+      ensureEventGroups(events, groups)
       ensureConsistentEnums(events)
 
-      Schema(version, platforms, events)
+      Schema(version, platforms, groups, events)
     }
   }
 }
@@ -102,6 +115,38 @@ public sealed interface SchemaProblem : Problem {
         }
         append("Available platforms:\n")
         append(availablePlatforms.joinToString(separator = "\n") { platform -> " - $platform" })
+      }
+    }
+  }
+
+  public data object UngroupedGroupPresent : SchemaProblem {
+    override fun print(): String {
+      return "Found a group with reserved 'ungrouped' group"
+    }
+  }
+
+  public data class DuplicateGroups(val duplicates: Map<String, Int>) : SchemaProblem {
+    override fun print(): String {
+      return "Found duplicate groups: $duplicates"
+    }
+  }
+
+  public data class UnknownEventGroups(
+    val unknownGroups: Map<String, String>,
+    val availableGroups: List<Group>,
+  ) : SchemaProblem {
+    override fun print(): String {
+      return buildString {
+        append("Found events with groups undeclared in schema:\n")
+        unknownGroups.forEach { (event, group) ->
+          append(" - ")
+          append(event)
+          append(": ")
+          append(group)
+          append('\n')
+        }
+        append("Available groups:\n")
+        append(availableGroups.joinToString(separator = "\n") { group -> " - ${group.uniqueKey}" })
       }
     }
   }
@@ -172,6 +217,34 @@ private fun Event.findUnknownPropertyPlatforms(availablePlatforms: Set<Platform>
   }
 }
 
+private fun Raise<SchemaProblem>.ensureNoUngroupedGroup(groups: List<Group>) {
+  if (groups.any { it.key.rawValue == Group.empty.key.rawValue }) {
+    raise(SchemaProblem.UngroupedGroupPresent)
+  }
+}
+
+private fun Raise<SchemaProblem>.ensureUniqueGroups(groups: List<Group>) {
+  ensureNoDuplicatesBy(groups, Group::uniqueKey) { duplicates ->
+    SchemaProblem.DuplicateGroups(duplicates)
+  }
+}
+
+private fun Raise<SchemaProblem>.ensureEventGroups(events: List<Event>, availableGroups: List<Group>) {
+  val unknownGroups = events.findUnknownGroups(availableGroups)
+  if (unknownGroups.isNotEmpty()) {
+    raise(SchemaProblem.UnknownEventGroups(unknownGroups, availableGroups))
+  }
+}
+
+private fun List<Event>.findUnknownGroups(availableGroups: List<Group>) = buildMap {
+  val availableGroupKeys = availableGroups.mapTo(mutableSetOf(), Group::uniqueKey)
+  this@findUnknownGroups.forEach { event ->
+    if (event.groupKey.rawValue !in availableGroupKeys) {
+      put(event.name.rawValue, event.groupKey.rawValue)
+    }
+  }
+}
+
 private fun Raise<SchemaProblem>.ensureConsistentEnums(events: List<Event>) {
   val inconsistentEnums = events
     .flatMap(Event::properties)
@@ -187,6 +260,8 @@ private fun Raise<SchemaProblem>.ensureConsistentEnums(events: List<Event>) {
 }
 
 private val Event.uniqueKey get() = name.rawValue
+
+private val Group.uniqueKey get() = key.rawValue
 
 private val PropertyType.Enum.rawValues get() = values.map(CaseString::rawValue)
 

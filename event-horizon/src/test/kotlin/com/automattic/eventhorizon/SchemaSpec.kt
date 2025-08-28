@@ -4,22 +4,30 @@ import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.shouldBe
 
 class SchemaSpec : FunSpec({
   test("create a schema") {
     val version = 1uL
     val platforms = platforms("android", "ios")
+    val groups = buildGroups {
+      group("group_a")
+      group("group_b")
+    }
     val events = buildEvents {
-      event("event1")
+      event("event1") {
+        groupKey = "group_a"
+      }
       event("event2") {
         excludedPlatforms("android")
       }
     }
-    val schema = Schema(version, platforms, events).shouldBeRight()
+    val schema = Schema(version, platforms, groups, events).shouldBeRight()
 
     schema.version shouldBe version
     schema.platforms shouldBe platforms
+    schema.groups shouldBe groups + Group.empty
     schema.events shouldBe events
   }
 
@@ -95,15 +103,19 @@ class SchemaSpec : FunSpec({
     Schema.empty.version shouldBe 0u
   }
 
+  test("empty schema has only 'ungrouped' group") {
+    Schema.empty.groups shouldHaveSingleElement Group.empty
+  }
+
   test("fail to create a schema with version 0") {
-    val result = Schema(version = 0u, platforms(), buildEvents())
+    val result = Schema(version = 0u, platforms(), buildGroups(), buildEvents())
 
     result shouldBeLeft SchemaProblem.InvalidSchemaVersion(0u)
   }
 
   test("fail to create a schema with unsupported version") {
     val version = Schema.supportedVersions.max() + 1u
-    val result = Schema(version, platforms(), buildEvents())
+    val result = Schema(version, platforms(), buildGroups(), buildEvents())
 
     result shouldBeLeft SchemaProblem.InvalidSchemaVersion(version)
   }
@@ -121,7 +133,7 @@ class SchemaSpec : FunSpec({
       event("event2")
       event("event3")
     }
-    val result = Schema(version = 1u, platforms(), events)
+    val result = Schema(version = 1u, platforms(), buildGroups(), events)
 
     result shouldBeLeft SchemaProblem.DuplicateEvents(mapOf("event1" to 2, "event2" to 3))
   }
@@ -130,6 +142,7 @@ class SchemaSpec : FunSpec({
     val result = Schema(
       version = 1u,
       platforms = platforms("android", "ios"),
+      groups = buildGroups(),
       events = buildEvents {
         event("event1") {
           excludedPlatforms("android")
@@ -156,6 +169,7 @@ class SchemaSpec : FunSpec({
     val result = Schema(
       version = 1u,
       platforms = platforms("android", "ios"),
+      groups = buildGroups(),
       events = buildEvents {
         event("event1")
         event("event2") {
@@ -216,6 +230,7 @@ class SchemaSpec : FunSpec({
     val result = Schema(
       version = 1u,
       platforms = platforms(),
+      groups = buildGroups(),
       events = buildEvents {
         event("event1") {
           properties {
@@ -247,6 +262,74 @@ class SchemaSpec : FunSpec({
           listOf("value_2_1", "value_2_2", "value_2_3"),
         ),
       ),
+    )
+  }
+
+  test("fail to create a schema with ungrouped group") {
+    val result = Schema(
+      version = 1u,
+      platforms = platforms(),
+      groups = buildGroups {
+        group("ungrouped")
+      },
+      events = buildEvents(),
+    )
+
+    result shouldBeLeft SchemaProblem.UngroupedGroupPresent
+  }
+
+  test("fail to create a schema with duplicate groups") {
+    val result = Schema(
+      version = 1u,
+      platforms = platforms(),
+      groups = buildGroups {
+        group("group_a")
+        group("group_a")
+        group("group_b")
+        group("group_c")
+        group("group_b")
+        group("group_b")
+      },
+      events = buildEvents(),
+    )
+
+    result shouldBeLeft SchemaProblem.DuplicateGroups(mapOf("group_a" to 2, "group_b" to 3))
+  }
+
+  test("fail to create a schema with undeclared groups used in events") {
+    val result = Schema(
+      version = 1u,
+      platforms = platforms(),
+      groups = buildGroups {
+        group("group_a")
+        group("group_b")
+      },
+      events = buildEvents {
+        event("event1") {
+          groupKey = "group_a"
+        }
+        event("event2") {
+          groupKey = "group_c"
+        }
+        event("event3") {
+          groupKey = "group_c"
+        }
+        event("event4") {
+          groupKey = "group_d"
+        }
+      },
+    )
+
+    result shouldBeLeft SchemaProblem.UnknownEventGroups(
+      mapOf(
+        "event2" to "group_c",
+        "event3" to "group_c",
+        "event4" to "group_d",
+      ),
+      buildGroups {
+        group("group_a")
+        group("group_b")
+      } + Group.empty,
     )
   }
 })
