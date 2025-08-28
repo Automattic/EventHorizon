@@ -15,6 +15,16 @@ platforms:
   - web
   - desktop
 
+# List of groups to categorize events.
+groups:
+  # 'ungrouped' key is a reserved keyword.
+  group_a:
+    # Optional key.
+    # If key is not present name is derived from the group key.
+    name: Some name
+    # Optional key.
+    description: Some text
+
 # List of events
 events:
   user_signup:
@@ -23,6 +33,10 @@ events:
     _metadata:
       # Optional key.
       description: Some description
+      # Optional key.
+      # Reference to a group defined in groups list.
+      # If key is not present the event will be categorized as 'ungrouped'.
+      group: group_a
       # Optional key.
       # List of platforms for which event should not be generated. Must use predeclared platforms.
       # If key is not present event will be generated for all platforms.

@@ -34,9 +34,10 @@ public class YamlParser {
     val rawSchema = decodeRawSchema(file.inputStream())
     val version = parseSchemaVersion(rawSchema.schemaVersion)
     val platforms = rawSchema.platforms.mapTo(mutableSetOf(), ::Platform)
+    val groups = parseGroups(rawSchema)
     val events = parseEvents(rawSchema, platforms)
 
-    Schema(version, platforms, events).mapLeft { nonEmptyListOf(it) }.bind()
+    Schema(version, platforms, groups, events).mapLeft { nonEmptyListOf(it) }.bind()
   }.recover { problems -> recoverEmptySchema(problems) }
 
   private fun Raise<Nel<Problem>>.parseSchemaVersion(rawVersion: YamlScalar): ULong {
@@ -51,6 +52,14 @@ public class YamlParser {
     }
   }
 
+  private fun Raise<Nel<Problem>>.parseGroups(schema: RawSchema): List<Group> {
+    return schema.groups.orEmpty().toList()
+      .mapOrAccumulate { (key, groupConfiguration) ->
+        Group(key, groupConfiguration?.name, groupConfiguration?.description).bind()
+      }
+      .bind()
+  }
+
   private fun Raise<Nel<Problem>>.parseEvents(schema: RawSchema, availablePlatforms: Set<Platform>): List<Event> {
     val enums = parseEnums(schema)
     val events = schema.events.orEmpty()
@@ -61,10 +70,11 @@ public class YamlParser {
       mappings?.minus(MetadataKey)?.let { parseProperties(it, enums, availablePlatforms) }
     }
     return events.toList().mapOrAccumulate { (name, _) ->
+      val groupKey = metadataMap[name]?.group ?: Group.empty.key.rawValue
       val properties = propertiesMap[name].orEmpty()
       val description = metadataMap[name]?.description
       val excludedPlatforms = metadataMap[name]?.excludedPlatforms?.mapTo(mutableSetOf(), ::Platform).orEmpty()
-      Event(name, properties, description, excludedPlatforms).bind()
+      Event(name, groupKey, properties, description, excludedPlatforms).bind()
     }.bind()
   }
 
@@ -91,7 +101,7 @@ public class YamlParser {
       .bind()
   }
 
-  private fun Raise<Problem>.parsePropertyType(configuration: PropertyConfigration, availableEnums: Set<PropertyType.Enum>): PropertyType {
+  private fun Raise<Problem>.parsePropertyType(configuration: PropertyConfiguration, availableEnums: Set<PropertyType.Enum>): PropertyType {
     return when (val typeText = configuration.type.content) {
       "text" -> PropertyType.Text
       "number" -> PropertyType.Number
@@ -106,7 +116,10 @@ public class YamlParser {
     }
   }
 
-  private fun Raise<Problem>.parseOptionalPlatforms(configuration: PropertyConfigration, availablePlatforms: Set<Platform>): Set<Platform> {
+  private fun Raise<Problem>.parseOptionalPlatforms(
+    configuration: PropertyConfiguration,
+    availablePlatforms: Set<Platform>,
+  ): Set<Platform> {
     return when (val optional = configuration.optional) {
       is YamlScalar -> if (optional.toBoolean()) {
         availablePlatforms
@@ -134,7 +147,7 @@ public class YamlParser {
     return catch({ yaml.decodeFromYamlNode(node) }, ::raiseYamlProblem)
   }
 
-  private fun Raise<Problem>.decodePropertyConfiguration(node: YamlNode): PropertyConfigration {
+  private fun Raise<Problem>.decodePropertyConfiguration(node: YamlNode): PropertyConfiguration {
     return catch({ yaml.decodeFromYamlNode(node) }, ::raiseYamlProblem)
   }
 }
@@ -168,18 +181,26 @@ private data class RawSchema(
   val platforms: Set<String> = emptySet(),
   val events: Map<String, Map<String, YamlMap>?>? = emptyMap(),
   val enums: Map<String, Set<String>?>? = emptyMap(),
+  val groups: Map<String, GroupConfiguration?>? = emptyMap(),
 )
 
 @Serializable
 private data class EventMetadata(
   val description: String? = null,
   val excludedPlatforms: Set<String> = emptySet(),
+  val group: String? = null,
 )
 
 @Serializable
-private data class PropertyConfigration(
+private data class PropertyConfiguration(
   val type: YamlScalar,
   val optional: YamlNode? = null,
+  val description: String? = null,
+)
+
+@Serializable
+private data class GroupConfiguration(
+  val name: String? = null,
   val description: String? = null,
 )
 

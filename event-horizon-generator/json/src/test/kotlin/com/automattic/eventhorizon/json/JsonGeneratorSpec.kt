@@ -14,6 +14,15 @@ class JsonGeneratorSpec : FunSpec({
   test("generate everything") {
     val schema = buildSchema {
       platforms("web", "ios", "android")
+      groups {
+        group("group_a") {
+          name = "Custom name"
+        }
+        group("z_group") {
+          description = "Some description"
+        }
+        group("group_c")
+      }
       events {
         event("event_a") {
           description = "Event description"
@@ -25,6 +34,8 @@ class JsonGeneratorSpec : FunSpec({
           excludedPlatforms("web", "ios")
         }
         event("event_b") {
+          groupKey = "z_group"
+
           properties {
             enum("property_a", enumType("enum_a", "value")) {
               optionalPlatforms("android", "ios")
@@ -33,6 +44,12 @@ class JsonGeneratorSpec : FunSpec({
               description = "Property description"
             }
           }
+        }
+        event("event_d") {
+          groupKey = "group_a"
+        }
+        event("event_c") {
+          groupKey = "group_a"
         }
       }
     }
@@ -46,57 +63,94 @@ class JsonGeneratorSpec : FunSpec({
       |        "ios",
       |        "web"
       |    ],
-      |    "events": [
+      |    "groups": [
       |        {
-      |            "key": "event_a",
-      |            "name": "Event A",
-      |            "description": "Event description",
-      |            "excludedPlatforms": [
-      |                "ios",
-      |                "web"
-      |            ],
-      |            "properties": [
-      |                {
-      |                    "key": "property_a",
-      |                    "type": "enum",
-      |                    "values": [
-      |                        "value"
-      |                    ],
-      |                    "optionalPlatforms": [
-      |                        "web"
-      |                    ]
-      |                }
-      |            ]
+      |            "key": "group_a",
+      |            "name": "Custom name"
       |        },
       |        {
-      |            "key": "event_b",
-      |            "name": "Event B",
-      |            "excludedPlatforms": [],
-      |            "properties": [
-      |                {
-      |                    "key": "property_b",
-      |                    "description": "Property description",
-      |                    "type": "enum",
-      |                    "values": [
-      |                        "value_a",
-      |                        "value_b"
-      |                    ],
-      |                    "optionalPlatforms": []
-      |                },
-      |                {
-      |                    "key": "property_a",
-      |                    "type": "enum",
-      |                    "values": [
-      |                        "value"
-      |                    ],
-      |                    "optionalPlatforms": [
-      |                        "android",
-      |                        "ios"
-      |                    ]
-      |                }
-      |            ]
+      |            "key": "group_c",
+      |            "name": "Group c"
+      |        },
+      |        {
+      |            "key": "z_group",
+      |            "name": "Z group",
+      |            "description": "Some description"
+      |        },
+      |        {
+      |            "key": "ungrouped",
+      |            "name": "Ungrouped"
       |        }
-      |    ]
+      |    ],
+      |    "events": {
+      |        "group_a": [
+      |            {
+      |                "key": "event_c",
+      |                "name": "Event C",
+      |                "excludedPlatforms": [],
+      |                "properties": []
+      |            },
+      |            {
+      |                "key": "event_d",
+      |                "name": "Event D",
+      |                "excludedPlatforms": [],
+      |                "properties": []
+      |            }
+      |        ],
+      |        "z_group": [
+      |            {
+      |                "key": "event_b",
+      |                "name": "Event B",
+      |                "excludedPlatforms": [],
+      |                "properties": [
+      |                    {
+      |                        "key": "property_b",
+      |                        "description": "Property description",
+      |                        "type": "enum",
+      |                        "values": [
+      |                            "value_a",
+      |                            "value_b"
+      |                        ],
+      |                        "optionalPlatforms": []
+      |                    },
+      |                    {
+      |                        "key": "property_a",
+      |                        "type": "enum",
+      |                        "values": [
+      |                            "value"
+      |                        ],
+      |                        "optionalPlatforms": [
+      |                            "android",
+      |                            "ios"
+      |                        ]
+      |                    }
+      |                ]
+      |            }
+      |        ],
+      |        "ungrouped": [
+      |            {
+      |                "key": "event_a",
+      |                "name": "Event A",
+      |                "description": "Event description",
+      |                "excludedPlatforms": [
+      |                    "ios",
+      |                    "web"
+      |                ],
+      |                "properties": [
+      |                    {
+      |                        "key": "property_a",
+      |                        "type": "enum",
+      |                        "values": [
+      |                            "value"
+      |                        ],
+      |                        "optionalPlatforms": [
+      |                            "web"
+      |                        ]
+      |                    }
+      |                ]
+      |            }
+      |        ]
+      |    }
       |}
     """.trimMargin()
   }

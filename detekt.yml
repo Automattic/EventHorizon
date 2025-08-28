@@ -3,7 +3,8 @@ build:
 
 style:
   MaxLineLength:
-    maxLineLength: 140
+    # Checked with ktlint
+    active: false
 
 naming:
   ObjectPropertyNaming:
@@ -16,3 +17,7 @@ naming:
     constantPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
     propertyPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
     privatePropertyPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
+
+complexity:
+  TooManyFunctions:
+    active: false
