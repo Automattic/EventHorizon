@@ -91,7 +91,7 @@ public class YamlParser {
       .bind()
   }
 
-  private fun Raise<Problem>.parsePropertyType(configuration: PropertyConfigration, availableEnums: Set<PropertyType.Enum>): PropertyType {
+  private fun Raise<Problem>.parsePropertyType(configuration: PropertyConfiguration, availableEnums: Set<PropertyType.Enum>): PropertyType {
     return when (val typeText = configuration.type.content) {
       "text" -> PropertyType.Text
       "number" -> PropertyType.Number
@@ -106,7 +106,7 @@ public class YamlParser {
     }
   }
 
-  private fun Raise<Problem>.parseOptionalPlatforms(configuration: PropertyConfigration, availablePlatforms: Set<Platform>): Set<Platform> {
+  private fun Raise<Problem>.parseOptionalPlatforms(configuration: PropertyConfiguration, availablePlatforms: Set<Platform>): Set<Platform> {
     return when (val optional = configuration.optional) {
       is YamlScalar -> if (optional.toBoolean()) {
         availablePlatforms
@@ -134,7 +134,7 @@ public class YamlParser {
     return catch({ yaml.decodeFromYamlNode(node) }, ::raiseYamlProblem)
   }
 
-  private fun Raise<Problem>.decodePropertyConfiguration(node: YamlNode): PropertyConfigration {
+  private fun Raise<Problem>.decodePropertyConfiguration(node: YamlNode): PropertyConfiguration {
     return catch({ yaml.decodeFromYamlNode(node) }, ::raiseYamlProblem)
   }
 }
@@ -177,7 +177,7 @@ private data class EventMetadata(
 )
 
 @Serializable
-private data class PropertyConfigration(
+private data class PropertyConfiguration(
   val type: YamlScalar,
   val optional: YamlNode? = null,
   val description: String? = null,
