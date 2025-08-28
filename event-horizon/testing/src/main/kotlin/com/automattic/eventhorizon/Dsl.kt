@@ -58,6 +58,7 @@ public class EventBuilder internal constructor(
   private val name: String,
 ) {
   public var description: String? = null
+  public var groupKey: String = Group.empty.key.rawValue
   private var properties = emptyList<Property>()
   private var excludedPlatforms: Set<String> = emptySet()
 
@@ -71,6 +72,7 @@ public class EventBuilder internal constructor(
 
   internal fun build() = Event(
     name = name,
+    groupKey = groupKey,
     description = description,
     excludedPlatforms = excludedPlatforms.mapTo(mutableSetOf(), ::Platform),
     properties = properties,
@@ -178,6 +180,25 @@ public fun caseString(value: String): CaseString = CaseString(value).getOrElse {
 }
 
 public fun platforms(vararg platforms: String): Set<Platform> = platforms.mapTo(mutableSetOf(), ::Platform)
+
+public class GroupBuilder internal constructor(
+  private val key: String,
+) {
+  public var name: String? = null
+  public var description: String? = null
+
+  internal fun build() = Group(
+    key = key,
+    name = name,
+    description = description,
+  ).getOrThrow()
+}
+
+public fun buildGroup(key: String, builderAction: GroupBuilder.() -> Unit = {}): Group {
+  val builder = GroupBuilder(key)
+  builder.builderAction()
+  return builder.build()
+}
 
 @DslMarker
 internal annotation class SchemaDsl

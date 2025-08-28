@@ -9,6 +9,7 @@ import com.automattic.eventhorizon.utils.ensureNoDuplicatesBy
 @ConsistentCopyVisibility
 public data class Event private constructor(
   val name: CaseString,
+  val groupKey: CaseString,
   val properties: List<Property>,
   val description: String?,
   val excludedPlatforms: Set<Platform>,
@@ -16,14 +17,16 @@ public data class Event private constructor(
   public companion object {
     public operator fun invoke(
       name: String,
+      groupKey: String,
       properties: List<Property>,
       description: String?,
       excludedPlatforms: Set<Platform>,
     ): Either<EventProblem, Event> = either {
       val caseName = ensureValidName(name)
+      val caseGroupKey = ensueValidGroupKey(name, groupKey)
       ensureValidProperties(name, properties)
 
-      Event(caseName, properties, description, excludedPlatforms)
+      Event(caseName, caseGroupKey, properties, description, excludedPlatforms)
     }
   }
 }
@@ -40,6 +43,17 @@ public sealed interface EventProblem : Problem {
       return "Event '$name' uses unsupported naming convention. ${Case.supportedConventionsMessage}"
     }
   }
+  public data class BlankGroupKey(val name: String) : EventProblem {
+    override fun print(): String {
+      return "Event '$name' cannot have a blank group key"
+    }
+  }
+
+  public data class UnknownGroupKeyCase(val name: String, val key: String) : EventProblem {
+    override fun print(): String {
+      return "Event '$name' uses unsupported naming convention for group key '$key'. ${Case.supportedConventionsMessage}"
+    }
+  }
 
   public data class DuplicateProperties(val eventName: String, val duplicates: Map<String, Int>) : EventProblem {
     override fun print(): String {
@@ -51,6 +65,11 @@ public sealed interface EventProblem : Problem {
 private fun Raise<EventProblem>.ensureValidName(name: String): CaseString {
   ensure(name.isNotBlank()) { EventProblem.BlankName }
   return CaseString(name).mapLeft(EventProblem::UnknownNameCase).bind()
+}
+
+private fun Raise<EventProblem>.ensueValidGroupKey(eventName: String, groupKey: String): CaseString {
+  ensure(groupKey.isNotBlank()) { EventProblem.BlankGroupKey(eventName) }
+  return CaseString(groupKey).mapLeft { EventProblem.UnknownGroupKeyCase(eventName, groupKey) }.bind()
 }
 
 private fun Raise<EventProblem>.ensureValidProperties(eventName: String, properties: List<Property>) {

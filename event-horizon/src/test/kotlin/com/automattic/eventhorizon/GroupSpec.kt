@@ -27,6 +27,14 @@ class GroupSpec : FunSpec({
     group.name shouldBe "Group key"
   }
 
+  test("empty group exists") {
+    val group = Group.empty
+
+    group.key shouldBe caseString("ungrouped")
+    group.name shouldBe "Ungrouped"
+    group.description.shouldBeNull()
+  }
+
   test("fail to create a group with an empty key") {
     val result = Group("", name = null, description = null)
 

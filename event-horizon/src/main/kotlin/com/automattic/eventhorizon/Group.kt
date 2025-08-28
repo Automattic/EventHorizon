@@ -1,6 +1,7 @@
 package com.automattic.eventhorizon
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
@@ -12,6 +13,12 @@ public data class Group private constructor(
   val description: String?,
 ) {
   public companion object {
+    public val empty: Group = invoke(
+      key = "ungrouped",
+      name = null,
+      description = null,
+    ).getOrElse { throw AssertionError("This should never happen") }
+
     public operator fun invoke(key: String, name: String?, description: String?): Either<GroupProblem, Group> = either {
       val caseKey = ensureValidKey(key)
       val name = name ?: caseKey.toHumanReadableString(uppercaseWords = false).replaceFirstChar(Char::uppercase)
