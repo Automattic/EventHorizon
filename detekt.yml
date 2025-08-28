@@ -16,3 +16,7 @@ naming:
     constantPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
     propertyPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
     privatePropertyPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
+
+complexity:
+  TooManyFunctions:
+    active: false
