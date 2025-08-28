@@ -3,7 +3,8 @@ package com.automattic.eventhorizon.json
 import com.automattic.eventhorizon.CaseString
 import com.automattic.eventhorizon.Event as InputEvent
 import com.automattic.eventhorizon.Generator
-import com.automattic.eventhorizon.Platform
+import com.automattic.eventhorizon.Group as InputGroup
+import com.automattic.eventhorizon.Platform as InputPlatform
 import com.automattic.eventhorizon.Property as InputProperty
 import com.automattic.eventhorizon.PropertyType
 import com.automattic.eventhorizon.Schema as InputSchema
@@ -23,10 +24,10 @@ public class JsonGenerator(
   }
 
   override fun generate(schema: InputSchema, outputPath: Path): Path {
-    val outputEvents = schema.events.map(InputEvent::toEvent)
     val outputSchema = Schema(
-      platforms = schema.platforms.map(Platform::value).sorted(),
-      events = outputEvents.sortedBy(Event::name),
+      platforms = schema.platforms.toPlatforms(),
+      groups = schema.groups.toGroups(),
+      events = schema.events.toEvents(),
     )
     val jsonText = json.encodeToString(outputSchema)
 
@@ -41,11 +42,39 @@ public class JsonGenerator(
   }
 }
 
+private fun Set<InputPlatform>.toPlatforms() = map(InputPlatform::value).sorted()
+
+private fun List<InputGroup>.toGroups() = buildList {
+  val regularGroups = this@toGroups.minus(InputGroup.empty)
+    .map(InputGroup::toGroup)
+    .sortedBy(Group::key)
+  addAll(regularGroups)
+  add(InputGroup.empty.toGroup())
+}
+
+private fun InputGroup.toGroup() = Group(
+  key = key.rawValue,
+  name = name,
+  description = description,
+)
+
+private fun List<InputEvent>.toEvents() = buildMap {
+  val sortedMap = groupBy { event -> event.groupKey.rawValue }
+    .mapValues { (_, events) -> events.map(InputEvent::toEvent).sortedBy(Event::name) }
+    .toSortedMap()
+  val ungroupedKey = InputGroup.empty.key.rawValue
+  val ungrouped = sortedMap.remove(ungroupedKey)
+  putAll(sortedMap)
+  if (ungrouped != null) {
+    put(ungroupedKey, ungrouped)
+  }
+}
+
 private fun InputEvent.toEvent() = Event(
   key = name.rawValue,
   name = name.toHumanReadableString(uppercaseWords = true),
   description = description,
-  excludedPlatforms = excludedPlatforms.map(Platform::value).sorted(),
+  excludedPlatforms = excludedPlatforms.toPlatforms(),
   properties = properties
     .map(InputProperty::toProperty)
     .sortedWith(compareBy({ it.optionalPlatforms.isNotEmpty() }, Property::key)),
@@ -61,13 +90,21 @@ private fun InputProperty.toProperty() = Property(
     is PropertyType.Enum -> "enum"
   },
   values = (type as? PropertyType.Enum)?.values?.map(CaseString::rawValue).orEmpty(),
-  optionalPlatforms = optionalPlatforms.map(Platform::value),
+  optionalPlatforms = optionalPlatforms.toPlatforms(),
 )
 
 @Serializable
 private class Schema(
   val platforms: List<String>,
-  val events: List<Event>,
+  val groups: List<Group>,
+  val events: Map<String, List<Event>>,
+)
+
+@Serializable
+private class Group(
+  val key: String,
+  val name: String,
+  val description: String?,
 )
 
 @Serializable
