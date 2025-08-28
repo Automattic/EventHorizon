@@ -3,7 +3,8 @@ build:
 
 style:
   MaxLineLength:
-    maxLineLength: 140
+    # Checked with ktlint
+    active: false
 
 naming:
   ObjectPropertyNaming:
