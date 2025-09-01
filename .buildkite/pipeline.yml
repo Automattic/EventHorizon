@@ -34,10 +34,11 @@ steps:
           context: Static code analysis
 
   - label: "Test homebrew install"
+    plugins:
+      - docker#v5.13.0:
+          image: homebrew/brew
+          platform: linux/amd64
     command: |
-      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
-      eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
       brew tap automattic/build-tools && brew install automattic/build-tools/event-horizon
 
   - label: "🧪 Tests"
