@@ -33,6 +33,10 @@ steps:
       - github_commit_status:
           context: Static code analysis
 
+  - label: "Test homebrew install"
+    command: |
+      brew tap automattic/build-tools && brew install automattic/build-tools/event-horizon
+
   - label: "🧪 Tests"
     command: ./gradlew test
     plugins:
