@@ -110,6 +110,10 @@ interface Trackable {
 }
 
 data class UpNextQueueReorderedEvent(
+  companion object {
+    const val EventName: String = "up_next_queue_reordered"
+  }
+
   val direction: QueueDirection,
   /**
    * The number of slots the episode was moved
@@ -122,7 +126,7 @@ data class UpNextQueueReorderedEvent(
   val source: String,
 ) : Trackable {
   override val trackableName: String
-    get() = "up_next_queue_reordered"
+    get() = EventName
 
   override val trackableProperties: Map<String, Any>
     get() = buildMap<String, Any> {
@@ -189,6 +193,8 @@ protocol Trackable {
  * When the user moves (up or down) one of the episodes
  */
 struct UpNextQueueReorderedEvent: Trackable {
+  static let eventName: String = "up_next_queue_reordered"
+
   let direction: QueueDirection
   /**
    * The number of slots the episode was moved
@@ -201,7 +207,7 @@ struct UpNextQueueReorderedEvent: Trackable {
   let episodeUuid: String
 
   var trackableName: String {
-    return "up_next_queue_reordered"
+    return UpNextQueueReorderedEvent.eventName
   }
 
   var trackableProperties: [AnyHashable : Any] {
