@@ -2,6 +2,15 @@
 
 A multi-language code generation tool for type-safe event tracking. The system takes YAML schema definitions as input and generates equivalent tracking implementations for Kotlin, Swift, TypeScript, and JSON schema formats.
 
+## Installation
+
+You can download binaries for Linux amd64 or Mac amd64 from the [releases page](https://github.com/Automattic/EventHorizon/releases). On a macOS system, you can download it with Brew using the following commands:
+
+```
+brew tap automattic/build-tools
+brew install automattic/build-tools/event-horizon
+```
+
 ## Input Schema
 
 ```yaml
