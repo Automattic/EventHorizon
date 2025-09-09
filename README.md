@@ -4,7 +4,7 @@ A multi-language code generation tool for type-safe event tracking. The system t
 
 ## Installation
 
-You can install EventHorizon using Homebrew on both macOS and Linux:
+You can install Event Horizon using Homebrew on both macOS and Linux:
 
 ```bash
 brew tap automattic/build-tools
