@@ -4,12 +4,14 @@ A multi-language code generation tool for type-safe event tracking. The system t
 
 ## Installation
 
-You can download binaries for Linux amd64 or Mac amd64 from the [releases page](https://github.com/Automattic/EventHorizon/releases). On a macOS system, you can download it with Brew using the following commands:
+You can install EventHorizon using Homebrew on both macOS and Linux:
 
-```
+```bash
 brew tap automattic/build-tools
 brew install automattic/build-tools/event-horizon
 ```
+
+If you prefer, or if Homebrew is not available, you can download prebuilt binaries directly from the [releases page](https://github.com/Automattic/EventHorizon/releases) for both Linux `amd64` and Mac `arm64`.
 
 ## Input Schema
 
