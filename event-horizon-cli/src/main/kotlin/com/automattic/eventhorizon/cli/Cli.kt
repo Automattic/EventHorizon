@@ -24,6 +24,7 @@ import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
 import java.nio.file.Path
 import java.text.Format
+import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
 internal class Cli : CliktCommand("event-horizon") {
@@ -97,8 +98,8 @@ internal class Cli : CliktCommand("event-horizon") {
   private fun requireCorrectOutput(outputDir: Path, format: FormatType) {
     when (format) {
       FormatType.Kotlin, FormatType.Swift, FormatType.TypeScript -> {
-        if (!outputDir.isDirectory()) {
-          throw UsageError("--output-path option must be a file in combination with $format format")
+        if (outputDir.exists() && !outputDir.isDirectory()) {
+          throw UsageError("--output-path option must be a directory in combination with $format format")
         }
       }
       FormatType.Json -> Unit
