@@ -47,37 +47,7 @@ class CliSpec : FunSpec({
     outputDir.resolve("EventHorizon.kt").shouldExist()
   }
 
-  test("generate swift code") {
-    val outputDir = tempdir().toPath()
-    inputFile.writeText("")
-
-    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "swift")
-
-    result.statusCode shouldBe 0
-    outputDir.resolve("EventHorizon.swift").shouldExist()
-  }
-
-  test("generate type script code") {
-    val outputDir = tempdir().toPath()
-    inputFile.writeText("")
-
-    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "ts")
-
-    result.statusCode shouldBe 0
-    outputDir.resolve("eventHorizon.ts").shouldExist()
-  }
-
-  test("generate JSON schema") {
-    val outputDir = tempdir().toPath()
-    inputFile.writeText("")
-
-    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "json")
-
-    result.statusCode shouldBe 0
-    outputDir.resolve("event-horizon.json").shouldExist()
-  }
-
-  test("generate code for non-existing output path") {
+  test("generate Kotlin code for non-existing output path") {
     val outputDir = tempdir().toPath().resolve("absent")
     inputFile.writeText("")
 
@@ -87,7 +57,7 @@ class CliSpec : FunSpec({
     outputDir.resolve("EventHorizon.kt").shouldExist()
   }
 
-  test("fail to generate code to output.file") {
+  test("fail to generate Kotlin code to output file") {
     val outputFile = tempfile()
     inputFile.writeText("")
 
@@ -100,6 +70,86 @@ class CliSpec : FunSpec({
       |Error: --output-path option must be a directory in combination with Kotlin format
       |
     """.trimMargin()
+  }
+
+  test("generate swift code") {
+    val outputDir = tempdir().toPath()
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "swift")
+
+    result.statusCode shouldBe 0
+    outputDir.resolve("EventHorizon.swift").shouldExist()
+  }
+
+  test("generate Swift code for non-existing output path") {
+    val outputDir = tempdir().toPath().resolve("absent")
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "swift")
+
+    result.statusCode shouldBe 0
+    outputDir.resolve("EventHorizon.swift").shouldExist()
+  }
+
+  test("fail to generate Swift code to output file") {
+    val outputFile = tempfile()
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputFile", "-f", "swift")
+
+    result.statusCode shouldBe 1
+    result.stderr shouldBe """
+      |Usage: event-horizon [<options>]
+      |
+      |Error: --output-path option must be a directory in combination with Swift format
+      |
+    """.trimMargin()
+  }
+
+  test("generate type script code") {
+    val outputDir = tempdir().toPath()
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "ts")
+
+    result.statusCode shouldBe 0
+    outputDir.resolve("eventHorizon.ts").shouldExist()
+  }
+
+  test("generate type script code for non-existing output path") {
+    val outputDir = tempdir().toPath().resolve("absent")
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "ts")
+
+    result.statusCode shouldBe 0
+    outputDir.resolve("eventHorizon.ts").shouldExist()
+  }
+
+  test("fail to generate type script code to output file") {
+    val outputFile = tempfile()
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputFile", "-f", "ts")
+
+    result.statusCode shouldBe 1
+    result.stderr shouldBe """
+      |Usage: event-horizon [<options>]
+      |
+      |Error: --output-path option must be a directory in combination with TypeScript format
+      |
+    """.trimMargin()
+  }
+
+  test("generate JSON schema") {
+    val outputDir = tempdir().toPath()
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "json")
+
+    result.statusCode shouldBe 0
+    outputDir.resolve("event-horizon.json").shouldExist()
   }
 
   test("generate JSON to output file") {
