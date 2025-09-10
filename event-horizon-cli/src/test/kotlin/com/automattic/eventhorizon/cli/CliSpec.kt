@@ -77,6 +77,40 @@ class CliSpec : FunSpec({
     outputDir.resolve("event-horizon.json").shouldExist()
   }
 
+  test("generate code for non-existing output path") {
+    val outputDir = tempdir().toPath().resolve("absent")
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputDir", "-f", "kotlin")
+
+    result.statusCode shouldBe 0
+    outputDir.resolve("EventHorizon.kt").shouldExist()
+  }
+
+  test("fail to generate code to output.file") {
+    val outputFile = tempfile()
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputFile", "-f", "kotlin")
+
+    result.statusCode shouldBe 1
+    result.stderr shouldBe """
+      |Usage: event-horizon [<options>]
+      |
+      |Error: --output-path option must be a directory in combination with Kotlin format
+      |
+    """.trimMargin()
+  }
+
+  test("generate JSON to output file") {
+    val outputFile = tempfile()
+    inputFile.writeText("")
+
+    val result = cli.test("-i", "$inputFile", "-o", "$outputFile", "-f", "json")
+
+    result.statusCode shouldBe 0
+  }
+
   test("require output platform") {
     val outputDir = tempdir().toPath()
     inputFile.writeText(
