@@ -23,7 +23,6 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.path
 import java.nio.file.Path
-import java.text.Format
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 
@@ -54,7 +53,7 @@ internal class Cli : CliktCommand("event-horizon") {
     .flag()
 
   override fun help(context: Context): String {
-    return context.theme.info("This is a command")
+    return context.theme.info("Event Horizon v$LibraryVersion")
   }
 
   override fun run() {
