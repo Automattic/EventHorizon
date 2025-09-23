@@ -19,6 +19,7 @@ internal class EventHorizonClass(
 
   private val trackFunction
     get() = FunctionSpec.builder("track")
+      .addModifiers(Modifier.PUBLIC)
       .addParameter("_", "event", trackable.typeName)
       .addCode("%N(event.%N, event.%N)\n", EventSinkProperty, trackable.nameProperty, trackable.propertiesProperty)
       .build()
@@ -26,6 +27,7 @@ internal class EventHorizonClass(
   val typeSpec
     get() = TypeSpec
       .classBuilder(typeName)
+      .addModifiers(Modifier.PUBLIC)
       .addProperty(EventSinkProperty)
       .addFunction(Constructor)
       .addFunction(trackFunction)
@@ -47,6 +49,7 @@ private val EventSinkParameter = ParameterSpec
   .build()
 
 private val Constructor = FunctionSpec.constructorBuilder()
+  .addModifiers(Modifier.PUBLIC)
   .addParameter(EventSinkParameter)
   .addCode("self.%N = %N\n", EventSinkProperty, EventSinkProperty)
   .build()

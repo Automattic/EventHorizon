@@ -42,15 +42,15 @@ class SwiftGeneratorSpec : FunSpec({
     val file = generator.generate(schema, tempDir)
 
     file.readText() shouldBe """
-      |class EventHorizon {
+      |public class EventHorizon {
       |
       |  private let eventSink: (String, [AnyHashable : Any]) -> Void
       |
-      |  init(eventSink: @escaping (String, [AnyHashable : Any]) -> Void) {
+      |  public init(eventSink: @escaping (String, [AnyHashable : Any]) -> Void) {
       |    self.eventSink = eventSink
       |  }
       |
-      |  func track(_ event: Trackable) {
+      |  public func track(_ event: Trackable) {
       |    eventSink(event.trackableName, event.trackableProperties)
       |  }
       |

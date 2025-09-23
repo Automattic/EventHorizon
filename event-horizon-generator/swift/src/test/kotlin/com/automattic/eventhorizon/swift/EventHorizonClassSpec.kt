@@ -8,15 +8,15 @@ class EventHorizonClassSpec : FunSpec({
     val typeSpec = EventHorizonClass("MyModule", TrackableProtocol("MyModule")).typeSpec
 
     typeSpec.toString() shouldBe """
-      |class EventHorizon {
+      |public class EventHorizon {
       |
       |  private let eventSink: (Swift.String, [Swift.AnyHashable : Swift.Any]) -> Swift.Void
       |
-      |  init(eventSink: @escaping (Swift.String, [Swift.AnyHashable : Swift.Any]) -> Swift.Void) {
+      |  public init(eventSink: @escaping (Swift.String, [Swift.AnyHashable : Swift.Any]) -> Swift.Void) {
       |    self.eventSink = eventSink
       |  }
       |
-      |  func track(_ event: MyModule.Trackable) {
+      |  public func track(_ event: MyModule.Trackable) {
       |    eventSink(event.trackableName, event.trackableProperties)
       |  }
       |
