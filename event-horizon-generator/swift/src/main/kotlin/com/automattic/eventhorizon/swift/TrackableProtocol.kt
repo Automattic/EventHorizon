@@ -3,6 +3,7 @@ package com.automattic.eventhorizon.swift
 import io.outfoxx.swiftpoet.CodeBlock
 import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.FunctionSpec
+import io.outfoxx.swiftpoet.Modifier
 import io.outfoxx.swiftpoet.PropertySpec
 import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeSpec
@@ -21,6 +22,7 @@ internal class TrackableProtocol(
 
   val typeSpec
     get() = TypeSpec.protocolBuilder(typeName)
+      .addModifiers(Modifier.PUBLIC)
       .addProperty(nameProperty.toBuilder().abstractGetter().build())
       .addProperty(propertiesProperty.toBuilder().abstractGetter().build())
       .build()
@@ -39,5 +41,9 @@ internal class TrackableProtocol(
   }
 }
 
-private val NameProperty = PropertySpec.builder("trackableName", STRING).build()
-private val PropertiesProperty = PropertySpec.builder("trackableProperties", DictionaryAnyHashableAny).build()
+private val NameProperty = PropertySpec.builder("trackableName", STRING)
+  .addModifiers(Modifier.PUBLIC)
+  .build()
+private val PropertiesProperty = PropertySpec.builder("trackableProperties", DictionaryAnyHashableAny)
+  .addModifiers(Modifier.PUBLIC)
+  .build()

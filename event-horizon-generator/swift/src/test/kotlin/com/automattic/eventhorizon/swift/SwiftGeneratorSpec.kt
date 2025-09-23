@@ -56,10 +56,10 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |}
       |
-      |protocol Trackable {
+      |public protocol Trackable {
       |
-      |  var trackableName: String { get }
-      |  var trackableProperties: [AnyHashable : Any] { get }
+      |  public var trackableName: String { get }
+      |  public var trackableProperties: [AnyHashable : Any] { get }
       |
       |}
       |
@@ -69,10 +69,10 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |  static let eventName: String = "event_a"
       |  let propertyA: EnumA
-      |  var trackableName: String {
+      |  public var trackableName: String {
       |    return EventAEvent.eventName
       |  }
-      |  var trackableProperties: [AnyHashable : Any] {
+      |  public var trackableProperties: [AnyHashable : Any] {
       |    var props: [AnyHashable : Any] = [:]
       |    props["property_a"] = propertyA.analyticsValue
       |    return props
@@ -91,10 +91,10 @@ class SwiftGeneratorSpec : FunSpec({
       |  /**
       |   * Property description */
       |  let propertyB: EnumB
-      |  var trackableName: String {
+      |  public var trackableName: String {
       |    return EventBEvent.eventName
       |  }
-      |  var trackableProperties: [AnyHashable : Any] {
+      |  public var trackableProperties: [AnyHashable : Any] {
       |    var props: [AnyHashable : Any] = [:]
       |    if let propertyA = propertyA {
       |      props["property_a"] = propertyA.analyticsValue
