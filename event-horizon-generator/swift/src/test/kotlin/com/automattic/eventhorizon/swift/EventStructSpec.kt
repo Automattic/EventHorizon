@@ -22,7 +22,7 @@ class EventStructSpec : FunSpec({
       |    return MyModule.EventNameEvent.eventName
       |  }
       |  public var trackableProperties: [Swift.AnyHashable : Swift.Any] {
-      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
+      |    let props: [Swift.AnyHashable : Swift.Any] = [:]
       |    return props
       |  }
       |
@@ -97,7 +97,7 @@ class EventStructSpec : FunSpec({
       |    return MyModule.EventNameEvent.eventName
       |  }
       |  public var trackableProperties: [Swift.AnyHashable : Swift.Any] {
-      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
+      |    let props: [Swift.AnyHashable : Swift.Any] = [:]
       |    return props
       |  }
       |
