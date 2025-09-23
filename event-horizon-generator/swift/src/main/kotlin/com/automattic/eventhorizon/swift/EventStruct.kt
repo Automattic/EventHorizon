@@ -28,6 +28,7 @@ internal class EventStruct(
     get() = event.properties
       .associateBy { property ->
         PropertySpec.builder(property.name.toString(Case.Camel), property.typeName)
+          .addModifiers(Modifier.PUBLIC)
           .also { builder -> property.description?.let(builder::addDoc) }
           .build()
       }
@@ -51,11 +52,13 @@ internal class EventStruct(
   private val eventNameProperty
     get() = PropertySpec
       .builder("eventName", STRING, Modifier.STATIC)
+      .addModifiers(Modifier.PUBLIC)
       .initializer("%S", event.name.rawValue)
       .build()
 
   private val constructor
     get() = FunctionSpec.constructorBuilder()
+      .addModifiers(Modifier.PUBLIC)
       .also { builder ->
         structProperties.forEach { (property, _) ->
           builder
@@ -96,6 +99,7 @@ internal class EventStruct(
   val typeSpec
     get() = TypeSpec
       .structBuilder(type)
+      .addModifiers(Modifier.PUBLIC)
       .addProperty(eventNameProperty)
       .addProperties(structProperties.keys)
       .also { builder -> event.description?.let(builder::addDoc) }

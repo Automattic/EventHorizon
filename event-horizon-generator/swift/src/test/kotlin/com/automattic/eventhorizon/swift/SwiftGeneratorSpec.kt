@@ -65,10 +65,10 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |/**
       | * Event description */
-      |struct EventAEvent : Trackable {
+      |public struct EventAEvent : Trackable {
       |
-      |  static let eventName: String = "event_a"
-      |  let propertyA: EnumA
+      |  public static let eventName: String = "event_a"
+      |  public let propertyA: EnumA
       |  public var trackableName: String {
       |    return EventAEvent.eventName
       |  }
@@ -78,19 +78,19 @@ class SwiftGeneratorSpec : FunSpec({
       |    return props
       |  }
       |
-      |  init(propertyA: EnumA) {
+      |  public init(propertyA: EnumA) {
       |    self.propertyA = propertyA
       |  }
       |
       |}
       |
-      |struct EventBEvent : Trackable {
+      |public struct EventBEvent : Trackable {
       |
-      |  static let eventName: String = "event_b"
-      |  let propertyA: EnumA?
+      |  public static let eventName: String = "event_b"
+      |  public let propertyA: EnumA?
       |  /**
       |   * Property description */
-      |  let propertyB: EnumB
+      |  public let propertyB: EnumB
       |  public var trackableName: String {
       |    return EventBEvent.eventName
       |  }
@@ -103,7 +103,7 @@ class SwiftGeneratorSpec : FunSpec({
       |    return props
       |  }
       |
-      |  init(propertyA: EnumA?, propertyB: EnumB) {
+      |  public init(propertyA: EnumA?, propertyB: EnumB) {
       |    self.propertyA = propertyA
       |    self.propertyB = propertyB
       |  }
