@@ -110,22 +110,22 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |}
       |
-      |enum EnumA : String {
+      |public enum EnumA : String {
       |
       |  case value = "value"
       |
-      |  var analyticsValue: String {
+      |  public var analyticsValue: String {
       |    return rawValue
       |  }
       |
       |}
       |
-      |enum EnumB : String {
+      |public enum EnumB : String {
       |
       |  case valueA = "value_a"
       |  case valueB = "value_b"
       |
-      |  var analyticsValue: String {
+      |  public var analyticsValue: String {
       |    return rawValue
       |  }
       |
