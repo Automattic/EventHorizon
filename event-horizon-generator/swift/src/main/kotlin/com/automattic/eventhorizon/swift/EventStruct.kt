@@ -77,7 +77,13 @@ internal class EventStruct(
   private val trackablePropertiesGetter
     get() = CodeBlock
       .builder()
-      .addStatement("var props: %T = [:]", DictionaryAnyHashableAny)
+      .addStatement(
+        buildString {
+          append(if (structProperties.isEmpty()) "let" else "var")
+          append(" props: %T = [:]")
+        },
+        DictionaryAnyHashableAny,
+      )
       .also { builder ->
         structProperties.forEach { (structProperty, codeGenProperty) ->
           if (structProperty.type.optional) {
