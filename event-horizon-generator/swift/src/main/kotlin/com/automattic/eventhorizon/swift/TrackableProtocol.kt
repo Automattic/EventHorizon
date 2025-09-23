@@ -30,10 +30,12 @@ internal class TrackableProtocol(
   fun conformType(type: TypeSpec, nameGetter: CodeBlock, propertiesGetter: CodeBlock): TypeSpec {
     val name = nameProperty
       .toBuilder()
+      .addModifiers(Modifier.PUBLIC)
       .getter(FunctionSpec.getterBuilder().addCode(nameGetter).build())
       .build()
     val properties = propertiesProperty
       .toBuilder()
+      .addModifiers(Modifier.PUBLIC)
       .getter(FunctionSpec.getterBuilder().addCode(propertiesGetter).build())
       .build()
 
@@ -41,9 +43,5 @@ internal class TrackableProtocol(
   }
 }
 
-private val NameProperty = PropertySpec.builder("trackableName", STRING)
-  .addModifiers(Modifier.PUBLIC)
-  .build()
-private val PropertiesProperty = PropertySpec.builder("trackableProperties", DictionaryAnyHashableAny)
-  .addModifiers(Modifier.PUBLIC)
-  .build()
+private val NameProperty = PropertySpec.builder("trackableName", STRING).build()
+private val PropertiesProperty = PropertySpec.builder("trackableProperties", DictionaryAnyHashableAny).build()

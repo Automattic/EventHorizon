@@ -58,8 +58,8 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |public protocol Trackable {
       |
-      |  public var trackableName: String { get }
-      |  public var trackableProperties: [AnyHashable : Any] { get }
+      |  var trackableName: String { get }
+      |  var trackableProperties: [AnyHashable : Any] { get }
       |
       |}
       |
