@@ -42,21 +42,21 @@ class SwiftGeneratorSpec : FunSpec({
     val file = generator.generate(schema, tempDir)
 
     file.readText() shouldBe """
-      |class EventHorizon {
+      |public class EventHorizon {
       |
       |  private let eventSink: (String, [AnyHashable : Any]) -> Void
       |
-      |  init(eventSink: @escaping (String, [AnyHashable : Any]) -> Void) {
+      |  public init(eventSink: @escaping (String, [AnyHashable : Any]) -> Void) {
       |    self.eventSink = eventSink
       |  }
       |
-      |  func track(_ event: Trackable) {
+      |  public func track(_ event: Trackable) {
       |    eventSink(event.trackableName, event.trackableProperties)
       |  }
       |
       |}
       |
-      |protocol Trackable {
+      |public protocol Trackable {
       |
       |  var trackableName: String { get }
       |  var trackableProperties: [AnyHashable : Any] { get }
@@ -65,36 +65,36 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |/**
       | * Event description */
-      |struct EventAEvent : Trackable {
+      |public struct EventAEvent : Trackable {
       |
-      |  static let eventName: String = "event_a"
-      |  let propertyA: EnumA
-      |  var trackableName: String {
+      |  public static let eventName: String = "event_a"
+      |  public let propertyA: EnumA
+      |  public var trackableName: String {
       |    return EventAEvent.eventName
       |  }
-      |  var trackableProperties: [AnyHashable : Any] {
+      |  public var trackableProperties: [AnyHashable : Any] {
       |    var props: [AnyHashable : Any] = [:]
       |    props["property_a"] = propertyA.analyticsValue
       |    return props
       |  }
       |
-      |  init(propertyA: EnumA) {
+      |  public init(propertyA: EnumA) {
       |    self.propertyA = propertyA
       |  }
       |
       |}
       |
-      |struct EventBEvent : Trackable {
+      |public struct EventBEvent : Trackable {
       |
-      |  static let eventName: String = "event_b"
-      |  let propertyA: EnumA?
+      |  public static let eventName: String = "event_b"
+      |  public let propertyA: EnumA?
       |  /**
       |   * Property description */
-      |  let propertyB: EnumB
-      |  var trackableName: String {
+      |  public let propertyB: EnumB
+      |  public var trackableName: String {
       |    return EventBEvent.eventName
       |  }
-      |  var trackableProperties: [AnyHashable : Any] {
+      |  public var trackableProperties: [AnyHashable : Any] {
       |    var props: [AnyHashable : Any] = [:]
       |    if let propertyA = propertyA {
       |      props["property_a"] = propertyA.analyticsValue
@@ -103,29 +103,29 @@ class SwiftGeneratorSpec : FunSpec({
       |    return props
       |  }
       |
-      |  init(propertyA: EnumA?, propertyB: EnumB) {
+      |  public init(propertyA: EnumA?, propertyB: EnumB) {
       |    self.propertyA = propertyA
       |    self.propertyB = propertyB
       |  }
       |
       |}
       |
-      |enum EnumA : String {
+      |public enum EnumA : String {
       |
       |  case value = "value"
       |
-      |  var analyticsValue: String {
+      |  public var analyticsValue: String {
       |    return rawValue
       |  }
       |
       |}
       |
-      |enum EnumB : String {
+      |public enum EnumB : String {
       |
       |  case valueA = "value_a"
       |  case valueB = "value_b"
       |
-      |  var analyticsValue: String {
+      |  public var analyticsValue: String {
       |    return rawValue
       |  }
       |
