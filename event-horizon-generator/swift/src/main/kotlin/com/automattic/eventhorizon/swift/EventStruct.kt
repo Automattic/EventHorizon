@@ -109,11 +109,7 @@ internal class EventStruct(
       .addProperty(eventNameProperty)
       .addProperties(structProperties.keys)
       .also { builder -> event.description?.let(builder::addDoc) }
-      .also { builder ->
-        if (structProperties.isNotEmpty()) {
-          builder.addFunction(constructor)
-        }
-      }
+      .also { builder -> builder.addFunction(constructor) }
       .build()
       .let { typeSpec -> trackableProtocol.conformType(typeSpec, trackableNameGetter, trackablePropertiesGetter) }
 }

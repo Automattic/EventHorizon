@@ -26,6 +26,9 @@ class EventStructSpec : FunSpec({
       |    return props
       |  }
       |
+      |  public init() {
+      |  }
+      |
       |}
       |
     """.trimMargin()
@@ -99,6 +102,9 @@ class EventStructSpec : FunSpec({
       |  public var trackableProperties: [Swift.AnyHashable : Swift.Any] {
       |    let props: [Swift.AnyHashable : Swift.Any] = [:]
       |    return props
+      |  }
+      |
+      |  public init() {
       |  }
       |
       |}
