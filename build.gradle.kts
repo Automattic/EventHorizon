@@ -102,7 +102,7 @@ subprojects {
       jvmTarget.set(jvmTargetVersion)
       progressiveMode.set(true)
       allWarningsAsErrors.set(true)
-      freeCompilerArgs.addAll("-Xjvm-default=all", "-Xannotation-default-target=param-property")
+      freeCompilerArgs.addAll("-Xannotation-default-target=param-property")
     }
   }
 
