@@ -41,12 +41,7 @@ internal class EventStruct(
         is PropertyType.Text -> STRING
         is PropertyType.Enum -> EventPropertyEnum(moduleName, type).typeName
       }
-      return if (isOptional(platform)) {
-        // https://github.com/outfoxx/swiftpoet/issues/120
-        if (typeName == NumericAny) NumericAnyNullable else typeName.makeOptional()
-      } else {
-        typeName
-      }
+      return if (isOptional(platform)) typeName.makeOptional() else typeName
     }
 
   private val eventNameProperty
