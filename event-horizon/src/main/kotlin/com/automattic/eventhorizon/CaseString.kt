@@ -109,6 +109,7 @@ public enum class Case(
   private fun tokenToString(index: Int, token: String): String {
     return when (this) {
       Snake, Kebab, Dot -> token
+
       Camel -> if (index == 0) {
         token
       } else {
@@ -122,6 +123,7 @@ public enum class Case(
   private fun isCharAllowed(index: Int, char: Char): Boolean {
     return when (this) {
       Snake, Kebab, Dot -> char == wordSeparator || char.isLetterOrDigit()
+
       Camel -> if (index == 0) {
         char.isLetterOrDigit() && char.isLowerCase()
       } else {

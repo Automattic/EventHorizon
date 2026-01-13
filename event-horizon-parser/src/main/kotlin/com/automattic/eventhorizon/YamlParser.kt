@@ -104,8 +104,11 @@ public class YamlParser {
   private fun Raise<Problem>.parsePropertyType(configuration: PropertyConfiguration, availableEnums: Set<PropertyType.Enum>): PropertyType {
     return when (val typeText = configuration.type.content) {
       "text" -> PropertyType.Text
+
       "number" -> PropertyType.Number
+
       "boolean" -> PropertyType.Boolean
+
       else -> availableEnums.find { enum -> enum.name.rawValue == typeText } ?: run {
         val exception = YamlException(
           "Value '$typeText' must be one of 'boolean', 'number', 'text', or a predefined enum.",
@@ -128,7 +131,9 @@ public class YamlParser {
       }
 
       is YamlList -> optional.items.mapTo(mutableSetOf()) { item -> Platform(item.yamlScalar.content) }
+
       null -> emptySet()
+
       is YamlNull, is YamlMap, is YamlTaggedNode -> {
         val exception = YamlException(
           "Expected element to be YamlScalar or YamlList but is ${optional::class.simpleName}",

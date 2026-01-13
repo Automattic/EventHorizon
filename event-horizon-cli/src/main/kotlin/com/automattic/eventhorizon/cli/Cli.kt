@@ -101,6 +101,7 @@ internal class Cli : CliktCommand("event-horizon") {
           throw UsageError("--output-path option must be a directory in combination with $format format")
         }
       }
+
       FormatType.Json -> Unit
     }
   }
