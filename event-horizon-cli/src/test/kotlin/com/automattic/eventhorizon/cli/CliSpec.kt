@@ -32,7 +32,8 @@ class CliSpec : FunSpec({
 
     result.statusCode shouldBe 1
     result.output shouldBe """
-      |IncorrectTypeException at <root> on line 1, column 1: Expected an object, but got a scalar value
+      |Invalid schema content:
+      |??
       |
     """.trimMargin()
   }

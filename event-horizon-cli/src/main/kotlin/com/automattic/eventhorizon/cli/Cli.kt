@@ -67,7 +67,7 @@ internal class Cli : CliktCommand("event-horizon") {
   private fun verify() {
     YamlParser().parseSchema(inputFile)
       .onRight { echoSuccess("$inputFile file is a valid schema") }
-      .onLeft(::echoProblemsAndExit)
+      .onLeft(::echoProblemAndExit)
   }
 
   private fun generate() {
@@ -78,11 +78,9 @@ internal class Cli : CliktCommand("event-horizon") {
     YamlParser()
       .parseSchema(inputFile)
       .map { schema -> requireDeclaredPlatform(schema, format) }
-      .map { (schema, platform) ->
-        createGenerator(format, platform).generate(schema, path)
-      }
+      .map { (schema, platform) -> createGenerator(format, platform).generate(schema, path) }
       .onRight { file -> echoSuccess("$file generated successfully.") }
-      .onLeft(::echoProblemsAndExit)
+      .onLeft(::echoProblemAndExit)
   }
 
   private fun createGenerator(formatType: FormatType, platform: Platform): Generator {
@@ -126,9 +124,8 @@ internal class Cli : CliktCommand("event-horizon") {
     echo(currentContext.theme.success(message))
   }
 
-  private fun echoProblemsAndExit(problems: List<Problem>) {
-    val message = problems.joinToString(separator = "\n\n") { problem -> problem.print() }
-    echo(message, err = true)
+  private fun echoProblemAndExit(problem: Problem) {
+    echo(problem.print(), err = true)
     throw ProgramResult(1)
   }
 }

@@ -1,11 +1,10 @@
 plugins {
   alias(libs.plugins.kotlin.jvm)
-  alias(libs.plugins.kotlin.serialization)
 }
 
 dependencies {
   api(projects.eventHorizon)
-  implementation(libs.kaml)
+  implementation(libs.jackson.yaml)
 
   testImplementation(projects.eventHorizon.testing)
   testImplementation(libs.kotest.arrow)
