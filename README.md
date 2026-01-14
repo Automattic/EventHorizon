@@ -54,7 +54,7 @@ events:
       excludedPlatforms:
         - android
         - web
-    # Optional properties used with an event
+    # Optional properties used with an event.
     user_id:
       # Required. Type of the property for the generated code.
       # Must be one of [text, boolean, number, <predeclared enum reference>].
@@ -72,17 +72,21 @@ events:
         - android
         - ios
 
-# List of enums used for property types
+# List of enums used for property types.
 enums:
   signup_type:
     - google
     - facebook
     - apple
 
-# List of property names that are disallowed
+# List of property names that are disallowed.
+# It can be prefixed with the 'predefined:' keyword to use one of predefined rule sets. For example 'predefined:tracks`.
+# Currently supported predefined rule sets are:
+#   - tracks
 reservedProperties:
   - property_name_1
   - property_name_2
+  - predefined:<value>
 ```
 
 ## CLI

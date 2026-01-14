@@ -155,11 +155,29 @@ public class YamlParser {
 
   private fun Raise<Problem>.parseReservedProperties(node: SafeNode): Set<CaseString> {
     val node = node.ensureArray().bind()
-    return node.mapTo(HashSet(node.size)) { node ->
-      CaseString(node.ensureText().bind())
-        .mapLeft { value -> SimpleProblem("Invalid reserved property value '$value'. ${Case.supportedConventionsMessage}.") }
-        .bind()
+    return node.flatMapTo(HashSet(node.size)) { node ->
+      val text = node.ensureText().bind()
+      if (text.startsWith("predefined:")) {
+        val predefined = text.substringAfter("predefined:")
+        ensureNotNull(reserverPropertiesMap[predefined]) {
+          SimpleProblem("Invalid predefined reserved properties '$predefined'. Expected one of $knownReservedProperties.")
+        }
+      } else {
+        setOf(
+          CaseString(node.ensureText().bind())
+            .mapLeft { value -> SimpleProblem("Invalid reserved property value '$value'. ${Case.supportedConventionsMessage}.") }
+            .bind(),
+        )
+      }
     }
+  }
+
+  internal companion object {
+    private val reserverPropertiesMap = mapOf(
+      "tracks" to Schema.tracksReservedProperties,
+    )
+
+    val knownReservedProperties get() = reserverPropertiesMap.keys
   }
 }
 
