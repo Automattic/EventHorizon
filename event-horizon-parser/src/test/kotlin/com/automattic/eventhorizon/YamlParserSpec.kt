@@ -8,7 +8,6 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.collections.shouldHaveSingleElement
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
 import kotlin.io.path.writeText
 
 class YamlParserSpec : FunSpec({
@@ -36,8 +35,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid schema content:\n!!!"
+    result shouldBeLeft SimpleProblem("Invalid schema content:\n!!!")
   }
 
   test("parse a schema version") {
@@ -60,8 +58,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$.schemaVersion'. Expected an unsigned long."
+    result shouldBeLeft SimpleProblem("Invalid value at path '$.schemaVersion'. Expected an unsigned long.")
   }
 
   test("fail to parse a non-numeric schema version") {
@@ -72,8 +69,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$.schemaVersion'. Expected an unsigned long."
+    result shouldBeLeft SimpleProblem("Invalid value at path '$.schemaVersion'. Expected an unsigned long.")
   }
 
   test("fail to parse unknown root key") {
@@ -85,8 +81,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$'. Unexpected keys: [someKey]."
+    result shouldBeLeft SimpleProblem("Invalid value at path '$'. Unexpected keys: [someKey].")
   }
 
   test("fail to parse events without a schema version") {
@@ -98,8 +93,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$': missing required key 'schemaVersion'."
+    result shouldBeLeft SimpleProblem("Invalid value at path '$': missing required key 'schemaVersion'.")
   }
 
   test("parse groups") {
@@ -148,8 +142,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$.groups.group_a'. Unexpected keys: [someKey]."
+    result shouldBeLeft SimpleProblem("Invalid value at path '$.groups.group_a'. Unexpected keys: [someKey].")
   }
 
   test("parse an event without properties") {
@@ -252,9 +245,10 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe
-      "Invalid value at path '$.events.event.property.type'. Expected one of 'boolean', 'number', 'text', or a predefined enum, but was 'enum_reference'."
+    result shouldBeLeft
+      SimpleProblem(
+        "Invalid value at path '$.events.event.property.type'. Expected one of 'boolean', 'number', 'text', or a predefined enum, but was 'enum_reference'.",
+      )
   }
 
   test("fail to parse an event with an unkown property that doesn't exist") {
@@ -270,8 +264,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$.events.event.property'. Unexpected keys: [someKey]."
+    result shouldBeLeft SimpleProblem("Invalid value at path '$.events.event.property'. Unexpected keys: [someKey].")
   }
 
   test("parse an event with an optional property on all platforms") {
@@ -385,8 +378,8 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$.events.event.property.optional'. Expected a boolean or an array of platforms."
+    result shouldBeLeft
+      SimpleProblem("Invalid value at path '$.events.event.property.optional'. Expected a boolean or an array of platforms.")
   }
 
   test("fail to parse an event with a map optional property") {
@@ -408,8 +401,8 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$.events.event.property.optional'. Expected a boolean or an array of platforms."
+    result shouldBeLeft
+      SimpleProblem("Invalid value at path '$.events.event.property.optional'. Expected a boolean or an array of platforms.")
   }
 
   test("parse an event with multiple properties") {
@@ -562,8 +555,7 @@ class YamlParserSpec : FunSpec({
 
     val result = parser.parseSchema(tempFile)
 
-    val problem = result.shouldBeLeft().shouldBeInstanceOf<SimpleProblem>()
-    problem.print() shouldBe "Invalid value at path '$.events.event._metadata'. Unexpected keys: [type]."
+    result shouldBeLeft SimpleProblem("Invalid value at path '$.events.event._metadata'. Unexpected keys: [type].")
   }
 
   test("parse a property's description") {
