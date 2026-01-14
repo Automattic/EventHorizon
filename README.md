@@ -78,6 +78,11 @@ enums:
     - google
     - facebook
     - apple
+
+# List of property names that are disallowed
+reservedProperties:
+  - property_name_1
+  - property_name_2
 ```
 
 ## CLI

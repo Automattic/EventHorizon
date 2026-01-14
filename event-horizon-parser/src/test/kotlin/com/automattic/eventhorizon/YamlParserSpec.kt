@@ -611,4 +611,23 @@ class YamlParserSpec : FunSpec({
 
     result.shouldBeRight().events.shouldBeEmpty()
   }
+
+  test("parse reserved properties") {
+    val text = """
+      |schemaVersion: 1
+      |
+      |events:
+      |  event:
+      |    prop1:
+      |      type: text
+      |
+      |reservedProperties:
+      |  - prop1
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    result shouldBeLeft SchemaProblem.ReservedPropertyNames(mapOf("event" to listOf("prop1")))
+  }
 })

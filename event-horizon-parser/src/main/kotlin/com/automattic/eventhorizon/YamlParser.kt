@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import arrow.core.raise.Raise
+import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
@@ -30,14 +31,15 @@ public class YamlParser {
         raise(SimpleProblem("Invalid schema content:\n$content"))
       } else {
         val root = SafeNode(jsonRoot)
-        val children = root.ensureChildren("schemaVersion", "platforms", "groups", "enums", "events").bind()
+        val children = root.ensureChildren("schemaVersion", "platforms", "groups", "enums", "events", "reservedProperties").bind()
         val version = children.ensureValue("schemaVersion").bind().ensureULong().bind()
         val platforms = children["platforms"]?.let { parsePlatforms(it) }.orEmpty()
         val groups = children["groups"]?.let { parseGroups(it) }.orEmpty()
         val enums = children["enums"]?.let { parseEnums(it) }.orEmpty()
         val events = children["events"]?.let { parseEvents(it, platforms, enums) }.orEmpty()
+        val reservedProperties = children["reservedProperties"]?.let { parseReservedProperties(it) }.orEmpty()
 
-        Schema(version, platforms, groups, events).bind()
+        Schema(version, platforms, groups, events, reservedProperties).bind()
       }
     }
   }
@@ -148,6 +150,15 @@ public class YamlParser {
       }
 
       Property(name, type, description, optionalPlatforms).bind()
+    }
+  }
+
+  private fun Raise<Problem>.parseReservedProperties(node: SafeNode): Set<CaseString> {
+    val node = node.ensureArray().bind()
+    return node.mapTo(HashSet(node.size)) { node ->
+      CaseString(node.ensureText().bind())
+        .mapLeft { value -> SimpleProblem("Invalid reserved property value '$value'. ${Case.supportedConventionsMessage}.") }
+        .bind()
     }
   }
 }

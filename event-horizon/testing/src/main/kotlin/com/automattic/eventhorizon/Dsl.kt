@@ -15,6 +15,7 @@ public class SchemaBuilder internal constructor() {
   private var platforms = emptySet<String>()
   private var events = emptyList<Event>()
   private var groups = emptyList<Group>()
+  private var reservedProperties = emptySet<String>()
 
   public fun platforms(vararg platforms: String) {
     this.platforms = platforms.toSet()
@@ -28,11 +29,16 @@ public class SchemaBuilder internal constructor() {
     groups = buildGroups(builderAction)
   }
 
+  public fun reservedProperties(vararg names: String) {
+    reservedProperties = names.toSet()
+  }
+
   internal fun build() = Schema(
     version,
     platforms.mapTo(mutableSetOf(), ::Platform),
     groups,
     events,
+    reservedProperties.mapTo(mutableSetOf(), ::caseString),
   ).getOrThrow()
 }
 
@@ -186,6 +192,8 @@ public fun caseString(value: String): CaseString = CaseString(value).getOrElse {
 }
 
 public fun platforms(vararg platforms: String): Set<Platform> = platforms.mapTo(mutableSetOf(), ::Platform)
+
+public fun reservedProperties(vararg names: String): Set<CaseString> = names.mapTo(mutableSetOf(), ::caseString)
 
 public fun buildGroups(builderAction: GroupsBuilder.() -> Unit = {}): List<Group> {
   val builder = GroupsBuilder()

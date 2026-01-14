@@ -22,8 +22,14 @@ class SchemaSpec : FunSpec({
       event("event2") {
         excludedPlatforms("android")
       }
+      event("event3") {
+        properties {
+          text("property1")
+        }
+      }
     }
-    val schema = Schema(version, platforms, groups, events).shouldBeRight()
+    val reservedNames = reservedProperties("property2")
+    val schema = Schema(version, platforms, groups, events, reservedNames).shouldBeRight()
 
     schema.version shouldBe version
     schema.platforms shouldBe platforms
@@ -108,14 +114,14 @@ class SchemaSpec : FunSpec({
   }
 
   test("fail to create a schema with version 0") {
-    val result = Schema(version = 0u, platforms(), buildGroups(), buildEvents())
+    val result = Schema(version = 0u, platforms(), buildGroups(), buildEvents(), reservedProperties())
 
     result shouldBeLeft SchemaProblem.InvalidSchemaVersion(0u)
   }
 
   test("fail to create a schema with unsupported version") {
     val version = Schema.supportedVersions.max() + 1u
-    val result = Schema(version, platforms(), buildGroups(), buildEvents())
+    val result = Schema(version, platforms(), buildGroups(), buildEvents(), reservedProperties())
 
     result shouldBeLeft SchemaProblem.InvalidSchemaVersion(version)
   }
@@ -133,7 +139,7 @@ class SchemaSpec : FunSpec({
       event("event2")
       event("event3")
     }
-    val result = Schema(version = 1u, platforms(), buildGroups(), events)
+    val result = Schema(version = 1u, platforms(), buildGroups(), events, reservedProperties())
 
     result shouldBeLeft SchemaProblem.DuplicateEvents(mapOf("event1" to 2, "event2" to 3))
   }
@@ -154,6 +160,7 @@ class SchemaSpec : FunSpec({
           excludedPlatforms("web", "embedded")
         }
       },
+      reservedProperties = reservedProperties(),
     )
 
     result shouldBeLeft SchemaProblem.UnknownEventPlatforms(
@@ -207,6 +214,7 @@ class SchemaSpec : FunSpec({
           }
         }
       },
+      reservedProperties = reservedProperties(),
     )
 
     result shouldBeLeft SchemaProblem.UnknownPropertyPlatforms(
@@ -249,6 +257,7 @@ class SchemaSpec : FunSpec({
           }
         }
       },
+      reservedProperties = reservedProperties(),
     )
 
     result shouldBeLeft SchemaProblem.InconsistentEnumValues(
@@ -273,6 +282,7 @@ class SchemaSpec : FunSpec({
         group("ungrouped")
       },
       events = buildEvents(),
+      reservedProperties = reservedProperties(),
     )
 
     result shouldBeLeft SchemaProblem.UngroupedGroupPresent
@@ -291,6 +301,7 @@ class SchemaSpec : FunSpec({
         group("group_b")
       },
       events = buildEvents(),
+      reservedProperties = reservedProperties(),
     )
 
     result shouldBeLeft SchemaProblem.DuplicateGroups(mapOf("group_a" to 2, "group_b" to 3))
@@ -318,6 +329,7 @@ class SchemaSpec : FunSpec({
           groupKey = "group_d"
         }
       },
+      reservedProperties = reservedProperties(),
     )
 
     result shouldBeLeft SchemaProblem.UnknownEventGroups(
@@ -330,6 +342,40 @@ class SchemaSpec : FunSpec({
         group("group_a")
         group("group_b")
       } + Group.empty,
+    )
+  }
+
+  test("fail to create a schema without reserved property names") {
+    val result = Schema(
+      version = 1u,
+      platforms = platforms(),
+      groups = buildGroups(),
+      events = buildEvents {
+        event("event1") {
+          properties {
+            text("prop_one")
+          }
+        }
+        event("event2") {
+          properties {
+            text("prop_two")
+            boolean("prop_three")
+          }
+        }
+        event("event3") {
+          properties {
+            text("prop.three")
+          }
+        }
+      },
+      reservedProperties = reservedProperties("prop_two", "prop_three"),
+    )
+
+    result shouldBeLeft SchemaProblem.ReservedPropertyNames(
+      mapOf(
+        "event2" to listOf("prop_two", "prop_three"),
+        "event3" to listOf("prop.three"),
+      ),
     )
   }
 })

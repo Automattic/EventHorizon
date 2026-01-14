@@ -1,6 +1,7 @@
 package com.automattic.eventhorizon
 
 import arrow.core.Either
+import arrow.core.mapValuesNotNull
 import arrow.core.raise.Raise
 import arrow.core.raise.either
 import arrow.core.raise.ensure
@@ -45,6 +46,7 @@ public data class Schema private constructor(
       platforms: Set<Platform>,
       groups: List<Group>,
       events: List<Event>,
+      reservedProperties: Set<CaseString>,
     ): Either<SchemaProblem, Schema> = either {
       ensureSchemaVersion(version)
       ensureUniqueEvents(events)
@@ -55,6 +57,7 @@ public data class Schema private constructor(
       val groups = groups + Group.empty
       ensureEventGroups(events, groups)
       ensureConsistentEnums(events)
+      ensureNoReservedNames(events, reservedProperties)
 
       Schema(version, platforms, groups, events)
     }
@@ -164,6 +167,20 @@ public sealed interface SchemaProblem : Problem {
       }
     }
   }
+
+  public data class ReservedPropertyNames(val illegalValues: Map<String, List<String>>) : SchemaProblem {
+    override fun print(): String {
+      return buildString {
+        append("Following events use reserved property names:\n")
+        illegalValues.forEach { (event, properties) ->
+          append(" - ")
+          append(event)
+          append(":\n")
+          append(properties.joinToString(separator = "\n") { values -> "   - $values" })
+        }
+      }
+    }
+  }
 }
 
 private fun Raise<SchemaProblem>.ensureSchemaVersion(version: ULong) {
@@ -256,6 +273,27 @@ private fun Raise<SchemaProblem>.ensureConsistentEnums(events: List<Event>) {
 
   if (inconsistentEnums.isNotEmpty()) {
     raise(SchemaProblem.InconsistentEnumValues(inconsistentEnums))
+  }
+}
+
+private fun Raise<SchemaProblem>.ensureNoReservedNames(events: List<Event>, names: Set<CaseString>) {
+  val normalizedNames = names.map { it.toString(Case.Snake) }
+  val illegalProperties = events
+    .associate { event -> event.name.rawValue to event.properties }
+    .mapValuesNotNull { (_, properties) -> properties.findReservedNames(normalizedNames) }
+    .filter { (_, groupedValues) -> groupedValues.isNotEmpty() }
+  if (illegalProperties.isNotEmpty()) {
+    raise(SchemaProblem.ReservedPropertyNames(illegalProperties))
+  }
+}
+
+private fun List<Property>.findReservedNames(reserveList: List<String>): List<String> {
+  return mapNotNull { property ->
+    if (property.name.toString(Case.Snake) in reserveList) {
+      property.name.rawValue
+    } else {
+      null
+    }
   }
 }
 
