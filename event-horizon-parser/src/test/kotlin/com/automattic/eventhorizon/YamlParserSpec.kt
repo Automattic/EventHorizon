@@ -630,4 +630,60 @@ class YamlParserSpec : FunSpec({
 
     result shouldBeLeft SchemaProblem.ReservedPropertyNames(mapOf("event" to listOf("prop1")))
   }
+
+  test("parse reserved Tracks properties") {
+    val text = """
+      |schemaVersion: 1
+      |
+      |events:
+      |  event:
+      |    year:
+      |      type: text
+      |
+      |reservedProperties:
+      |  - predefined:tracks
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    result shouldBeLeft SchemaProblem.ReservedPropertyNames(mapOf("event" to listOf("year")))
+  }
+
+  test("parse reserved mixed properties") {
+    val text = """
+      |schemaVersion: 1
+      |
+      |events:
+      |  event:
+      |    prop1:
+      |      type: text
+      |    year:
+      |      type: text
+      |
+      |reservedProperties:
+      |  - predefined:tracks
+      |  - prop1
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    result shouldBeLeft SchemaProblem.ReservedPropertyNames(mapOf("event" to listOf("prop1", "year")))
+  }
+
+  test("fail to parse reserved predefined unknown properties") {
+    val text = """
+      |schemaVersion: 1
+      |
+      |reservedProperties:
+      |  - predefined:foo
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    result shouldBeLeft
+      SimpleProblem("Invalid predefined reserved properties 'foo'. Expected one of ${YamlParser.knownReservedProperties}.")
+  }
 })
