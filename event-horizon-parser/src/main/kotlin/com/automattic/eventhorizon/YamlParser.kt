@@ -1,214 +1,240 @@
 package com.automattic.eventhorizon
 
-import arrow.core.EitherNel
-import arrow.core.Nel
-import arrow.core.mapOrAccumulate
+import arrow.core.Either
+import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import arrow.core.raise.Raise
-import arrow.core.raise.catch
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
-import arrow.core.recover
-import com.charleskorn.kaml.EmptyYamlDocumentException
-import com.charleskorn.kaml.InvalidPropertyValueException
-import com.charleskorn.kaml.Yaml
-import com.charleskorn.kaml.YamlException
-import com.charleskorn.kaml.YamlList
-import com.charleskorn.kaml.YamlMap
-import com.charleskorn.kaml.YamlNode
-import com.charleskorn.kaml.YamlNull
-import com.charleskorn.kaml.YamlScalar
-import com.charleskorn.kaml.YamlTaggedNode
-import com.charleskorn.kaml.decodeFromStream
-import com.charleskorn.kaml.yamlScalar
-import java.io.InputStream
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
 import java.nio.file.Path
 import kotlin.io.path.inputStream
-import kotlinx.serialization.Serializable
+import kotlin.io.path.readText
 
 public class YamlParser {
-  private val yaml = Yaml.default
+  private val mapper = YAMLMapper()
+    .enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY)
 
-  public fun parseSchema(file: Path): EitherNel<Problem, Schema> = either {
-    val rawSchema = decodeRawSchema(file.inputStream())
-    val version = parseSchemaVersion(rawSchema.schemaVersion)
-    val platforms = rawSchema.platforms.mapTo(mutableSetOf(), ::Platform)
-    val groups = parseGroups(rawSchema)
-    val events = parseEvents(rawSchema, platforms)
+  public fun parseSchema(file: Path): Either<Problem, Schema> = either {
+    val content = file.readText().trim()
+    if (content.isEmpty()) {
+      Schema.empty
+    } else {
+      val jsonRoot = mapper.readTree(content)
+      if (jsonRoot.isEmpty) {
+        raise(SimpleProblem("Invalid schema content:\n$content"))
+      } else {
+        val root = SafeNode(jsonRoot)
+        val children = root.ensureChildren("schemaVersion", "platforms", "groups", "enums", "events").bind()
+        val version = children.ensureValue("schemaVersion").bind().ensureULong().bind()
+        val platforms = children["platforms"]?.let { parsePlatforms(it) }.orEmpty()
+        val groups = children["groups"]?.let { parseGroups(it) }.orEmpty()
+        val enums = children["enums"]?.let { parseEnums(it) }.orEmpty()
+        val events = children["events"]?.let { parseEvents(it, platforms, enums) }.orEmpty()
 
-    Schema(version, platforms, groups, events).mapLeft { nonEmptyListOf(it) }.bind()
-  }.recover { problems -> recoverEmptySchema(problems) }
-
-  private fun Raise<Nel<Problem>>.parseSchemaVersion(rawVersion: YamlScalar): ULong {
-    val content = rawVersion.content
-    return ensureNotNull(content.toULongOrNull()) {
-      val exception = InvalidPropertyValueException(
-        propertyName = "schemaVersion",
-        reason = "Value '$content' is not a valid unsigned long value.",
-        path = rawVersion.path,
-      )
-      raise(nonEmptyListOf(GenericProblem(exception)))
-    }
-  }
-
-  private fun Raise<Nel<Problem>>.parseGroups(schema: RawSchema): List<Group> {
-    return schema.groups.orEmpty().toList()
-      .mapOrAccumulate { (key, groupConfiguration) ->
-        Group(key, groupConfiguration?.name, groupConfiguration?.description).bind()
+        Schema(version, platforms, groups, events).bind()
       }
-      .bind()
+    }
   }
 
-  private fun Raise<Nel<Problem>>.parseEvents(schema: RawSchema, availablePlatforms: Set<Platform>): List<Event> {
-    val enums = parseEnums(schema)
-    val events = schema.events.orEmpty()
-    val metadataMap = events.mapValues { (_, mappings) ->
-      mappings?.get(MetadataKey)?.let { decodeEventMetadata(it) }
+  private fun Raise<Problem>.parsePlatforms(node: SafeNode): Set<Platform> {
+    val node = node.ensureArray().bind()
+    return node
+      .mapTo(HashSet(node.size)) { node -> Platform(node.ensureText().bind()) }
+      .toSortedSet(compareBy(Platform::value))
+  }
+
+  private fun Raise<Problem>.parseGroups(node: SafeNode): List<Group> {
+    val node = node.ensureObject().bind()
+    return node.mapTo(ArrayList(node.size)) { (key, node) ->
+      val children = node.ensureChildren("name", "description").bind()
+      val name = children["name"]?.ensureText()?.bind()
+      val description = children["description"]?.ensureText()?.bind()
+
+      Group(key, name, description).bind()
     }
-    val propertiesMap = events.mapValues { (_, mappings) ->
-      mappings?.minus(MetadataKey)?.let { parseProperties(it, enums, availablePlatforms) }
+  }
+
+  private fun Raise<Problem>.parseEnums(node: SafeNode): Set<PropertyType.Enum> {
+    val node = node.ensureObject().bind()
+    return node.mapTo(HashSet(node.size)) { (key, node) ->
+      val children = node.ensureArray().bind()
+      val values = children.mapTo(HashSet(children.size)) { node -> node.ensureText().bind() }
+
+      PropertyType.Enum(key, values).bind()
     }
-    return events.toList().mapOrAccumulate { (name, _) ->
+  }
+
+  private fun Raise<Problem>.parseEvents(node: SafeNode, platforms: Set<Platform>, enums: Set<PropertyType.Enum>): List<Event> {
+    val eventNodes = node.ensureObject().bind()
+    val metadataMap = HashMap<String, EventMetadata>(eventNodes.size)
+    val propertiesMap = HashMap<String, List<Property>>(eventNodes.size)
+
+    for ((key, mappingsNode) in eventNodes) {
+      val mappings = mappingsNode.ensureObject().bind()
+      val metadata = mappings["_metadata"]?.let { parseEventMetadata(it) }
+      if (metadata != null) {
+        metadataMap[key] = metadata
+      }
+      val properties = parseEventProperties((mappings - "_metadata"), platforms, enums)
+      propertiesMap[key] = properties
+    }
+
+    return eventNodes.mapTo(ArrayList(eventNodes.size)) { (name, _) ->
       val groupKey = metadataMap[name]?.group ?: Group.empty.key.rawValue
       val properties = propertiesMap[name].orEmpty()
       val description = metadataMap[name]?.description
-      val excludedPlatforms = metadataMap[name]?.excludedPlatforms?.mapTo(mutableSetOf(), ::Platform).orEmpty()
+      val excludedPlatforms = metadataMap[name]?.excludedPlatforms.orEmpty()
+
       Event(name, groupKey, properties, description, excludedPlatforms).bind()
-    }.bind()
+    }
   }
 
-  private fun Raise<Nel<Problem>>.parseEnums(schema: RawSchema): Set<PropertyType.Enum> {
-    return schema.enums.orEmpty().toList()
-      .mapOrAccumulate { (name, values) -> PropertyType.Enum(name, values.orEmpty()).bind() }
-      .map { it.toSet() }
-      .bind()
+  private fun Raise<Problem>.parseEventMetadata(node: SafeNode): EventMetadata {
+    val children = node.ensureChildren("description", "group", "excludedPlatforms").bind()
+    val description = children["description"]?.ensureText()?.bind()
+    val group = children["group"]?.ensureText()?.bind()
+    val platforms = children["excludedPlatforms"]?.let { parsePlatforms(it) }.orEmpty()
+
+    return EventMetadata(description, group, platforms)
   }
 
-  private fun Raise<Nel<Problem>>.parseProperties(
-    rawProperties: YamlStringMap,
+  private fun Raise<Problem>.parseEventProperties(
+    nodes: Map<String, SafeNode>,
+    availablePlatforms: Set<Platform>,
     availableEnums: Set<PropertyType.Enum>,
-    availablePlatforms: Set<Platform>,
   ): List<Property> {
-    return rawProperties.toList()
-      .mapOrAccumulate { (name, rawConfiguration) ->
-        val configuration = decodePropertyConfiguration(rawConfiguration)
-        val type = parsePropertyType(configuration, availableEnums)
-        val optionalPlatforms = parseOptionalPlatforms(configuration, availablePlatforms)
+    return nodes.mapTo(ArrayList(nodes.size)) { (name, node) ->
+      val children = node.ensureChildren("type", "description", "optional").bind()
+      val typeNode = children.ensureValue("type").bind()
+      val type = when (val typeText = typeNode.ensureText().bind()) {
+        "text" -> PropertyType.Text
 
-        Property(name, type, configuration.description, optionalPlatforms).bind()
+        "number" -> PropertyType.Number
+
+        "boolean" -> PropertyType.Boolean
+
+        else -> ensureNotNull(availableEnums.find { enum -> enum.name.rawValue == typeText }) {
+          SimpleProblem(
+            "Invalid value at path '${typeNode.path}'. Expected one of 'boolean', 'number', 'text', or a predefined enum, but was '$typeText'.",
+          )
+        }
       }
-      .bind()
+      val description = children["description"]?.ensureText()?.bind()
+      val optionalNode = children["optional"]
+      val optionalPlatforms = when {
+        optionalNode == null -> emptySet()
+
+        optionalNode.isBoolean -> {
+          if (optionalNode.ensureBoolean().bind()) {
+            availablePlatforms
+          } else {
+            emptySet()
+          }
+        }
+
+        optionalNode.isArray -> {
+          parsePlatforms(optionalNode)
+        }
+
+        else -> {
+          raise(SimpleProblem("Invalid value at path '${optionalNode.path}'. Expected a boolean or an array of platforms."))
+        }
+      }
+
+      Property(name, type, description, optionalPlatforms).bind()
+    }
+  }
+}
+
+private class SafeNode(
+  private val node: JsonNode,
+  private val pathSegments: NonEmptyList<String>,
+) {
+  val path get() = pathSegments.joinToString(separator = ".")
+
+  constructor(node: JsonNode) : this(node, pathSegments = nonEmptyListOf("$"))
+
+  val isBoolean get() = node.isBoolean
+
+  val isArray get() = node.isArray
+
+  fun ensureText() = either<Problem, String> {
+    ensure(node.isValueNode) {
+      SimpleProblem("Invalid value at path '$path'. Expected a scalar.")
+    }
+    node.asText()
   }
 
-  private fun Raise<Problem>.parsePropertyType(configuration: PropertyConfiguration, availableEnums: Set<PropertyType.Enum>): PropertyType {
-    return when (val typeText = configuration.type.content) {
-      "text" -> PropertyType.Text
-
-      "number" -> PropertyType.Number
-
-      "boolean" -> PropertyType.Boolean
-
-      else -> availableEnums.find { enum -> enum.name.rawValue == typeText } ?: run {
-        val exception = YamlException(
-          "Value '$typeText' must be one of 'boolean', 'number', 'text', or a predefined enum.",
-          configuration.type.path,
-        )
-        raise(GenericProblem(exception))
-      }
+  fun ensureULong() = either {
+    val value = ensureText().bind()
+    ensureNotNull(value.toULongOrNull()) {
+      raise(SimpleProblem("Invalid value at path '$path'. Expected an unsigned long."))
     }
   }
 
-  private fun Raise<Problem>.parseOptionalPlatforms(
-    configuration: PropertyConfiguration,
-    availablePlatforms: Set<Platform>,
-  ): Set<Platform> {
-    return when (val optional = configuration.optional) {
-      is YamlScalar -> if (optional.toBoolean()) {
-        availablePlatforms
-      } else {
-        emptySet()
-      }
+  fun ensureBoolean() = either<Problem, Boolean> {
+    ensure(node.isBoolean) {
+      SimpleProblem("Invalid value at path '$path'. Expected a boolean.")
+    }
+    node.asBoolean()
+  }
 
-      is YamlList -> optional.items.mapTo(mutableSetOf()) { item -> Platform(item.yamlScalar.content) }
+  fun ensureArray() = either<Problem, List<SafeNode>> {
+    ensure(node.isArray || node.isNull) {
+      SimpleProblem("Invalid value at path '$path'. Expected an array.")
+    }
+    node.toList().map { node -> SafeNode(node, pathSegments) }
+  }
 
-      null -> emptySet()
-
-      is YamlNull, is YamlMap, is YamlTaggedNode -> {
-        val exception = YamlException(
-          "Expected element to be YamlScalar or YamlList but is ${optional::class.simpleName}",
-          optional.path,
-        )
-        raise(GenericProblem(exception))
-      }
+  fun ensureObject() = either<Problem, Map<String, SafeNode>> {
+    ensure(node.isObject || node.isNull) {
+      SimpleProblem("Invalid value at path '$path'. Expected an object.")
+    }
+    node.properties().associate { (key, node) ->
+      key to SafeNode(node, pathSegments + key)
     }
   }
 
-  private fun Raise<Nel<Problem>>.decodeRawSchema(stream: InputStream): RawSchema {
-    return catch({ yaml.decodeFromStream(stream) }, ::raiseYamlProblem)
-  }
-
-  private fun Raise<Nel<Problem>>.decodeEventMetadata(node: YamlNode): EventMetadata {
-    return catch({ yaml.decodeFromYamlNode(node) }, ::raiseYamlProblem)
-  }
-
-  private fun Raise<Problem>.decodePropertyConfiguration(node: YamlNode): PropertyConfiguration {
-    return catch({ yaml.decodeFromYamlNode(node) }, ::raiseYamlProblem)
-  }
-}
-
-@JvmName("raiseYamlNelProblem")
-private fun Raise<Nel<Problem>>.raiseYamlProblem(error: Throwable): Nothing {
-  if (error is YamlException) {
-    raise(nonEmptyListOf(GenericProblem(error, Throwable::toString)))
-  } else {
-    throw error
+  fun ensureChildren(name: String, vararg names: String) = either {
+    val expectedNames = setOf(name, *names)
+    val properties = ensureObject().bind()
+    val unexpectedNames = properties.keys - expectedNames
+    ensure(unexpectedNames.isEmpty()) {
+      SimpleProblem("Invalid value at path '$path'. Unexpected keys: $unexpectedNames.")
+    }
+    val value = buildMap(expectedNames.size) {
+      for (name in expectedNames) {
+        val node = properties[name]
+        if (node != null) {
+          put(name, node)
+        }
+      }
+    }
+    SafeMap(value, path)
   }
 }
 
-private fun Raise<Problem>.raiseYamlProblem(error: Throwable): Nothing {
-  if (error is YamlException) {
-    raise(GenericProblem(error, Throwable::toString))
-  } else {
-    throw error
+private class SafeMap(
+  private val value: Map<String, SafeNode>,
+  private val rootPath: String,
+) {
+  operator fun get(key: String) = value[key]
+
+  fun ensureValue(key: String) = either {
+    ensureNotNull(get(key)) {
+      SimpleProblem("Invalid value at path '$rootPath': missing required key '$key'.")
+    }
   }
 }
 
-private fun Raise<Nel<Problem>>.recoverEmptySchema(problems: Nel<Problem>): Schema {
-  val singleProblem = problems.singleOrNull()
-  ensure(singleProblem is GenericProblem && singleProblem.error is EmptyYamlDocumentException) { problems }
-  return Schema.empty
-}
-
-@Serializable
-private data class RawSchema(
-  val schemaVersion: YamlScalar,
-  val platforms: Set<String> = emptySet(),
-  val events: Map<String, Map<String, YamlMap>?>? = emptyMap(),
-  val enums: Map<String, Set<String>?>? = emptyMap(),
-  val groups: Map<String, GroupConfiguration?>? = emptyMap(),
+private class EventMetadata(
+  val description: String?,
+  val group: String?,
+  val excludedPlatforms: Set<Platform>,
 )
-
-@Serializable
-private data class EventMetadata(
-  val description: String? = null,
-  val excludedPlatforms: Set<String> = emptySet(),
-  val group: String? = null,
-)
-
-@Serializable
-private data class PropertyConfiguration(
-  val type: YamlScalar,
-  val optional: YamlNode? = null,
-  val description: String? = null,
-)
-
-@Serializable
-private data class GroupConfiguration(
-  val name: String? = null,
-  val description: String? = null,
-)
-
-private typealias YamlStringMap = Map<String, YamlNode>
-
-private const val MetadataKey = "_metadata"
