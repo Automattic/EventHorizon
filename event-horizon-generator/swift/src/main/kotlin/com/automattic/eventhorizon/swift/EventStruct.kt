@@ -100,5 +100,5 @@ internal class EventStruct(
       .addProperties(structProperties.keys)
       .also { builder -> event.description?.let(builder::addDoc) }
       .build()
-      .let { typeSpec -> trackableProtocol.conformType(typeSpec, trackableNameGetter) }
+      .let { typeSpec -> trackableProtocol.conformType(typeSpec, type, trackableNameGetter, structProperties.keys.toList()) }
 }

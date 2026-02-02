@@ -192,18 +192,18 @@ Generated code:
 
 ```swift
 class EventHorizon {
-  private let eventSink: (Trackable) -> Void
+  private let eventSink: (any Trackable) -> Void
 
-  init(eventSink: @escaping (Trackable) -> Void) {
+  init(eventSink: @escaping (any Trackable) -> Void) {
     self.eventSink = eventSink
   }
 
-  func track(_ event: Trackable) {
+  func track(_ event: any Trackable) {
     eventSink(event)
   }
 }
 
-protocol Trackable {
+protocol Trackable : Hashable, CustomStringConvertible {
   var name: String { get }
   var properties: [AnyHashable : Any] { get }
 }
@@ -250,6 +250,30 @@ struct UpNextQueueReorderedEvent: Trackable {
     props["is_next"] = isNext
     props["episode_uuid"] = episodeUuid
     self.properties = props
+  }
+
+  public static func == (lhs: UpNextQueueReorderedEvent, rhs: UpNextQueueReorderedEvent) -> Bool {
+    return
+      lhs.direction == rhs.direction &&
+      lhs.slots == rhs.slots &&
+      lhs.isNext == rhs.isNext &&
+      lhs.episodeUuid == rhs.episodeUuid
+  }
+
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(direction)
+    hasher.combine(slots)
+    hasher.combine(isNext)
+    hasher.combine(episodeUuid)
+  }
+
+  public var description: String {
+    var parts: [String] = []
+    parts.append("direction: \(direction)")
+    parts.append("slots: \(String(describing: slots))")
+    parts.append("isNext: \(isNext)")
+    parts.append("episodeUuid: \(episodeUuid)")
+    return "UpNextQueueReorderedEvent(\(parts.joined(separator: ", ")))"
   }
 }
 
