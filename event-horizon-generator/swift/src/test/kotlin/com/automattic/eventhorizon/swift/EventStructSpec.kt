@@ -18,10 +18,10 @@ class EventStructSpec : FunSpec({
       |public struct EventNameEvent : MyModule.Trackable {
       |
       |  public static let eventName: Swift.String = "event_name"
-      |  public var trackableName: Swift.String {
+      |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var trackableProperties: [Swift.AnyHashable : Swift.Any] {
+      |  public var properties: [Swift.AnyHashable : Swift.Any] {
       |    let props: [Swift.AnyHashable : Swift.Any] = [:]
       |    return props
       |  }
@@ -54,10 +54,10 @@ class EventStructSpec : FunSpec({
       |  public let propertyTwo: any Swift.Numeric
       |  public let propertyThree: Swift.Bool
       |  public let propertyFour: MyModule.EnumName
-      |  public var trackableName: Swift.String {
+      |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var trackableProperties: [Swift.AnyHashable : Swift.Any] {
+      |  public var properties: [Swift.AnyHashable : Swift.Any] {
       |    var props: [Swift.AnyHashable : Swift.Any] = [:]
       |    props["property_one"] = propertyOne
       |    props["property_two"] = propertyTwo
@@ -96,10 +96,10 @@ class EventStructSpec : FunSpec({
       |public struct EventNameEvent : MyModule.Trackable {
       |
       |  public static let eventName: Swift.String = "event_name"
-      |  public var trackableName: Swift.String {
+      |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var trackableProperties: [Swift.AnyHashable : Swift.Any] {
+      |  public var properties: [Swift.AnyHashable : Swift.Any] {
       |    let props: [Swift.AnyHashable : Swift.Any] = [:]
       |    return props
       |  }
@@ -138,10 +138,10 @@ class EventStructSpec : FunSpec({
       |  /**
       |   * Description 2 */
       |  public let propertyThree: Swift.String
-      |  public var trackableName: Swift.String {
+      |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var trackableProperties: [Swift.AnyHashable : Swift.Any] {
+      |  public var properties: [Swift.AnyHashable : Swift.Any] {
       |    var props: [Swift.AnyHashable : Swift.Any] = [:]
       |    props["property_one"] = propertyOne
       |    props["property_two"] = propertyTwo
@@ -188,10 +188,10 @@ class EventStructSpec : FunSpec({
       |  public let propertyOne: Swift.String
       |  public let propertyTwo: Swift.String?
       |  public let propertyThree: Swift.String
-      |  public var trackableName: Swift.String {
+      |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var trackableProperties: [Swift.AnyHashable : Swift.Any] {
+      |  public var properties: [Swift.AnyHashable : Swift.Any] {
       |    var props: [Swift.AnyHashable : Swift.Any] = [:]
       |    props["property_one"] = propertyOne
       |    if let propertyTwo = propertyTwo {

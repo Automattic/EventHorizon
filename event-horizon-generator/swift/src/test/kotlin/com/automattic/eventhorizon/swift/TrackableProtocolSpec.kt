@@ -10,8 +10,8 @@ class TrackableProtocolSpec : FunSpec({
     typeSpec.toString() shouldBe """
       |public protocol Trackable {
       |
-      |  var trackableName: Swift.String { get }
-      |  var trackableProperties: [Swift.AnyHashable : Swift.Any] { get }
+      |  var name: Swift.String { get }
+      |  var properties: [Swift.AnyHashable : Swift.Any] { get }
       |
       |}
       |

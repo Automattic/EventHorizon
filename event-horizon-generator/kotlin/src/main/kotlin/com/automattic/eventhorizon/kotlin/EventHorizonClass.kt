@@ -13,32 +13,32 @@ internal class EventHorizonClass(
   private val packageName: String,
   private val trackable: TrackableInterface,
 ) {
+  private val eventSinkType = LambdaTypeName.get(
+    parameters = arrayOf(trackable.className),
+    returnType = UNIT,
+  )
+
+  private val eventSinkProperty = PropertySpec
+    .builder("eventSink", eventSinkType, KModifier.PRIVATE)
+    .initializer("eventSink").build()
+
+  private val constructor = FunSpec
+    .constructorBuilder()
+    .addParameter(eventSinkProperty.name, eventSinkProperty.type)
+    .build()
+
   private val trackFunction
     get() = FunSpec
       .builder("track")
       .addParameter("event", trackable.className)
-      .addCode("%N(event.%N, event.%N)", EventSinkProperty, trackable.nameProperty, trackable.propertiesProperty)
+      .addCode("%N(event)", eventSinkProperty)
       .build()
 
   val typeSpec
     get() = TypeSpec
       .classBuilder(ClassName(packageName, "EventHorizon"))
-      .primaryConstructor(Constructor)
-      .addProperty(EventSinkProperty)
+      .primaryConstructor(constructor)
+      .addProperty(eventSinkProperty)
       .addFunction(trackFunction)
       .build()
 }
-
-private val EventSinkType = LambdaTypeName.get(
-  parameters = arrayOf(STRING, MapStringAny),
-  returnType = UNIT,
-)
-
-private val EventSinkProperty = PropertySpec
-  .builder("eventSink", EventSinkType, KModifier.PRIVATE)
-  .initializer("eventSink").build()
-
-private val Constructor = FunSpec
-  .constructorBuilder()
-  .addParameter(EventSinkProperty.name, EventSinkProperty.type)
-  .build()

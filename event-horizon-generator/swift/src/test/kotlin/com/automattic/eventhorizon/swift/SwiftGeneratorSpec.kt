@@ -44,22 +44,22 @@ class SwiftGeneratorSpec : FunSpec({
     file.readText() shouldBe """
       |public class EventHorizon {
       |
-      |  private let eventSink: (String, [AnyHashable : Any]) -> Void
+      |  private let eventSink: (Trackable) -> Void
       |
-      |  public init(eventSink: @escaping (String, [AnyHashable : Any]) -> Void) {
+      |  public init(eventSink: @escaping (Trackable) -> Void) {
       |    self.eventSink = eventSink
       |  }
       |
       |  public func track(_ event: Trackable) {
-      |    eventSink(event.trackableName, event.trackableProperties)
+      |    eventSink(event)
       |  }
       |
       |}
       |
       |public protocol Trackable {
       |
-      |  var trackableName: String { get }
-      |  var trackableProperties: [AnyHashable : Any] { get }
+      |  var name: String { get }
+      |  var properties: [AnyHashable : Any] { get }
       |
       |}
       |
@@ -69,10 +69,10 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |  public static let eventName: String = "event_a"
       |  public let propertyA: EnumA
-      |  public var trackableName: String {
+      |  public var name: String {
       |    return EventAEvent.eventName
       |  }
-      |  public var trackableProperties: [AnyHashable : Any] {
+      |  public var properties: [AnyHashable : Any] {
       |    var props: [AnyHashable : Any] = [:]
       |    props["property_a"] = propertyA.analyticsValue
       |    return props
@@ -91,10 +91,10 @@ class SwiftGeneratorSpec : FunSpec({
       |  /**
       |   * Property description */
       |  public let propertyB: EnumB
-      |  public var trackableName: String {
+      |  public var name: String {
       |    return EventBEvent.eventName
       |  }
-      |  public var trackableProperties: [AnyHashable : Any] {
+      |  public var properties: [AnyHashable : Any] {
       |    var props: [AnyHashable : Any] = [:]
       |    if let propertyA = propertyA {
       |      props["property_a"] = propertyA.analyticsValue
