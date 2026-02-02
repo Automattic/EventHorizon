@@ -9,10 +9,10 @@ class EventHorizonClassSpec : FunSpec({
 
     typeSpec.toString() shouldBe """
       |public class EventHorizon(
-      |  private val eventSink: (kotlin.String, kotlin.collections.Map<kotlin.String, kotlin.Any>) -> kotlin.Unit,
+      |  private val eventSink: (dev.sample.Trackable) -> kotlin.Unit,
       |) {
       |  public fun track(event: dev.sample.Trackable) {
-      |    eventSink(event.trackableName, event.trackableProperties)
+      |    eventSink(event)
       |  }
       |}
       |

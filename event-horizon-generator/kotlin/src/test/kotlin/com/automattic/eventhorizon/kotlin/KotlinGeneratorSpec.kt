@@ -51,17 +51,17 @@ class KotlinGeneratorSpec : FunSpec({
       |import kotlin.collections.buildMap
       |
       |public class EventHorizon(
-      |  private val eventSink: (String, Map<String, Any>) -> Unit,
+      |  private val eventSink: (Trackable) -> Unit,
       |) {
       |  public fun track(event: Trackable) {
-      |    eventSink(event.trackableName, event.trackableProperties)
+      |    eventSink(event)
       |  }
       |}
       |
       |public interface Trackable {
-      |  public val trackableName: String
+      |  public val name: String
       |
-      |  public val trackableProperties: Map<String, Any>
+      |  public val properties: Map<String, Any>
       |}
       |
       |/**
@@ -70,10 +70,10 @@ class KotlinGeneratorSpec : FunSpec({
       |public data class EventAEvent(
       |  public val propertyA: EnumA,
       |) : Trackable {
-      |  override val trackableName: String
+      |  override val name: String
       |    get() = EventName
       |
-      |  override val trackableProperties: Map<String, Any>
+      |  override val properties: Map<String, Any>
       |    get() = buildMap<String, Any> {
       |      put("property_a", propertyA)
       |    }
@@ -90,10 +90,10 @@ class KotlinGeneratorSpec : FunSpec({
       |   */
       |  public val propertyB: EnumB,
       |) : Trackable {
-      |  override val trackableName: String
+      |  override val name: String
       |    get() = EventName
       |
-      |  override val trackableProperties: Map<String, Any>
+      |  override val properties: Map<String, Any>
       |    get() = buildMap<String, Any> {
       |      if (propertyA != null) {
       |        put("property_a", propertyA)

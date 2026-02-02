@@ -117,16 +117,16 @@ Generated code:
 
 ```kotlin
 class EventHorizon(
-  private val eventSink: (String, Map<String, Any>) -> Unit,
+  private val eventSink: (Trackable) -> Unit,
 ) {
   fun track(event: Trackable) {
-    eventSink(event.trackableName, event.trackableProperties)
+    eventSink(event)
   }
 }
 
 interface Trackable {
-  val trackableName: String
-  val trackableProperties: Map<String, Any>
+  val name: String
+  val properties: Map<String, Any>
 }
 
 data class UpNextQueueReorderedEvent(
@@ -145,10 +145,10 @@ data class UpNextQueueReorderedEvent(
   val isNext: Boolean,
   val source: String,
 ) : Trackable {
-  override val trackableName: String
+  override val name: String
     get() = EventName
 
-  override val trackableProperties: Map<String, Any>
+  override val properties: Map<String, Any>
     get() = buildMap<String, Any> {
       put("direction", direction)
       if (slots != null) {
@@ -173,7 +173,7 @@ Integration and usage:
 
 ```kotlin
 val tracker: AnalyticsTracker = TODO()
-val eventHorizon = EventHorizon { eventName, eventProperties ->
+val eventHorizon = EventHorizon { event ->
   // delegation to analytics tracker
 }
 
@@ -193,20 +193,20 @@ Generated code:
 
 ```swift
 class EventHorizon {
-  private let eventSink: (String, [AnyHashable : Any]) -> Void
+  private let eventSink: (Trackable) -> Void
 
-  init(eventSink: @escaping (String, [AnyHashable : Any]) -> Void) {
+  init(eventSink: @escaping (Trackable) -> Void) {
     self.eventSink = eventSink
   }
 
   func track(_ event: Trackable) {
-    eventSink(event.trackableName, event.trackableProperties)
+    eventSink(event)
   }
 }
 
 protocol Trackable {
-  var trackableName: String { get }
-  var trackableProperties: [AnyHashable : Any] { get }
+  var name: String { get }
+  var properties: [AnyHashable : Any] { get }
 }
 
 /**
@@ -226,11 +226,11 @@ struct UpNextQueueReorderedEvent: Trackable {
   let isNext: Bool
   let episodeUuid: String
 
-  var trackableName: String {
+  var name: String {
     return UpNextQueueReorderedEvent.eventName
   }
 
-  var trackableProperties: [AnyHashable : Any] {
+  var properties: [AnyHashable : Any] {
     var props: [AnyHashable : Any] = [:]
     props["direction"] = direction.analyticsValue
     if let slots = slots {
@@ -268,7 +268,7 @@ Integration and usage:
 
 ```swift
 let tracker: AnalyticsTracker = TODO()
-let eventHorizon = EventHorizon { eventName, eventProperties ->
+let eventHorizon = EventHorizon { event ->
    // delegation to analytics tracker
 }
 

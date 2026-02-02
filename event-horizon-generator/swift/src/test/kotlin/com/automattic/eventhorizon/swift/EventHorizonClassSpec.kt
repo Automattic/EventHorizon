@@ -10,14 +10,14 @@ class EventHorizonClassSpec : FunSpec({
     typeSpec.toString() shouldBe """
       |public class EventHorizon {
       |
-      |  private let eventSink: (Swift.String, [Swift.AnyHashable : Swift.Any]) -> Swift.Void
+      |  private let eventSink: (MyModule.Trackable) -> Swift.Void
       |
-      |  public init(eventSink: @escaping (Swift.String, [Swift.AnyHashable : Swift.Any]) -> Swift.Void) {
+      |  public init(eventSink: @escaping (MyModule.Trackable) -> Swift.Void) {
       |    self.eventSink = eventSink
       |  }
       |
       |  public func track(_ event: MyModule.Trackable) {
-      |    eventSink(event.trackableName, event.trackableProperties)
+      |    eventSink(event)
       |  }
       |
       |}
