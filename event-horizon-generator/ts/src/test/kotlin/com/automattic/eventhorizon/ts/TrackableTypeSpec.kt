@@ -26,9 +26,10 @@ class TrackableTypeSpec : FunSpec({
       event("event_name") {
         properties {
           text("property_one")
-          number("property_two")
+          int("property_two")
           boolean("property_three")
           enum("property_four", enumType("enum_name", "value"))
+          float("property_five")
         }
       }
     }
@@ -42,6 +43,7 @@ class TrackableTypeSpec : FunSpec({
       |    property_two: number;
       |    property_three: boolean;
       |    property_four: EnumName;
+      |    property_five: number;
       |  };
       |};
     """.trimMargin()

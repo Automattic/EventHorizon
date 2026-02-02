@@ -86,7 +86,7 @@ private fun InputProperty.toProperty() = Property(
   type = when (type) {
     is PropertyType.Text -> "text"
     is PropertyType.Boolean -> "boolean"
-    is PropertyType.Number -> "number"
+    is PropertyType.NumberInt, PropertyType.NumberFloat -> "number"
     is PropertyType.Enum -> "enum"
   },
   values = (type as? PropertyType.Enum)?.values?.map(CaseString::rawValue).orEmpty(),

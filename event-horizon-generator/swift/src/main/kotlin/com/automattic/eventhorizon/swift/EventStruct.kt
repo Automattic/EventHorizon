@@ -8,7 +8,9 @@ import com.automattic.eventhorizon.PropertyType
 import io.outfoxx.swiftpoet.BOOL
 import io.outfoxx.swiftpoet.CodeBlock
 import io.outfoxx.swiftpoet.DeclaredTypeName
+import io.outfoxx.swiftpoet.FLOAT
 import io.outfoxx.swiftpoet.FunctionSpec
+import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.Modifier
 import io.outfoxx.swiftpoet.PropertySpec
 import io.outfoxx.swiftpoet.STRING
@@ -37,7 +39,8 @@ internal class EventStruct(
     get() {
       val typeName = when (val type = type) {
         is PropertyType.Boolean -> BOOL
-        is PropertyType.Number -> NumericAny
+        is PropertyType.NumberInt -> INT
+        is PropertyType.NumberFloat -> FLOAT
         is PropertyType.Text -> STRING
         is PropertyType.Enum -> EventPropertyEnum(moduleName, type).typeName
       }

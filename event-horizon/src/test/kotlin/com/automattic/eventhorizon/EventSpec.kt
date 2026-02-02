@@ -50,7 +50,7 @@ class EventSpec : FunSpec({
     val properties = buildProperties {
       text("name_a")
       boolean("name_a")
-      number("name_a")
+      int("name_a")
       text("name_b")
       enum("name_b", enumType("enum_name", "value"))
       boolean("name_c")

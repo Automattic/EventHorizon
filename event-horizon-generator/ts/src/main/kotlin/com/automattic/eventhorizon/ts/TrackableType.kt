@@ -83,7 +83,7 @@ internal class TrackableType(
   private val Property.typeName
     get() = when (val type = type) {
       is PropertyType.Boolean -> "boolean"
-      is PropertyType.Number -> "number"
+      is PropertyType.NumberInt, is PropertyType.NumberFloat -> "number"
       is PropertyType.Text -> "string"
       is PropertyType.Enum -> EventPropertyType(type).typeName
     }
