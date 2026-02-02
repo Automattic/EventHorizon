@@ -66,7 +66,7 @@ internal class EventStruct(
         if (structProperties.isEmpty()) {
           builder.addStatement("self.%L = [:]", trackableProtocol.propertiesProperty.name)
         } else {
-          builder.addStatement("var props: %T = [:]", DictionaryAnyHashableAny)
+          builder.addStatement("var props: %T = [:]", DictStringStringConvertible)
           structProperties.forEach { (structProperty, codeGenProperty) ->
             if (structProperty.type.optional) {
               builder.beginControlFlow("if", "let %L = %L", structProperty.name, structProperty.name)

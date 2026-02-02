@@ -11,7 +11,7 @@ class TrackableProtocolSpec : FunSpec({
       |public protocol Trackable : Swift.Hashable, Swift.CustomStringConvertible {
       |
       |  var name: Swift.String { get }
-      |  var properties: [Swift.AnyHashable : Swift.Any] { get }
+      |  var properties: [Swift.String : Swift.CustomStringConvertible] { get }
       |
       |}
       |
