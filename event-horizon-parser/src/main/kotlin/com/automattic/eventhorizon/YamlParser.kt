@@ -117,13 +117,15 @@ public class YamlParser {
       val type = when (val typeText = typeNode.ensureText().bind()) {
         "text" -> PropertyType.Text
 
-        "number" -> PropertyType.Number
+        "int" -> PropertyType.NumberInt
+
+        "float" -> PropertyType.NumberFloat
 
         "boolean" -> PropertyType.Boolean
 
         else -> ensureNotNull(availableEnums.find { enum -> enum.name.rawValue == typeText }) {
           SimpleProblem(
-            "Invalid value at path '${typeNode.path}'. Expected one of 'boolean', 'number', 'text', or a predefined enum, but was '$typeText'.",
+            "Invalid value at path '${typeNode.path}'. Expected one of 'boolean', 'int', 'float', 'text', or a predefined enum, but was '$typeText'.",
           )
         }
       }

@@ -8,10 +8,11 @@ import com.automattic.eventhorizon.PropertyType
 import com.squareup.kotlinpoet.ANY
 import com.squareup.kotlinpoet.BOOLEAN
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.DOUBLE
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.LONG
 import com.squareup.kotlinpoet.MemberName
-import com.squareup.kotlinpoet.NUMBER
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
@@ -35,7 +36,8 @@ internal class EventClass(
   private val Property.className
     get() = when (val type = type) {
       is PropertyType.Boolean -> BOOLEAN
-      is PropertyType.Number -> NUMBER
+      is PropertyType.NumberInt -> LONG
+      is PropertyType.NumberFloat -> DOUBLE
       is PropertyType.Text -> STRING
       is PropertyType.Enum -> EventPropertyEnum(packageName, type).className
     }.copy(nullable = isOptional(platform))

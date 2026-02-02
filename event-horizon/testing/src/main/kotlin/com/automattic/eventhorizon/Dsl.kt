@@ -105,8 +105,12 @@ public class PropertyListBuilder internal constructor() {
     properties += buildProperty(name, PropertyType.Text, builderAction)
   }
 
-  public fun number(name: String, builderAction: BasicPropertyBuilder.() -> Unit = {}) {
-    properties += buildProperty(name, PropertyType.Number, builderAction)
+  public fun int(name: String, builderAction: BasicPropertyBuilder.() -> Unit = {}) {
+    properties += buildProperty(name, PropertyType.NumberInt, builderAction)
+  }
+
+  public fun float(name: String, builderAction: BasicPropertyBuilder.() -> Unit = {}) {
+    properties += buildProperty(name, PropertyType.NumberFloat, builderAction)
   }
 
   public fun boolean(name: String, builderAction: BasicPropertyBuilder.() -> Unit = {}) {

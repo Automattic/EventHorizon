@@ -177,21 +177,38 @@ class YamlParserSpec : FunSpec({
     event.properties shouldHaveSingleElement buildProperty("property", PropertyType.Text)
   }
 
-  test("parse an event with a number property") {
+  test("parse an event with an int property") {
     val text = """
       |schemaVersion: 1
       |
       |events:
       |  event:
       |    property:
-      |      type: number
+      |      type: int
     """
     tempFile.writeText(text.trimMargin())
 
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeRight().events.shouldHaveSingleElement()
-    event.properties shouldHaveSingleElement buildProperty("property", PropertyType.Number)
+    event.properties shouldHaveSingleElement buildProperty("property", PropertyType.NumberInt)
+  }
+
+  test("parse an event with a float property") {
+    val text = """
+      |schemaVersion: 1
+      |
+      |events:
+      |  event:
+      |    property:
+      |      type: float
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val event = result.shouldBeRight().events.shouldHaveSingleElement()
+    event.properties shouldHaveSingleElement buildProperty("property", PropertyType.NumberFloat)
   }
 
   test("parse event with a boolean property") {
@@ -247,7 +264,7 @@ class YamlParserSpec : FunSpec({
 
     result shouldBeLeft
       SimpleProblem(
-        "Invalid value at path '$.events.event.property.type'. Expected one of 'boolean', 'number', 'text', or a predefined enum, but was 'enum_reference'.",
+        "Invalid value at path '$.events.event.property.type'. Expected one of 'boolean', 'int', 'float', 'text', or a predefined enum, but was 'enum_reference'.",
       )
   }
 
@@ -422,7 +439,7 @@ class YamlParserSpec : FunSpec({
       |      optional:
       |        - android
       |    property3:
-      |      type: number
+      |      type: int
     """
     tempFile.writeText(text.trimMargin())
 
@@ -436,7 +453,7 @@ class YamlParserSpec : FunSpec({
       boolean("property2") {
         optionalPlatforms("android")
       }
-      number("property3")
+      int("property3")
     }
   }
 

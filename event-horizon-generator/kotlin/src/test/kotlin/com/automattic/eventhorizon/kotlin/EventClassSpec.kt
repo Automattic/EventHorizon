@@ -31,9 +31,10 @@ class EventClassSpec : FunSpec({
     val event = buildEvent("event_name") {
       properties {
         text("property_one")
-        number("property_two")
+        int("property_two")
         boolean("property_three")
         enum("property_four", enumType("enum_name", "value"))
+        float("property_five")
       }
     }
 
@@ -42,9 +43,10 @@ class EventClassSpec : FunSpec({
     typeSpec.toString() shouldBe """
       |public data class EventNameEvent(
       |  public val propertyOne: kotlin.String,
-      |  public val propertyTwo: kotlin.Number,
+      |  public val propertyTwo: kotlin.Long,
       |  public val propertyThree: kotlin.Boolean,
       |  public val propertyFour: dev.sample.EnumName,
+      |  public val propertyFive: kotlin.Double,
       |) : dev.sample.Trackable {
       |  override val name: kotlin.String
       |    get() = EventName
@@ -54,6 +56,7 @@ class EventClassSpec : FunSpec({
       |    put("property_two", propertyTwo)
       |    put("property_three", propertyThree)
       |    put("property_four", propertyFour)
+      |    put("property_five", propertyFive)
       |  }
       |
       |  public companion object {

@@ -57,7 +57,7 @@ events:
     # Optional properties used with an event.
     user_id:
       # Required. Type of the property for the generated code.
-      # Must be one of [text, boolean, number, <predeclared enum reference>].
+      # Must be one of [text, boolean, int, float, <predeclared enum reference>].
       type: text
       # Optional key.
       description: Some description
@@ -138,7 +138,7 @@ data class UpNextQueueReorderedEvent(
   /**
    * The number of slots the episode was moved
    */
-  val slots: Number?,
+  val slots: Long?,
   /**
    * Whether the episode was moved to the next item that will play
    */
@@ -218,7 +218,7 @@ struct UpNextQueueReorderedEvent: Trackable {
   /**
    * The number of slots the episode was moved
    */
-  let slots: (any Numeric)?
+  let slots: Int?
   /**
    * Whether the episode was moved to the next item that will play
    */
@@ -233,7 +233,7 @@ struct UpNextQueueReorderedEvent: Trackable {
 
   init(
     direction: QueueDirection,
-    slots: (any Numeric)?,
+    slots: Int?,
     isNext: Bool,
     episodeUuid: String
   ) {

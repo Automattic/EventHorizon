@@ -16,7 +16,9 @@ public sealed interface PropertyType {
 
   public data object Text : Basic
 
-  public data object Number : Basic
+  public data object NumberInt : Basic
+
+  public data object NumberFloat : Basic
 
   public data object Boolean : Basic
 

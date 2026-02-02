@@ -36,9 +36,10 @@ class EventStructSpec : FunSpec({
     val event = buildEvent("event_name") {
       properties {
         text("property_one")
-        number("property_two")
+        int("property_two")
         boolean("property_three")
         enum("property_four", enumType("enum_name", "value"))
+        float("property_five")
       }
     }
 
@@ -49,9 +50,10 @@ class EventStructSpec : FunSpec({
       |
       |  public static let eventName: Swift.String = "event_name"
       |  public let propertyOne: Swift.String
-      |  public let propertyTwo: any Swift.Numeric
+      |  public let propertyTwo: Swift.Int
       |  public let propertyThree: Swift.Bool
       |  public let propertyFour: MyModule.EnumName
+      |  public let propertyFive: Swift.Float
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
@@ -59,19 +61,22 @@ class EventStructSpec : FunSpec({
       |
       |  public init(
       |    propertyOne: Swift.String,
-      |    propertyTwo: any Swift.Numeric,
+      |    propertyTwo: Swift.Int,
       |    propertyThree: Swift.Bool,
-      |    propertyFour: MyModule.EnumName
+      |    propertyFour: MyModule.EnumName,
+      |    propertyFive: Swift.Float
       |  ) {
       |    self.propertyOne = propertyOne
       |    self.propertyTwo = propertyTwo
       |    self.propertyThree = propertyThree
       |    self.propertyFour = propertyFour
+      |    self.propertyFive = propertyFive
       |    var props: [Swift.AnyHashable : Swift.Any] = [:]
       |    props["property_one"] = propertyOne
       |    props["property_two"] = propertyTwo
       |    props["property_three"] = propertyThree
       |    props["property_four"] = propertyFour.analyticsValue
+      |    props["property_five"] = propertyFive
       |    self.properties = props
       |  }
       |
