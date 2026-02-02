@@ -43,7 +43,18 @@ internal class TrackableProtocol(
       .addModifiers(Modifier.PUBLIC)
       .build()
 
-    val equalityFunction = FunctionSpec.operatorBuilder("==")
+    return type.toBuilder()
+      .addSuperType(this.typeName)
+      .addProperty(name)
+      .addProperty(properties)
+      .addFunction(createEqualityFunction(typeName, eventProperties))
+      .addFunction(createHashingFunction(eventProperties))
+      .addProperty(createDescriptionProperty(eventProperties, type))
+      .build()
+  }
+
+  private fun createEqualityFunction(typeName: TypeName, eventProperties: List<PropertySpec>): FunctionSpec =
+    FunctionSpec.operatorBuilder("==")
       .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
       .addParameter("lhs", typeName)
       .addParameter("rhs", typeName)
@@ -61,21 +72,22 @@ internal class TrackableProtocol(
       .returns(BOOL)
       .build()
 
-    val hashingFunction = FunctionSpec.builder("hash")
-      .addModifiers(Modifier.PUBLIC)
-      .addParameter("into", "hasher", Hasher, Modifier.INOUT)
-      .also { builder ->
-        if (eventProperties.isNotEmpty()) {
-          eventProperties.forEach { field ->
-            builder.addStatement("hasher.combine(%L)", field.name)
-          }
-        } else {
-          builder.addStatement("// no-op")
+  private fun createHashingFunction(eventProperties: List<PropertySpec>): FunctionSpec = FunctionSpec.builder("hash")
+    .addModifiers(Modifier.PUBLIC)
+    .addParameter("into", "hasher", Hasher, Modifier.INOUT)
+    .also { builder ->
+      if (eventProperties.isNotEmpty()) {
+        eventProperties.forEach { field ->
+          builder.addStatement("hasher.combine(%L)", field.name)
         }
+      } else {
+        builder.addStatement("// no-op")
       }
-      .build()
+    }
+    .build()
 
-    val descriptionProperty = PropertySpec.builder("description", STRING)
+  private fun createDescriptionProperty(eventProperties: List<PropertySpec>, type: TypeSpec): PropertySpec =
+    PropertySpec.builder("description", STRING)
       .addModifiers(Modifier.PUBLIC)
       .getter(
         FunctionSpec.getterBuilder()
@@ -103,16 +115,6 @@ internal class TrackableProtocol(
           .build(),
       )
       .build()
-
-    return type.toBuilder()
-      .addSuperType(this.typeName)
-      .addProperty(name)
-      .addProperty(properties)
-      .addFunction(equalityFunction)
-      .addFunction(hashingFunction)
-      .addProperty(descriptionProperty)
-      .build()
-  }
 }
 
 private val NameProperty = PropertySpec.builder("name", STRING).build()
