@@ -44,19 +44,19 @@ class SwiftGeneratorSpec : FunSpec({
     file.readText() shouldBe """
       |public class EventHorizon {
       |
-      |  private let eventSink: (Trackable) -> Void
+      |  private let eventSink: (any Trackable) -> Void
       |
-      |  public init(eventSink: @escaping (Trackable) -> Void) {
+      |  public init(eventSink: @escaping (any Trackable) -> Void) {
       |    self.eventSink = eventSink
       |  }
       |
-      |  public func track(_ event: Trackable) {
+      |  public func track(_ event: any Trackable) {
       |    eventSink(event)
       |  }
       |
       |}
       |
-      |public protocol Trackable {
+      |public protocol Trackable : Hashable, CustomStringConvertible {
       |
       |  var name: String { get }
       |  var properties: [AnyHashable : Any] { get }
@@ -73,12 +73,26 @@ class SwiftGeneratorSpec : FunSpec({
       |    return EventAEvent.eventName
       |  }
       |  public let properties: [AnyHashable : Any]
+      |  public var description: String {
+      |    var parts: [String] = []
+      |    parts.append("propertyA: \(propertyA)")
+      |    return "EventAEvent(\(parts.joined(separator: ", ")))"
+      |  }
       |
       |  public init(propertyA: EnumA) {
       |    self.propertyA = propertyA
       |    var props: [AnyHashable : Any] = [:]
       |    props["property_a"] = propertyA.analyticsValue
       |    self.properties = props
+      |  }
+      |
+      |  public static func ==(lhs: EventAEvent, rhs: EventAEvent) -> Bool {
+      |    return
+      |      lhs.propertyA == rhs.propertyA
+      |  }
+      |
+      |  public func hash(into hasher: inout Hasher) {
+      |    hasher.combine(propertyA)
       |  }
       |
       |}
@@ -94,6 +108,12 @@ class SwiftGeneratorSpec : FunSpec({
       |    return EventBEvent.eventName
       |  }
       |  public let properties: [AnyHashable : Any]
+      |  public var description: String {
+      |    var parts: [String] = []
+      |    parts.append("propertyA: \(String(describing: propertyA))")
+      |    parts.append("propertyB: \(propertyB)")
+      |    return "EventBEvent(\(parts.joined(separator: ", ")))"
+      |  }
       |
       |  public init(propertyA: EnumA?, propertyB: EnumB) {
       |    self.propertyA = propertyA
@@ -104,6 +124,17 @@ class SwiftGeneratorSpec : FunSpec({
       |    }
       |    props["property_b"] = propertyB.analyticsValue
       |    self.properties = props
+      |  }
+      |
+      |  public static func ==(lhs: EventBEvent, rhs: EventBEvent) -> Bool {
+      |    return
+      |      lhs.propertyA == rhs.propertyA &&
+      |      lhs.propertyB == rhs.propertyB
+      |  }
+      |
+      |  public func hash(into hasher: inout Hasher) {
+      |    hasher.combine(propertyA)
+      |    hasher.combine(propertyB)
       |  }
       |
       |}

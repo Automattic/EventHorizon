@@ -22,9 +22,20 @@ class EventStructSpec : FunSpec({
       |    return MyModule.EventNameEvent.eventName
       |  }
       |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public var description: Swift.String {
+      |    return "EventNameEvent"
+      |  }
       |
       |  public init() {
       |    self.properties = [:]
+      |  }
+      |
+      |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
+      |    return true
+      |  }
+      |
+      |  public func hash(into hasher: inout Swift.Hasher) {
+      |    // no-op
       |  }
       |
       |}
@@ -58,6 +69,15 @@ class EventStructSpec : FunSpec({
       |    return MyModule.EventNameEvent.eventName
       |  }
       |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public var description: Swift.String {
+      |    var parts: [Swift.String] = []
+      |    parts.append("propertyOne: \(propertyOne)")
+      |    parts.append("propertyTwo: \(propertyTwo)")
+      |    parts.append("propertyThree: \(propertyThree)")
+      |    parts.append("propertyFour: \(propertyFour)")
+      |    parts.append("propertyFive: \(propertyFive)")
+      |    return "EventNameEvent(\(parts.joined(separator: ", ")))"
+      |  }
       |
       |  public init(
       |    propertyOne: Swift.String,
@@ -78,6 +98,23 @@ class EventStructSpec : FunSpec({
       |    props["property_four"] = propertyFour.analyticsValue
       |    props["property_five"] = propertyFive
       |    self.properties = props
+      |  }
+      |
+      |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
+      |    return
+      |      lhs.propertyOne == rhs.propertyOne &&
+      |      lhs.propertyTwo == rhs.propertyTwo &&
+      |      lhs.propertyThree == rhs.propertyThree &&
+      |      lhs.propertyFour == rhs.propertyFour &&
+      |      lhs.propertyFive == rhs.propertyFive
+      |  }
+      |
+      |  public func hash(into hasher: inout Swift.Hasher) {
+      |    hasher.combine(propertyOne)
+      |    hasher.combine(propertyTwo)
+      |    hasher.combine(propertyThree)
+      |    hasher.combine(propertyFour)
+      |    hasher.combine(propertyFive)
       |  }
       |
       |}
@@ -102,9 +139,20 @@ class EventStructSpec : FunSpec({
       |    return MyModule.EventNameEvent.eventName
       |  }
       |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public var description: Swift.String {
+      |    return "EventNameEvent"
+      |  }
       |
       |  public init() {
       |    self.properties = [:]
+      |  }
+      |
+      |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
+      |    return true
+      |  }
+      |
+      |  public func hash(into hasher: inout Swift.Hasher) {
+      |    // no-op
       |  }
       |
       |}
@@ -142,6 +190,13 @@ class EventStructSpec : FunSpec({
       |    return MyModule.EventNameEvent.eventName
       |  }
       |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public var description: Swift.String {
+      |    var parts: [Swift.String] = []
+      |    parts.append("propertyOne: \(propertyOne)")
+      |    parts.append("propertyTwo: \(propertyTwo)")
+      |    parts.append("propertyThree: \(propertyThree)")
+      |    return "EventNameEvent(\(parts.joined(separator: ", ")))"
+      |  }
       |
       |  public init(
       |    propertyOne: Swift.String,
@@ -156,6 +211,19 @@ class EventStructSpec : FunSpec({
       |    props["property_two"] = propertyTwo
       |    props["property_three"] = propertyThree
       |    self.properties = props
+      |  }
+      |
+      |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
+      |    return
+      |      lhs.propertyOne == rhs.propertyOne &&
+      |      lhs.propertyTwo == rhs.propertyTwo &&
+      |      lhs.propertyThree == rhs.propertyThree
+      |  }
+      |
+      |  public func hash(into hasher: inout Swift.Hasher) {
+      |    hasher.combine(propertyOne)
+      |    hasher.combine(propertyTwo)
+      |    hasher.combine(propertyThree)
       |  }
       |
       |}
@@ -191,6 +259,13 @@ class EventStructSpec : FunSpec({
       |    return MyModule.EventNameEvent.eventName
       |  }
       |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public var description: Swift.String {
+      |    var parts: [Swift.String] = []
+      |    parts.append("propertyOne: \(propertyOne)")
+      |    parts.append("propertyTwo: \(Swift.String(describing: propertyTwo))")
+      |    parts.append("propertyThree: \(propertyThree)")
+      |    return "EventNameEvent(\(parts.joined(separator: ", ")))"
+      |  }
       |
       |  public init(
       |    propertyOne: Swift.String,
@@ -207,6 +282,19 @@ class EventStructSpec : FunSpec({
       |    }
       |    props["property_three"] = propertyThree
       |    self.properties = props
+      |  }
+      |
+      |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
+      |    return
+      |      lhs.propertyOne == rhs.propertyOne &&
+      |      lhs.propertyTwo == rhs.propertyTwo &&
+      |      lhs.propertyThree == rhs.propertyThree
+      |  }
+      |
+      |  public func hash(into hasher: inout Swift.Hasher) {
+      |    hasher.combine(propertyOne)
+      |    hasher.combine(propertyTwo)
+      |    hasher.combine(propertyThree)
       |  }
       |
       |}

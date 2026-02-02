@@ -8,7 +8,7 @@ class TrackableProtocolSpec : FunSpec({
     val typeSpec = TrackableProtocol("MyModule").typeSpec
 
     typeSpec.toString() shouldBe """
-      |public protocol Trackable {
+      |public protocol Trackable : Swift.Hashable, Swift.CustomStringConvertible {
       |
       |  var name: Swift.String { get }
       |  var properties: [Swift.AnyHashable : Swift.Any] { get }
