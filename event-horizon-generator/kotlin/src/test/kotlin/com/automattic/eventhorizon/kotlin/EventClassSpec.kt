@@ -21,8 +21,7 @@ class EventClassSpec : FunSpec({
       |  override val name: kotlin.String
       |    get() = EventName
       |
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any>
-      |    get() = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
+      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
       |}
       |
     """.trimMargin()
@@ -50,13 +49,12 @@ class EventClassSpec : FunSpec({
       |  override val name: kotlin.String
       |    get() = EventName
       |
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any>
-      |    get() = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
-      |      put("property_one", propertyOne)
-      |      put("property_two", propertyTwo)
-      |      put("property_three", propertyThree)
-      |      put("property_four", propertyFour)
-      |    }
+      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
+      |    put("property_one", propertyOne)
+      |    put("property_two", propertyTwo)
+      |    put("property_three", propertyThree)
+      |    put("property_four", propertyFour)
+      |  }
       |
       |  public companion object {
       |    public const val EventName: kotlin.String = "event_name"
@@ -83,8 +81,7 @@ class EventClassSpec : FunSpec({
       |  override val name: kotlin.String
       |    get() = EventName
       |
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any>
-      |    get() = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
+      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
       |}
       |
     """.trimMargin()
@@ -120,12 +117,11 @@ class EventClassSpec : FunSpec({
       |  override val name: kotlin.String
       |    get() = EventName
       |
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any>
-      |    get() = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
-      |      put("property_one", propertyOne)
-      |      put("property_two", propertyTwo)
-      |      put("property_three", propertyThree)
-      |    }
+      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
+      |    put("property_one", propertyOne)
+      |    put("property_two", propertyTwo)
+      |    put("property_three", propertyThree)
+      |  }
       |
       |  public companion object {
       |    public const val EventName: kotlin.String = "event_name"
@@ -161,14 +157,13 @@ class EventClassSpec : FunSpec({
       |  override val name: kotlin.String
       |    get() = EventName
       |
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any>
-      |    get() = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
-      |      put("property_one", propertyOne)
-      |      put("property_two", propertyTwo)
-      |      if (propertyThree != null) {
-      |        put("property_three", propertyThree)
-      |      }
+      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
+      |    put("property_one", propertyOne)
+      |    put("property_two", propertyTwo)
+      |    if (propertyThree != null) {
+      |      put("property_three", propertyThree)
       |    }
+      |  }
       |
       |  public companion object {
       |    public const val EventName: kotlin.String = "event_name"

@@ -75,7 +75,7 @@ internal class EventClass(
     }
 
   private fun propertiesInMap() = buildCodeBlock {
-    beginControlFlow("return %M<%T, %T>", BuildMap, STRING, ANY)
+    beginControlFlow("%M<%T, %T>", BuildMap, STRING, ANY)
     classProperties.forEach { (classProperty, codeGenProperty) ->
       if (classProperty.type.isNullable) {
         beginControlFlow("if (%N != null)", classProperty)
@@ -89,7 +89,7 @@ internal class EventClass(
   }
 
   private fun emptyPropertyMap() = buildCodeBlock {
-    addStatement("return %M<%T, %T>()", EmptyMap, STRING, ANY)
+    addStatement("%M<%T, %T>()", EmptyMap, STRING, ANY)
   }
 
   val typeSpec: TypeSpec

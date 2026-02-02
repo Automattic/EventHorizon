@@ -36,7 +36,7 @@ internal class TrackableInterface(
     val properties = propertiesProperty
       .toBuilder()
       .addModifiers(KModifier.OVERRIDE)
-      .getter(FunSpec.getterBuilder().addCode(propertiesGetter).build())
+      .initializer(propertiesGetter)
       .build()
 
     return typeSpec
