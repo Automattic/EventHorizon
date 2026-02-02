@@ -58,7 +58,26 @@ internal class EventStruct(
         structProperties.forEach { (property, _) ->
           builder
             .addParameter(property.name, property.type)
-            .addCode("self.%L = %L\n", property.name, property.name)
+            .addStatement("self.%L = %L", property.name, property.name)
+        }
+        if (structProperties.isEmpty()) {
+          builder.addStatement("self.%L = [:]", trackableProtocol.propertiesProperty.name)
+        } else {
+          builder.addStatement("var props: %T = [:]", DictionaryAnyHashableAny)
+          structProperties.forEach { (structProperty, codeGenProperty) ->
+            if (structProperty.type.optional) {
+              builder.beginControlFlow("if", "let %L = %L", structProperty.name, structProperty.name)
+            }
+            if (codeGenProperty.type is PropertyType.Enum) {
+              builder.addStatement("props[%S] = %L.analyticsValue", codeGenProperty.name.rawValue, structProperty.name)
+            } else {
+              builder.addStatement("props[%S] = %L", codeGenProperty.name.rawValue, structProperty.name)
+            }
+            if (structProperty.type.optional) {
+              builder.endControlFlow("if")
+            }
+          }
+          builder.addStatement("self.%L = props", trackableProtocol.propertiesProperty.name)
         }
       }
       .build()
@@ -67,34 +86,6 @@ internal class EventStruct(
     get() = CodeBlock
       .builder()
       .addStatement("return %T.%N", type, eventNameProperty)
-      .build()
-
-  private val trackablePropertiesGetter
-    get() = CodeBlock
-      .builder()
-      .addStatement(
-        buildString {
-          append(if (structProperties.isEmpty()) "let" else "var")
-          append(" props: %T = [:]")
-        },
-        DictionaryAnyHashableAny,
-      )
-      .also { builder ->
-        structProperties.forEach { (structProperty, codeGenProperty) ->
-          if (structProperty.type.optional) {
-            builder.beginControlFlow("if", "let %L = %L", structProperty.name, structProperty.name)
-          }
-          if (codeGenProperty.type is PropertyType.Enum) {
-            builder.addStatement("props[%S] = %L.analyticsValue", codeGenProperty.name.rawValue, structProperty.name)
-          } else {
-            builder.addStatement("props[%S] = %L", codeGenProperty.name.rawValue, structProperty.name)
-          }
-          if (structProperty.type.optional) {
-            builder.endControlFlow("if")
-          }
-        }
-      }
-      .addStatement("return props")
       .build()
 
   val typeSpec
@@ -106,5 +97,5 @@ internal class EventStruct(
       .addProperties(structProperties.keys)
       .also { builder -> event.description?.let(builder::addDoc) }
       .build()
-      .let { typeSpec -> trackableProtocol.conformType(typeSpec, trackableNameGetter, trackablePropertiesGetter) }
+      .let { typeSpec -> trackableProtocol.conformType(typeSpec, trackableNameGetter) }
 }

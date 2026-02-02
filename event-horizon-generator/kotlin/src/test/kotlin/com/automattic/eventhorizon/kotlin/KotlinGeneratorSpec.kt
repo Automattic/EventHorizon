@@ -73,10 +73,9 @@ class KotlinGeneratorSpec : FunSpec({
       |  override val name: String
       |    get() = EventName
       |
-      |  override val properties: Map<String, Any>
-      |    get() = buildMap<String, Any> {
-      |      put("property_a", propertyA)
-      |    }
+      |  override val properties: Map<String, Any> = buildMap<String, Any> {
+      |    put("property_a", propertyA)
+      |  }
       |
       |  public companion object {
       |    public const val EventName: String = "event_a"
@@ -93,13 +92,12 @@ class KotlinGeneratorSpec : FunSpec({
       |  override val name: String
       |    get() = EventName
       |
-      |  override val properties: Map<String, Any>
-      |    get() = buildMap<String, Any> {
-      |      if (propertyA != null) {
-      |        put("property_a", propertyA)
-      |      }
-      |      put("property_b", propertyB)
+      |  override val properties: Map<String, Any> = buildMap<String, Any> {
+      |    if (propertyA != null) {
+      |      put("property_a", propertyA)
       |    }
+      |    put("property_b", propertyB)
+      |  }
       |
       |  public companion object {
       |    public const val EventName: String = "event_b"

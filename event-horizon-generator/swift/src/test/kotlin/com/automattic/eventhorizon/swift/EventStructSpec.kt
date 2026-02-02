@@ -21,12 +21,10 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var properties: [Swift.AnyHashable : Swift.Any] {
-      |    let props: [Swift.AnyHashable : Swift.Any] = [:]
-      |    return props
-      |  }
+      |  public let properties: [Swift.AnyHashable : Swift.Any]
       |
       |  public init() {
+      |    self.properties = [:]
       |  }
       |
       |}
@@ -57,14 +55,7 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var properties: [Swift.AnyHashable : Swift.Any] {
-      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
-      |    props["property_one"] = propertyOne
-      |    props["property_two"] = propertyTwo
-      |    props["property_three"] = propertyThree
-      |    props["property_four"] = propertyFour.analyticsValue
-      |    return props
-      |  }
+      |  public let properties: [Swift.AnyHashable : Swift.Any]
       |
       |  public init(
       |    propertyOne: Swift.String,
@@ -76,6 +67,12 @@ class EventStructSpec : FunSpec({
       |    self.propertyTwo = propertyTwo
       |    self.propertyThree = propertyThree
       |    self.propertyFour = propertyFour
+      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
+      |    props["property_one"] = propertyOne
+      |    props["property_two"] = propertyTwo
+      |    props["property_three"] = propertyThree
+      |    props["property_four"] = propertyFour.analyticsValue
+      |    self.properties = props
       |  }
       |
       |}
@@ -99,12 +96,10 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var properties: [Swift.AnyHashable : Swift.Any] {
-      |    let props: [Swift.AnyHashable : Swift.Any] = [:]
-      |    return props
-      |  }
+      |  public let properties: [Swift.AnyHashable : Swift.Any]
       |
       |  public init() {
+      |    self.properties = [:]
       |  }
       |
       |}
@@ -141,13 +136,7 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var properties: [Swift.AnyHashable : Swift.Any] {
-      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
-      |    props["property_one"] = propertyOne
-      |    props["property_two"] = propertyTwo
-      |    props["property_three"] = propertyThree
-      |    return props
-      |  }
+      |  public let properties: [Swift.AnyHashable : Swift.Any]
       |
       |  public init(
       |    propertyOne: Swift.String,
@@ -157,6 +146,11 @@ class EventStructSpec : FunSpec({
       |    self.propertyOne = propertyOne
       |    self.propertyTwo = propertyTwo
       |    self.propertyThree = propertyThree
+      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
+      |    props["property_one"] = propertyOne
+      |    props["property_two"] = propertyTwo
+      |    props["property_three"] = propertyThree
+      |    self.properties = props
       |  }
       |
       |}
@@ -191,15 +185,7 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public var properties: [Swift.AnyHashable : Swift.Any] {
-      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
-      |    props["property_one"] = propertyOne
-      |    if let propertyTwo = propertyTwo {
-      |      props["property_two"] = propertyTwo
-      |    }
-      |    props["property_three"] = propertyThree
-      |    return props
-      |  }
+      |  public let properties: [Swift.AnyHashable : Swift.Any]
       |
       |  public init(
       |    propertyOne: Swift.String,
@@ -209,6 +195,13 @@ class EventStructSpec : FunSpec({
       |    self.propertyOne = propertyOne
       |    self.propertyTwo = propertyTwo
       |    self.propertyThree = propertyThree
+      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
+      |    props["property_one"] = propertyOne
+      |    if let propertyTwo = propertyTwo {
+      |      props["property_two"] = propertyTwo
+      |    }
+      |    props["property_three"] = propertyThree
+      |    self.properties = props
       |  }
       |
       |}

@@ -72,14 +72,13 @@ class SwiftGeneratorSpec : FunSpec({
       |  public var name: String {
       |    return EventAEvent.eventName
       |  }
-      |  public var properties: [AnyHashable : Any] {
-      |    var props: [AnyHashable : Any] = [:]
-      |    props["property_a"] = propertyA.analyticsValue
-      |    return props
-      |  }
+      |  public let properties: [AnyHashable : Any]
       |
       |  public init(propertyA: EnumA) {
       |    self.propertyA = propertyA
+      |    var props: [AnyHashable : Any] = [:]
+      |    props["property_a"] = propertyA.analyticsValue
+      |    self.properties = props
       |  }
       |
       |}
@@ -94,18 +93,17 @@ class SwiftGeneratorSpec : FunSpec({
       |  public var name: String {
       |    return EventBEvent.eventName
       |  }
-      |  public var properties: [AnyHashable : Any] {
+      |  public let properties: [AnyHashable : Any]
+      |
+      |  public init(propertyA: EnumA?, propertyB: EnumB) {
+      |    self.propertyA = propertyA
+      |    self.propertyB = propertyB
       |    var props: [AnyHashable : Any] = [:]
       |    if let propertyA = propertyA {
       |      props["property_a"] = propertyA.analyticsValue
       |    }
       |    props["property_b"] = propertyB.analyticsValue
-      |    return props
-      |  }
-      |
-      |  public init(propertyA: EnumA?, propertyB: EnumB) {
-      |    self.propertyA = propertyA
-      |    self.propertyB = propertyB
+      |    self.properties = props
       |  }
       |
       |}

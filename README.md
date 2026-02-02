@@ -148,15 +148,14 @@ data class UpNextQueueReorderedEvent(
   override val name: String
     get() = EventName
 
-  override val properties: Map<String, Any>
-    get() = buildMap<String, Any> {
-      put("direction", direction)
-      if (slots != null) {
-        put("slots", slots)
-      }
-      put("is_next", isNext)
-      put("source", source)
+  override val properties: Map<String, Any> = buildMap<String, Any> {
+    put("direction", direction)
+    if (slots != null) {
+      put("slots", slots)
     }
+    put("is_next", isNext)
+    put("source", source)
+  }
 }
 
 enum class QueueDirection {
@@ -230,16 +229,7 @@ struct UpNextQueueReorderedEvent: Trackable {
     return UpNextQueueReorderedEvent.eventName
   }
 
-  var properties: [AnyHashable : Any] {
-    var props: [AnyHashable : Any] = [:]
-    props["direction"] = direction.analyticsValue
-    if let slots = slots {
-      props["slots"] = slots
-    }
-    props["is_next"] = isNext
-    props["episode_uuid"] = episodeUuid
-    return props
-  }
+  let properties: [AnyHashable : Any]
 
   init(
     direction: QueueDirection,
@@ -251,6 +241,15 @@ struct UpNextQueueReorderedEvent: Trackable {
     self.slots = slots
     self.isNext = isNext
     self.episodeUuid = episodeUuid
+
+    var props: [AnyHashable : Any] = [:]
+    props["direction"] = direction.analyticsValue
+    if let slots = slots {
+      props["slots"] = slots
+    }
+    props["is_next"] = isNext
+    props["episode_uuid"] = episodeUuid
+    self.properties = props
   }
 }
 
