@@ -205,7 +205,7 @@ class EventHorizon {
 
 protocol Trackable : Hashable, CustomStringConvertible {
   var name: String { get }
-  var properties: [AnyHashable : Any] { get }
+  var properties: [String : CustomStringConvertible] { get }
 }
 
 /**
@@ -229,7 +229,7 @@ struct UpNextQueueReorderedEvent: Trackable {
     return UpNextQueueReorderedEvent.eventName
   }
 
-  let properties: [AnyHashable : Any]
+  let properties: [String : CustomStringConvertible]
 
   init(
     direction: QueueDirection,
@@ -242,7 +242,7 @@ struct UpNextQueueReorderedEvent: Trackable {
     self.isNext = isNext
     self.episodeUuid = episodeUuid
 
-    var props: [AnyHashable : Any] = [:]
+    var props: [String : CustomStringConvertible] = [:]
     props["direction"] = direction.analyticsValue
     if let slots = slots {
       props["slots"] = slots

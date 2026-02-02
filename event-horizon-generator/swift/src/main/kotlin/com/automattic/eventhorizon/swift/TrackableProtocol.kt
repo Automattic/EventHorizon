@@ -116,4 +116,4 @@ internal class TrackableProtocol(
 }
 
 private val NameProperty = PropertySpec.builder("name", STRING).build()
-private val PropertiesProperty = PropertySpec.builder("properties", DictionaryAnyHashableAny).build()
+private val PropertiesProperty = PropertySpec.builder("properties", DictStringStringConvertible).build()

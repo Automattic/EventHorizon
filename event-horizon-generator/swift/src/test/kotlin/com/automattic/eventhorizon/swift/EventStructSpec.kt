@@ -21,7 +21,7 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    return "EventNameEvent"
       |  }
@@ -68,7 +68,7 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    var parts: [Swift.String] = []
       |    parts.append("propertyOne: \(propertyOne)")
@@ -91,7 +91,7 @@ class EventStructSpec : FunSpec({
       |    self.propertyThree = propertyThree
       |    self.propertyFour = propertyFour
       |    self.propertyFive = propertyFive
-      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
+      |    var props: [Swift.String : Swift.CustomStringConvertible] = [:]
       |    props["property_one"] = propertyOne
       |    props["property_two"] = propertyTwo
       |    props["property_three"] = propertyThree
@@ -138,7 +138,7 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    return "EventNameEvent"
       |  }
@@ -189,7 +189,7 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    var parts: [Swift.String] = []
       |    parts.append("propertyOne: \(propertyOne)")
@@ -206,7 +206,7 @@ class EventStructSpec : FunSpec({
       |    self.propertyOne = propertyOne
       |    self.propertyTwo = propertyTwo
       |    self.propertyThree = propertyThree
-      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
+      |    var props: [Swift.String : Swift.CustomStringConvertible] = [:]
       |    props["property_one"] = propertyOne
       |    props["property_two"] = propertyTwo
       |    props["property_three"] = propertyThree
@@ -258,7 +258,7 @@ class EventStructSpec : FunSpec({
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.AnyHashable : Swift.Any]
+      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    var parts: [Swift.String] = []
       |    parts.append("propertyOne: \(propertyOne)")
@@ -275,7 +275,7 @@ class EventStructSpec : FunSpec({
       |    self.propertyOne = propertyOne
       |    self.propertyTwo = propertyTwo
       |    self.propertyThree = propertyThree
-      |    var props: [Swift.AnyHashable : Swift.Any] = [:]
+      |    var props: [Swift.String : Swift.CustomStringConvertible] = [:]
       |    props["property_one"] = propertyOne
       |    if let propertyTwo = propertyTwo {
       |      props["property_two"] = propertyTwo
