@@ -15,12 +15,14 @@ class EventClassSpec : FunSpec({
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
     typeSpec.toString() shouldBe """
+      |@kotlinx.parcelize.Parcelize
       |public data object EventNameEvent : dev.sample.Trackable {
       |  public const val EventName: kotlin.String = "event_name"
       |
       |  override val name: kotlin.String
       |    get() = EventName
       |
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
       |}
       |
@@ -41,6 +43,7 @@ class EventClassSpec : FunSpec({
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
     typeSpec.toString() shouldBe """
+      |@kotlinx.parcelize.Parcelize
       |public data class EventNameEvent(
       |  public val propertyOne: kotlin.String,
       |  public val propertyTwo: kotlin.Long,
@@ -51,6 +54,7 @@ class EventClassSpec : FunSpec({
       |  override val name: kotlin.String
       |    get() = EventName
       |
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
       |    put("property_one", propertyOne)
       |    put("property_two", propertyTwo)
@@ -78,12 +82,14 @@ class EventClassSpec : FunSpec({
       |/**
       | * Some description
       | */
+      |@kotlinx.parcelize.Parcelize
       |public data object EventNameEvent : dev.sample.Trackable {
       |  public const val EventName: kotlin.String = "event_name"
       |
       |  override val name: kotlin.String
       |    get() = EventName
       |
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
       |}
       |
@@ -106,6 +112,7 @@ class EventClassSpec : FunSpec({
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
     typeSpec.toString() shouldBe """
+      |@kotlinx.parcelize.Parcelize
       |public data class EventNameEvent(
       |  /**
       |   * Description 1
@@ -120,6 +127,7 @@ class EventClassSpec : FunSpec({
       |  override val name: kotlin.String
       |    get() = EventName
       |
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
       |    put("property_one", propertyOne)
       |    put("property_two", propertyTwo)
@@ -152,6 +160,7 @@ class EventClassSpec : FunSpec({
     val typeSpec = EventClass("dev.sample", event, trackable, Platform("android")).typeSpec
 
     typeSpec.toString() shouldBe """
+      |@kotlinx.parcelize.Parcelize
       |public data class EventNameEvent(
       |  public val propertyOne: kotlin.String,
       |  public val propertyThree: kotlin.String,
@@ -160,6 +169,7 @@ class EventClassSpec : FunSpec({
       |  override val name: kotlin.String
       |    get() = EventName
       |
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
       |    put("property_one", propertyOne)
       |    put("property_three", propertyThree)

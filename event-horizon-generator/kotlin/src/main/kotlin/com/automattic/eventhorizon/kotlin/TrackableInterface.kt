@@ -23,6 +23,7 @@ internal class TrackableInterface(
   val typeSpec
     get() = TypeSpec
       .interfaceBuilder(className)
+      .addSuperinterface(Parcelable)
       .addProperty(nameProperty)
       .addProperty(propertiesProperty)
       .build()
@@ -35,12 +36,14 @@ internal class TrackableInterface(
       .build()
     val properties = propertiesProperty
       .toBuilder()
+      .addAnnotation(IgnoredOnParcel)
       .addModifiers(KModifier.OVERRIDE)
       .initializer(propertiesGetter)
       .build()
 
     return typeSpec
       .toBuilder()
+      .addAnnotation(Parcelize)
       .addSuperinterface(className)
       .addProperty(name)
       .addProperty(properties)

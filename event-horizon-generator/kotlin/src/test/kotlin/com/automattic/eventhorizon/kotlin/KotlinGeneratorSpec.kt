@@ -44,11 +44,14 @@ class KotlinGeneratorSpec : FunSpec({
     file.readText() shouldBe """
       |package dev.sample
       |
+      |import android.os.Parcelable
       |import kotlin.Any
       |import kotlin.String
       |import kotlin.Unit
       |import kotlin.collections.Map
       |import kotlin.collections.buildMap
+      |import kotlinx.parcelize.IgnoredOnParcel
+      |import kotlinx.parcelize.Parcelize
       |
       |public class EventHorizon(
       |  private val eventSink: (Trackable) -> Unit,
@@ -58,7 +61,7 @@ class KotlinGeneratorSpec : FunSpec({
       |  }
       |}
       |
-      |public interface Trackable {
+      |public interface Trackable : Parcelable {
       |  public val name: String
       |
       |  public val properties: Map<String, Any>
@@ -67,12 +70,14 @@ class KotlinGeneratorSpec : FunSpec({
       |/**
       | * Event description
       | */
+      |@Parcelize
       |public data class EventAEvent(
       |  public val propertyA: EnumA,
       |) : Trackable {
       |  override val name: String
       |    get() = EventName
       |
+      |  @IgnoredOnParcel
       |  override val properties: Map<String, Any> = buildMap<String, Any> {
       |    put("property_a", propertyA)
       |  }
@@ -82,6 +87,7 @@ class KotlinGeneratorSpec : FunSpec({
       |  }
       |}
       |
+      |@Parcelize
       |public data class EventBEvent(
       |  /**
       |   * Property description
@@ -92,6 +98,7 @@ class KotlinGeneratorSpec : FunSpec({
       |  override val name: String
       |    get() = EventName
       |
+      |  @IgnoredOnParcel
       |  override val properties: Map<String, Any> = buildMap<String, Any> {
       |    put("property_b", propertyB)
       |    if (propertyA != null) {
