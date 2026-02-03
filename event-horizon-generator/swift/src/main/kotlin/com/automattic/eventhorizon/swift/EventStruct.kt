@@ -12,6 +12,7 @@ import io.outfoxx.swiftpoet.FLOAT
 import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.INT
 import io.outfoxx.swiftpoet.Modifier
+import io.outfoxx.swiftpoet.ParameterSpec
 import io.outfoxx.swiftpoet.PropertySpec
 import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.TypeName
@@ -28,6 +29,7 @@ internal class EventStruct(
 
   private val structProperties
     get() = event.properties
+      .sortedBy { property -> property.isOptional(platform) }
       .associateBy { property ->
         PropertySpec.builder(property.name.toString(Case.Camel), property.typeName)
           .addModifiers(Modifier.PUBLIC)
@@ -59,8 +61,15 @@ internal class EventStruct(
       .addModifiers(Modifier.PUBLIC)
       .also { builder ->
         structProperties.forEach { (property, _) ->
+          val parameter = ParameterSpec.builder(property.name, property.type)
+            .also { propertyBuilder ->
+              if (property.type.optional) {
+                propertyBuilder.defaultValue("%L", "nil")
+              }
+            }
+            .build()
           builder
-            .addParameter(property.name, property.type)
+            .addParameter(parameter)
             .addStatement("self.%L = %L", property.name, property.name)
         }
         if (structProperties.isEmpty()) {

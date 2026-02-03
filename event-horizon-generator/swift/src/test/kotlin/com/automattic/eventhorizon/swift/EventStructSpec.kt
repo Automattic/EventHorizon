@@ -253,8 +253,8 @@ class EventStructSpec : FunSpec({
       |
       |  public static let eventName: Swift.String = "event_name"
       |  public let propertyOne: Swift.String
-      |  public let propertyTwo: Swift.String?
       |  public let propertyThree: Swift.String
+      |  public let propertyTwo: Swift.String?
       |  public var name: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
@@ -262,39 +262,39 @@ class EventStructSpec : FunSpec({
       |  public var description: Swift.String {
       |    var parts: [Swift.String] = []
       |    parts.append("propertyOne: \(propertyOne)")
-      |    parts.append("propertyTwo: \(Swift.String(describing: propertyTwo))")
       |    parts.append("propertyThree: \(propertyThree)")
+      |    parts.append("propertyTwo: \(Swift.String(describing: propertyTwo))")
       |    return "EventNameEvent(\(parts.joined(separator: ", ")))"
       |  }
       |
       |  public init(
       |    propertyOne: Swift.String,
-      |    propertyTwo: Swift.String?,
-      |    propertyThree: Swift.String
+      |    propertyThree: Swift.String,
+      |    propertyTwo: Swift.String? = nil
       |  ) {
       |    self.propertyOne = propertyOne
-      |    self.propertyTwo = propertyTwo
       |    self.propertyThree = propertyThree
+      |    self.propertyTwo = propertyTwo
       |    var props: [Swift.String : Swift.CustomStringConvertible] = [:]
       |    props["property_one"] = propertyOne
+      |    props["property_three"] = propertyThree
       |    if let propertyTwo = propertyTwo {
       |      props["property_two"] = propertyTwo
       |    }
-      |    props["property_three"] = propertyThree
       |    self.properties = props
       |  }
       |
       |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
       |    return
       |      lhs.propertyOne == rhs.propertyOne &&
-      |      lhs.propertyTwo == rhs.propertyTwo &&
-      |      lhs.propertyThree == rhs.propertyThree
+      |      lhs.propertyThree == rhs.propertyThree &&
+      |      lhs.propertyTwo == rhs.propertyTwo
       |  }
       |
       |  public func hash(into hasher: inout Swift.Hasher) {
       |    hasher.combine(propertyOne)
-      |    hasher.combine(propertyTwo)
       |    hasher.combine(propertyThree)
+      |    hasher.combine(propertyTwo)
       |  }
       |
       |}

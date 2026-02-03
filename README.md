@@ -136,25 +136,25 @@ data class UpNextQueueReorderedEvent(
 
   val direction: QueueDirection,
   /**
-   * The number of slots the episode was moved
-   */
-  val slots: Long?,
-  /**
    * Whether the episode was moved to the next item that will play
    */
   val isNext: Boolean,
   val source: String,
+  /**
+   * The number of slots the episode was moved
+   */
+  val slots: Long? = null,
 ) : Trackable {
   override val name: String
     get() = EventName
 
   override val properties: Map<String, Any> = buildMap<String, Any> {
     put("direction", direction)
+    put("is_next", isNext)
+    put("source", source)
     if (slots != null) {
       put("slots", slots)
     }
-    put("is_next", isNext)
-    put("source", source)
   }
 }
 
@@ -216,14 +216,14 @@ struct UpNextQueueReorderedEvent: Trackable {
 
   let direction: QueueDirection
   /**
-   * The number of slots the episode was moved
-   */
-  let slots: Int?
-  /**
    * Whether the episode was moved to the next item that will play
    */
   let isNext: Bool
   let episodeUuid: String
+  /**
+   * The number of slots the episode was moved
+   */
+  let slots: Int?
 
   var name: String {
     return UpNextQueueReorderedEvent.eventName
@@ -233,46 +233,46 @@ struct UpNextQueueReorderedEvent: Trackable {
 
   init(
     direction: QueueDirection,
-    slots: Int?,
     isNext: Bool,
-    episodeUuid: String
+    episodeUuid: String,
+    slots: Int? = nil
   ) {
     self.direction = direction
-    self.slots = slots
     self.isNext = isNext
     self.episodeUuid = episodeUuid
+    self.slots = slots
 
     var props: [String : CustomStringConvertible] = [:]
     props["direction"] = direction.analyticsValue
+    props["is_next"] = isNext
+    props["episode_uuid"] = episodeUuid
     if let slots = slots {
       props["slots"] = slots
     }
-    props["is_next"] = isNext
-    props["episode_uuid"] = episodeUuid
     self.properties = props
   }
 
   public static func == (lhs: UpNextQueueReorderedEvent, rhs: UpNextQueueReorderedEvent) -> Bool {
     return
       lhs.direction == rhs.direction &&
-      lhs.slots == rhs.slots &&
       lhs.isNext == rhs.isNext &&
-      lhs.episodeUuid == rhs.episodeUuid
+      lhs.episodeUuid == rhs.episodeUuid &&
+      lhs.slots == rhs.slots
   }
 
   public func hash(into hasher: inout Hasher) {
     hasher.combine(direction)
-    hasher.combine(slots)
     hasher.combine(isNext)
     hasher.combine(episodeUuid)
+    hasher.combine(slots)
   }
 
   public var description: String {
     var parts: [String] = []
     parts.append("direction: \(direction)")
-    parts.append("slots: \(String(describing: slots))")
     parts.append("isNext: \(isNext)")
     parts.append("episodeUuid: \(episodeUuid)")
+    parts.append("slots: \(String(describing: slots))")
     return "UpNextQueueReorderedEvent(\(parts.joined(separator: ", ")))"
   }
 }
