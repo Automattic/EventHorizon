@@ -8,7 +8,7 @@ class TrackableInterfaceSpec : FunSpec({
     val typeSpec = TrackableInterface("dev.sample").typeSpec
 
     typeSpec.toString() shouldBe """
-      |public interface Trackable {
+      |public interface Trackable : android.os.Parcelable {
       |  public val name: kotlin.String
       |
       |  public val properties: kotlin.collections.Map<kotlin.String, kotlin.Any>
