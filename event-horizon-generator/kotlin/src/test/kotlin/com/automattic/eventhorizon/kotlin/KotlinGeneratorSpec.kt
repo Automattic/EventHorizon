@@ -83,20 +83,20 @@ class KotlinGeneratorSpec : FunSpec({
       |}
       |
       |public data class EventBEvent(
-      |  public val propertyA: EnumA?,
       |  /**
       |   * Property description
       |   */
       |  public val propertyB: EnumB,
+      |  public val propertyA: EnumA? = null,
       |) : Trackable {
       |  override val name: String
       |    get() = EventName
       |
       |  override val properties: Map<String, Any> = buildMap<String, Any> {
+      |    put("property_b", propertyB)
       |    if (propertyA != null) {
       |      put("property_a", propertyA)
       |    }
-      |    put("property_b", propertyB)
       |  }
       |
       |  public companion object {

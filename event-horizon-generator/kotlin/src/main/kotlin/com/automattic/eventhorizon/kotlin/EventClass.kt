@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.LONG
 import com.squareup.kotlinpoet.MemberName
+import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeSpec
@@ -26,6 +27,7 @@ internal class EventClass(
 ) {
   private val classProperties
     get() = event.properties
+      .sortedBy { property -> property.isOptional(platform) }
       .associateBy { property ->
         PropertySpec
           .builder(property.name.toString(Case.Camel), property.className)
@@ -59,7 +61,14 @@ internal class EventClass(
       .constructorBuilder()
       .also { builder ->
         classProperties.forEach { (property, _) ->
-          builder.addParameter(property.name, property.type)
+          val parameter = ParameterSpec.builder(property.name, property.type)
+            .also { propertyBuilder ->
+              if (property.type.isNullable) {
+                propertyBuilder.defaultValue("%L", "null")
+              }
+            }
+            .build()
+          builder.addParameter(parameter)
         }
       }
       .build()

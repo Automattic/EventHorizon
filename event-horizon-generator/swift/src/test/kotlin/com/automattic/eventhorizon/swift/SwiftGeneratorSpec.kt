@@ -100,41 +100,41 @@ class SwiftGeneratorSpec : FunSpec({
       |public struct EventBEvent : Trackable {
       |
       |  public static let eventName: String = "event_b"
-      |  public let propertyA: EnumA?
       |  /**
       |   * Property description */
       |  public let propertyB: EnumB
+      |  public let propertyA: EnumA?
       |  public var name: String {
       |    return EventBEvent.eventName
       |  }
       |  public let properties: [String : CustomStringConvertible]
       |  public var description: String {
       |    var parts: [String] = []
-      |    parts.append("propertyA: \(String(describing: propertyA))")
       |    parts.append("propertyB: \(propertyB)")
+      |    parts.append("propertyA: \(String(describing: propertyA))")
       |    return "EventBEvent(\(parts.joined(separator: ", ")))"
       |  }
       |
-      |  public init(propertyA: EnumA?, propertyB: EnumB) {
-      |    self.propertyA = propertyA
+      |  public init(propertyB: EnumB, propertyA: EnumA? = nil) {
       |    self.propertyB = propertyB
+      |    self.propertyA = propertyA
       |    var props: [String : CustomStringConvertible] = [:]
+      |    props["property_b"] = propertyB.analyticsValue
       |    if let propertyA = propertyA {
       |      props["property_a"] = propertyA.analyticsValue
       |    }
-      |    props["property_b"] = propertyB.analyticsValue
       |    self.properties = props
       |  }
       |
       |  public static func ==(lhs: EventBEvent, rhs: EventBEvent) -> Bool {
       |    return
-      |      lhs.propertyA == rhs.propertyA &&
-      |      lhs.propertyB == rhs.propertyB
+      |      lhs.propertyB == rhs.propertyB &&
+      |      lhs.propertyA == rhs.propertyA
       |  }
       |
       |  public func hash(into hasher: inout Hasher) {
-      |    hasher.combine(propertyA)
       |    hasher.combine(propertyB)
+      |    hasher.combine(propertyA)
       |  }
       |
       |}

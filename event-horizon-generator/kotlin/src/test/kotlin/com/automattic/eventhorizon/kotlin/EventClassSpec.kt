@@ -141,10 +141,10 @@ class EventClassSpec : FunSpec({
           optionalPlatforms("web")
         }
         text("property_two") {
-          optionalPlatforms("ios")
+          optionalPlatforms("android")
         }
         text("property_three") {
-          optionalPlatforms("android")
+          optionalPlatforms("ios")
         }
       }
     }
@@ -154,17 +154,17 @@ class EventClassSpec : FunSpec({
     typeSpec.toString() shouldBe """
       |public data class EventNameEvent(
       |  public val propertyOne: kotlin.String,
-      |  public val propertyTwo: kotlin.String,
-      |  public val propertyThree: kotlin.String?,
+      |  public val propertyThree: kotlin.String,
+      |  public val propertyTwo: kotlin.String? = null,
       |) : dev.sample.Trackable {
       |  override val name: kotlin.String
       |    get() = EventName
       |
       |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
       |    put("property_one", propertyOne)
-      |    put("property_two", propertyTwo)
-      |    if (propertyThree != null) {
-      |      put("property_three", propertyThree)
+      |    put("property_three", propertyThree)
+      |    if (propertyTwo != null) {
+      |      put("property_two", propertyTwo)
       |    }
       |  }
       |
