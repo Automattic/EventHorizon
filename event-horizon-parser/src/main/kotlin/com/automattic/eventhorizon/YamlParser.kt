@@ -4,22 +4,21 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import arrow.core.raise.Raise
-import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLParser
 import java.nio.file.Path
-import kotlin.io.path.inputStream
 import kotlin.io.path.readText
 
 public class YamlParser {
-  private val mapper = YAMLMapper()
+  private val mapper = YAMLMapper.builder()
+    .enable(YAMLParser.Feature.PARSE_BOOLEAN_LIKE_WORDS_AS_STRINGS)
     .enable(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY)
+    .build()
 
   public fun parseSchema(file: Path): Either<Problem, Schema> = either {
     val content = file.readText().trim()

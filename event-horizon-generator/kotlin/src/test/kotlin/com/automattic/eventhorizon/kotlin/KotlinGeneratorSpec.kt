@@ -74,6 +74,7 @@ class KotlinGeneratorSpec : FunSpec({
       |public data class EventAEvent(
       |  public val propertyA: EnumA,
       |) : Trackable {
+      |  @IgnoredOnParcel
       |  override val name: String
       |    get() = EventName
       |
@@ -95,6 +96,7 @@ class KotlinGeneratorSpec : FunSpec({
       |  public val propertyB: EnumB,
       |  public val propertyA: EnumA? = null,
       |) : Trackable {
+      |  @IgnoredOnParcel
       |  override val name: String
       |    get() = EventName
       |

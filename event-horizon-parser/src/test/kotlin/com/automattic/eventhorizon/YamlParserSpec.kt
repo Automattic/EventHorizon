@@ -695,4 +695,27 @@ class YamlParserSpec : FunSpec({
     result shouldBeLeft
       SimpleProblem("Invalid predefined reserved properties 'foo'. Expected one of ${YamlParser.knownReservedProperties}.")
   }
+
+  test("parse yes no on off as strings") {
+    val text = """
+      |schemaVersion: 1
+      |
+      |events:
+      |  event:
+      |    property:
+      |      type: enum_reference
+      |enums:
+      |  enum_reference:
+      |    - yes
+      |    - no
+      |    - on
+      |    - off
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val event = result.shouldBeRight().events.shouldHaveSingleElement()
+    event.properties shouldHaveSingleElement buildProperty("property", enumType("enum_reference", "yes", "no", "on", "off"))
+  }
 })
