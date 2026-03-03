@@ -19,6 +19,7 @@ class EventClassSpec : FunSpec({
       |public data object EventNameEvent : dev.sample.Trackable {
       |  public const val EventName: kotlin.String = "event_name"
       |
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val name: kotlin.String
       |    get() = EventName
       |
@@ -51,6 +52,7 @@ class EventClassSpec : FunSpec({
       |  public val propertyFour: dev.sample.EnumName,
       |  public val propertyFive: kotlin.Double,
       |) : dev.sample.Trackable {
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val name: kotlin.String
       |    get() = EventName
       |
@@ -86,6 +88,7 @@ class EventClassSpec : FunSpec({
       |public data object EventNameEvent : dev.sample.Trackable {
       |  public const val EventName: kotlin.String = "event_name"
       |
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val name: kotlin.String
       |    get() = EventName
       |
@@ -124,6 +127,7 @@ class EventClassSpec : FunSpec({
       |   */
       |  public val propertyThree: kotlin.String,
       |) : dev.sample.Trackable {
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val name: kotlin.String
       |    get() = EventName
       |
@@ -166,6 +170,7 @@ class EventClassSpec : FunSpec({
       |  public val propertyThree: kotlin.String,
       |  public val propertyTwo: kotlin.String? = null,
       |) : dev.sample.Trackable {
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  override val name: kotlin.String
       |    get() = EventName
       |

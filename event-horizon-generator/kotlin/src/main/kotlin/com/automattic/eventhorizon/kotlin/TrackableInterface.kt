@@ -31,6 +31,7 @@ internal class TrackableInterface(
   fun conformType(typeSpec: TypeSpec, nameGetter: CodeBlock, propertiesGetter: CodeBlock): TypeSpec {
     val name = nameProperty
       .toBuilder()
+      .addAnnotation(IgnoredOnParcel)
       .addModifiers(KModifier.OVERRIDE)
       .getter(FunSpec.getterBuilder().addCode(nameGetter).build())
       .build()
