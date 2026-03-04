@@ -17,6 +17,7 @@ class EventClassSpec : FunSpec({
     typeSpec.toString() shouldBe """
       |@kotlinx.parcelize.Parcelize
       |public data object EventNameEvent : dev.sample.Trackable {
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  public const val EventName: kotlin.String = "event_name"
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
@@ -86,6 +87,7 @@ class EventClassSpec : FunSpec({
       | */
       |@kotlinx.parcelize.Parcelize
       |public data object EventNameEvent : dev.sample.Trackable {
+      |  @kotlinx.parcelize.IgnoredOnParcel
       |  public const val EventName: kotlin.String = "event_name"
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
