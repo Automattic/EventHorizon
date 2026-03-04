@@ -114,7 +114,12 @@ internal class EventClass(
       } else {
         TypeSpec
           .objectBuilder(className)
-          .addProperty(eventNameProperty)
+          .addProperty(
+            eventNameProperty
+              .toBuilder()
+              .addAnnotation(IgnoredOnParcel)
+              .build(),
+          )
       }
       val initializerProperties = classProperties.keys.map { property ->
         property.toBuilder().initializer(property.name).build()
