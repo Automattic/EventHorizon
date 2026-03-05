@@ -378,4 +378,38 @@ class SchemaSpec : FunSpec({
       ),
     )
   }
+
+  test("fail to create a schema  event horizon reserved property names") {
+    val result = Schema(
+      version = 1u,
+      platforms = platforms(),
+      groups = buildGroups(),
+      events = buildEvents {
+        event("event1") {
+          properties {
+            text("analyticsName")
+          }
+        }
+        event("event2") {
+          properties {
+            text("analyticsProperties")
+          }
+        }
+        event("event3") {
+          properties {
+            text("_props")
+          }
+        }
+      },
+      reservedProperties = emptySet(),
+    )
+
+    result shouldBeLeft SchemaProblem.ReservedPropertyNames(
+      mapOf(
+        "event1" to listOf("analyticsName"),
+        "event2" to listOf("analyticsProperties"),
+        "event3" to listOf("_props"),
+      ),
+    )
+  }
 })
