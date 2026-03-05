@@ -58,8 +58,8 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |public protocol Trackable : Hashable, CustomStringConvertible {
       |
-      |  var name: String { get }
-      |  var properties: [String : CustomStringConvertible] { get }
+      |  var analyticsName: String { get }
+      |  var analyticsProperties: [String : CustomStringConvertible] { get }
       |
       |}
       |
@@ -69,10 +69,10 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |  public static let eventName: String = "event_a"
       |  public let propertyA: EnumA
-      |  public var name: String {
+      |  public var analyticsName: String {
       |    return EventAEvent.eventName
       |  }
-      |  public let properties: [String : CustomStringConvertible]
+      |  public let analyticsProperties: [String : CustomStringConvertible]
       |  public var description: String {
       |    var parts: [String] = []
       |    parts.append("propertyA: \(propertyA)")
@@ -81,9 +81,9 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |  public init(propertyA: EnumA) {
       |    self.propertyA = propertyA
-      |    var props: [String : CustomStringConvertible] = [:]
-      |    props["property_a"] = propertyA.analyticsValue
-      |    self.properties = props
+      |    var _props: [String : CustomStringConvertible] = [:]
+      |    _props["property_a"] = propertyA.analyticsValue
+      |    self.analyticsProperties = _props
       |  }
       |
       |  public static func ==(lhs: EventAEvent, rhs: EventAEvent) -> Bool {
@@ -104,10 +104,10 @@ class SwiftGeneratorSpec : FunSpec({
       |   * Property description */
       |  public let propertyB: EnumB
       |  public let propertyA: EnumA?
-      |  public var name: String {
+      |  public var analyticsName: String {
       |    return EventBEvent.eventName
       |  }
-      |  public let properties: [String : CustomStringConvertible]
+      |  public let analyticsProperties: [String : CustomStringConvertible]
       |  public var description: String {
       |    var parts: [String] = []
       |    parts.append("propertyB: \(propertyB)")
@@ -118,12 +118,12 @@ class SwiftGeneratorSpec : FunSpec({
       |  public init(propertyB: EnumB, propertyA: EnumA? = nil) {
       |    self.propertyB = propertyB
       |    self.propertyA = propertyA
-      |    var props: [String : CustomStringConvertible] = [:]
-      |    props["property_b"] = propertyB.analyticsValue
+      |    var _props: [String : CustomStringConvertible] = [:]
+      |    _props["property_b"] = propertyB.analyticsValue
       |    if let propertyA = propertyA {
-      |      props["property_a"] = propertyA.analyticsValue
+      |      _props["property_a"] = propertyA.analyticsValue
       |    }
-      |    self.properties = props
+      |    self.analyticsProperties = _props
       |  }
       |
       |  public static func ==(lhs: EventBEvent, rhs: EventBEvent) -> Bool {
