@@ -125,8 +125,8 @@ class EventHorizon(
 }
 
 interface Trackable : Parcelable {
-  val name: String
-  val properties: Map<String, Any>
+  val analyticsName: String
+  val analyticsProperties: Map<String, Any>
 }
 
 @Parcelize
@@ -146,11 +146,12 @@ data class UpNextQueueReorderedEvent(
    */
   val slots: Long? = null,
 ) : Trackable {
-  override val name: String
+  @IgnoredOnParcel
+  override val analticsName: String
     get() = EventName
 
   @IgnoredOnParcel
-  override val properties: Map<String, Any> = buildMap<String, Any> {
+  override val analyticsProperties: Map<String, Any> = buildMap<String, Any> {
     put("direction", direction)
     put("is_next", isNext)
     put("source", source)
