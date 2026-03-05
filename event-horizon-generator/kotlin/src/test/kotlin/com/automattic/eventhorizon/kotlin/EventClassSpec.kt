@@ -21,11 +21,11 @@ class EventClassSpec : FunSpec({
       |  public const val EventName: kotlin.String = "event_name"
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val name: kotlin.String
+      |  override val analyticsName: kotlin.String
       |    get() = EventName
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
+      |  override val analyticsProperties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
       |}
       |
     """.trimMargin()
@@ -54,11 +54,11 @@ class EventClassSpec : FunSpec({
       |  public val propertyFive: kotlin.Double,
       |) : dev.sample.Trackable {
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val name: kotlin.String
+      |  override val analyticsName: kotlin.String
       |    get() = EventName
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
+      |  override val analyticsProperties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
       |    put("property_one", propertyOne)
       |    put("property_two", propertyTwo)
       |    put("property_three", propertyThree)
@@ -91,11 +91,11 @@ class EventClassSpec : FunSpec({
       |  public const val EventName: kotlin.String = "event_name"
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val name: kotlin.String
+      |  override val analyticsName: kotlin.String
       |    get() = EventName
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
+      |  override val analyticsProperties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.emptyMap<kotlin.String, kotlin.Any>()
       |}
       |
     """.trimMargin()
@@ -130,11 +130,11 @@ class EventClassSpec : FunSpec({
       |  public val propertyThree: kotlin.String,
       |) : dev.sample.Trackable {
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val name: kotlin.String
+      |  override val analyticsName: kotlin.String
       |    get() = EventName
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
+      |  override val analyticsProperties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
       |    put("property_one", propertyOne)
       |    put("property_two", propertyTwo)
       |    put("property_three", propertyThree)
@@ -173,11 +173,11 @@ class EventClassSpec : FunSpec({
       |  public val propertyTwo: kotlin.String? = null,
       |) : dev.sample.Trackable {
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val name: kotlin.String
+      |  override val analyticsName: kotlin.String
       |    get() = EventName
       |
       |  @kotlinx.parcelize.IgnoredOnParcel
-      |  override val properties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
+      |  override val analyticsProperties: kotlin.collections.Map<kotlin.String, kotlin.Any> = kotlin.collections.buildMap<kotlin.String, kotlin.Any> {
       |    put("property_one", propertyOne)
       |    put("property_three", propertyThree)
       |    if (propertyTwo != null) {

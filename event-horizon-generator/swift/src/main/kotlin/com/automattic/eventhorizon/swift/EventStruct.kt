@@ -75,21 +75,21 @@ internal class EventStruct(
         if (structProperties.isEmpty()) {
           builder.addStatement("self.%L = [:]", trackableProtocol.propertiesProperty.name)
         } else {
-          builder.addStatement("var props: %T = [:]", DictStringStringConvertible)
+          builder.addStatement("var _props: %T = [:]", DictStringStringConvertible)
           structProperties.forEach { (structProperty, codeGenProperty) ->
             if (structProperty.type.optional) {
               builder.beginControlFlow("if", "let %L = %L", structProperty.name, structProperty.name)
             }
             if (codeGenProperty.type is PropertyType.Enum) {
-              builder.addStatement("props[%S] = %L.analyticsValue", codeGenProperty.name.rawValue, structProperty.name)
+              builder.addStatement("_props[%S] = %L.analyticsValue", codeGenProperty.name.rawValue, structProperty.name)
             } else {
-              builder.addStatement("props[%S] = %L", codeGenProperty.name.rawValue, structProperty.name)
+              builder.addStatement("_props[%S] = %L", codeGenProperty.name.rawValue, structProperty.name)
             }
             if (structProperty.type.optional) {
               builder.endControlFlow("if")
             }
           }
-          builder.addStatement("self.%L = props", trackableProtocol.propertiesProperty.name)
+          builder.addStatement("self.%L = _props", trackableProtocol.propertiesProperty.name)
         }
       }
       .build()

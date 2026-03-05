@@ -18,16 +18,16 @@ class EventStructSpec : FunSpec({
       |public struct EventNameEvent : MyModule.Trackable {
       |
       |  public static let eventName: Swift.String = "event_name"
-      |  public var name: Swift.String {
+      |  public var analyticsName: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
+      |  public let analyticsProperties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    return "EventNameEvent"
       |  }
       |
       |  public init() {
-      |    self.properties = [:]
+      |    self.analyticsProperties = [:]
       |  }
       |
       |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
@@ -65,10 +65,10 @@ class EventStructSpec : FunSpec({
       |  public let propertyThree: Swift.Bool
       |  public let propertyFour: MyModule.EnumName
       |  public let propertyFive: Swift.Float
-      |  public var name: Swift.String {
+      |  public var analyticsName: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
+      |  public let analyticsProperties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    var parts: [Swift.String] = []
       |    parts.append("propertyOne: \(propertyOne)")
@@ -91,13 +91,13 @@ class EventStructSpec : FunSpec({
       |    self.propertyThree = propertyThree
       |    self.propertyFour = propertyFour
       |    self.propertyFive = propertyFive
-      |    var props: [Swift.String : Swift.CustomStringConvertible] = [:]
-      |    props["property_one"] = propertyOne
-      |    props["property_two"] = propertyTwo
-      |    props["property_three"] = propertyThree
-      |    props["property_four"] = propertyFour.analyticsValue
-      |    props["property_five"] = propertyFive
-      |    self.properties = props
+      |    var _props: [Swift.String : Swift.CustomStringConvertible] = [:]
+      |    _props["property_one"] = propertyOne
+      |    _props["property_two"] = propertyTwo
+      |    _props["property_three"] = propertyThree
+      |    _props["property_four"] = propertyFour.analyticsValue
+      |    _props["property_five"] = propertyFive
+      |    self.analyticsProperties = _props
       |  }
       |
       |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
@@ -135,16 +135,16 @@ class EventStructSpec : FunSpec({
       |public struct EventNameEvent : MyModule.Trackable {
       |
       |  public static let eventName: Swift.String = "event_name"
-      |  public var name: Swift.String {
+      |  public var analyticsName: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
+      |  public let analyticsProperties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    return "EventNameEvent"
       |  }
       |
       |  public init() {
-      |    self.properties = [:]
+      |    self.analyticsProperties = [:]
       |  }
       |
       |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
@@ -186,10 +186,10 @@ class EventStructSpec : FunSpec({
       |  /**
       |   * Description 2 */
       |  public let propertyThree: Swift.String
-      |  public var name: Swift.String {
+      |  public var analyticsName: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
+      |  public let analyticsProperties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    var parts: [Swift.String] = []
       |    parts.append("propertyOne: \(propertyOne)")
@@ -206,11 +206,11 @@ class EventStructSpec : FunSpec({
       |    self.propertyOne = propertyOne
       |    self.propertyTwo = propertyTwo
       |    self.propertyThree = propertyThree
-      |    var props: [Swift.String : Swift.CustomStringConvertible] = [:]
-      |    props["property_one"] = propertyOne
-      |    props["property_two"] = propertyTwo
-      |    props["property_three"] = propertyThree
-      |    self.properties = props
+      |    var _props: [Swift.String : Swift.CustomStringConvertible] = [:]
+      |    _props["property_one"] = propertyOne
+      |    _props["property_two"] = propertyTwo
+      |    _props["property_three"] = propertyThree
+      |    self.analyticsProperties = _props
       |  }
       |
       |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {
@@ -255,10 +255,10 @@ class EventStructSpec : FunSpec({
       |  public let propertyOne: Swift.String
       |  public let propertyThree: Swift.String
       |  public let propertyTwo: Swift.String?
-      |  public var name: Swift.String {
+      |  public var analyticsName: Swift.String {
       |    return MyModule.EventNameEvent.eventName
       |  }
-      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
+      |  public let analyticsProperties: [Swift.String : Swift.CustomStringConvertible]
       |  public var description: Swift.String {
       |    var parts: [Swift.String] = []
       |    parts.append("propertyOne: \(propertyOne)")
@@ -275,13 +275,13 @@ class EventStructSpec : FunSpec({
       |    self.propertyOne = propertyOne
       |    self.propertyThree = propertyThree
       |    self.propertyTwo = propertyTwo
-      |    var props: [Swift.String : Swift.CustomStringConvertible] = [:]
-      |    props["property_one"] = propertyOne
-      |    props["property_three"] = propertyThree
+      |    var _props: [Swift.String : Swift.CustomStringConvertible] = [:]
+      |    _props["property_one"] = propertyOne
+      |    _props["property_three"] = propertyThree
       |    if let propertyTwo = propertyTwo {
-      |      props["property_two"] = propertyTwo
+      |      _props["property_two"] = propertyTwo
       |    }
-      |    self.properties = props
+      |    self.analyticsProperties = _props
       |  }
       |
       |  public static func ==(lhs: MyModule.EventNameEvent, rhs: MyModule.EventNameEvent) -> Swift.Bool {

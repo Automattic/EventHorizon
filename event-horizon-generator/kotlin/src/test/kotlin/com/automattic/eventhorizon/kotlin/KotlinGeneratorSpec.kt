@@ -62,9 +62,9 @@ class KotlinGeneratorSpec : FunSpec({
       |}
       |
       |public interface Trackable : Parcelable {
-      |  public val name: String
+      |  public val analyticsName: String
       |
-      |  public val properties: Map<String, Any>
+      |  public val analyticsProperties: Map<String, Any>
       |}
       |
       |/**
@@ -75,11 +75,11 @@ class KotlinGeneratorSpec : FunSpec({
       |  public val propertyA: EnumA,
       |) : Trackable {
       |  @IgnoredOnParcel
-      |  override val name: String
+      |  override val analyticsName: String
       |    get() = EventName
       |
       |  @IgnoredOnParcel
-      |  override val properties: Map<String, Any> = buildMap<String, Any> {
+      |  override val analyticsProperties: Map<String, Any> = buildMap<String, Any> {
       |    put("property_a", propertyA)
       |  }
       |
@@ -97,11 +97,11 @@ class KotlinGeneratorSpec : FunSpec({
       |  public val propertyA: EnumA? = null,
       |) : Trackable {
       |  @IgnoredOnParcel
-      |  override val name: String
+      |  override val analyticsName: String
       |    get() = EventName
       |
       |  @IgnoredOnParcel
-      |  override val properties: Map<String, Any> = buildMap<String, Any> {
+      |  override val analyticsProperties: Map<String, Any> = buildMap<String, Any> {
       |    put("property_b", propertyB)
       |    if (propertyA != null) {
       |      put("property_a", propertyA)

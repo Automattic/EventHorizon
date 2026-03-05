@@ -117,5 +117,5 @@ internal class TrackableProtocol(
       .build()
 }
 
-private val NameProperty = PropertySpec.builder("name", STRING).build()
-private val PropertiesProperty = PropertySpec.builder("properties", DictStringStringConvertible).build()
+private val NameProperty = PropertySpec.builder("analyticsName", STRING).build()
+private val PropertiesProperty = PropertySpec.builder("analyticsProperties", DictStringStringConvertible).build()

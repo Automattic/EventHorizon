@@ -38,6 +38,12 @@ public data class Schema private constructor(
       events = emptyList(),
     )
 
+    private val eventHorizonReserverProperties: Set<CaseString> = setOf(
+      CaseString("analyticsName"),
+      CaseString("analyticsProperties"),
+      CaseString("_props"),
+    ).mapTo(mutableSetOf()) { it.getOrElse { throw AssertionError("This should never happen") } }
+
     public val tracksReservedProperties: Set<CaseString> = setOf(
       CaseString("_dl"),
       CaseString("_dr"),
@@ -127,7 +133,7 @@ public data class Schema private constructor(
       val groups = groups + Group.empty
       ensureEventGroups(events, groups)
       ensureConsistentEnums(events)
-      ensureNoReservedNames(events, reservedProperties)
+      ensureNoReservedNames(events, eventHorizonReserverProperties + reservedProperties)
 
       Schema(version, platforms, groups, events)
     }

@@ -125,8 +125,8 @@ class EventHorizon(
 }
 
 interface Trackable : Parcelable {
-  val name: String
-  val properties: Map<String, Any>
+  val analyticsName: String
+  val analyticsProperties: Map<String, Any>
 }
 
 @Parcelize
@@ -146,11 +146,12 @@ data class UpNextQueueReorderedEvent(
    */
   val slots: Long? = null,
 ) : Trackable {
-  override val name: String
+  @IgnoredOnParcel
+  override val analticsName: String
     get() = EventName
 
   @IgnoredOnParcel
-  override val properties: Map<String, Any> = buildMap<String, Any> {
+  override val analyticsProperties: Map<String, Any> = buildMap<String, Any> {
     put("direction", direction)
     put("is_next", isNext)
     put("source", source)
@@ -206,8 +207,8 @@ class EventHorizon {
 }
 
 protocol Trackable : Hashable, CustomStringConvertible {
-  var name: String { get }
-  var properties: [String : CustomStringConvertible] { get }
+  var analyticsName: String { get }
+  var analyticsProperties: [String : CustomStringConvertible] { get }
 }
 
 /**
@@ -227,11 +228,11 @@ struct UpNextQueueReorderedEvent: Trackable {
    */
   let slots: Int?
 
-  var name: String {
+  var analyticsName: String {
     return UpNextQueueReorderedEvent.eventName
   }
 
-  let properties: [String : CustomStringConvertible]
+  let analyticsProperties: [String : CustomStringConvertible]
 
   init(
     direction: QueueDirection,
@@ -244,14 +245,14 @@ struct UpNextQueueReorderedEvent: Trackable {
     self.episodeUuid = episodeUuid
     self.slots = slots
 
-    var props: [String : CustomStringConvertible] = [:]
-    props["direction"] = direction.analyticsValue
-    props["is_next"] = isNext
-    props["episode_uuid"] = episodeUuid
+    var _props: [String : CustomStringConvertible] = [:]
+    _props["direction"] = direction.analyticsValue
+    _props["is_next"] = isNext
+    _props["episode_uuid"] = episodeUuid
     if let slots = slots {
-      props["slots"] = slots
+      _props["slots"] = slots
     }
-    self.properties = props
+    self.analyticsProperties = _props
   }
 
   public static func == (lhs: UpNextQueueReorderedEvent, rhs: UpNextQueueReorderedEvent) -> Bool {

@@ -9,9 +9,9 @@ class TrackableInterfaceSpec : FunSpec({
 
     typeSpec.toString() shouldBe """
       |public interface Trackable : android.os.Parcelable {
-      |  public val name: kotlin.String
+      |  public val analyticsName: kotlin.String
       |
-      |  public val properties: kotlin.collections.Map<kotlin.String, kotlin.Any>
+      |  public val analyticsProperties: kotlin.collections.Map<kotlin.String, kotlin.Any>
       |}
       |
     """.trimMargin()
