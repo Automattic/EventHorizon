@@ -19,5 +19,7 @@ naming:
     privatePropertyPattern: '^[A-Z](([a-z0-9]+[A-Z]?)*)$'
 
 complexity:
+  LargeClass:
+    active: false
   TooManyFunctions:
     active: false

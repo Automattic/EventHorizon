@@ -90,17 +90,22 @@ public class YamlParser {
       val groupKey = metadataMap[name]?.group ?: Group.empty.key.rawValue
       val properties = propertiesMap[name].orEmpty()
       val description = metadataMap[name]?.description
-      val excludedPlatforms = metadataMap[name]?.excludedPlatforms.orEmpty()
+      val includedPlatforms = metadataMap[name]?.includedPlatforms
+      val excludedPlatforms = if (includedPlatforms != null) {
+        platforms - includedPlatforms
+      } else {
+        emptySet()
+      }
 
       Event(name, groupKey, properties, description, excludedPlatforms).bind()
     }
   }
 
   private fun Raise<Problem>.parseEventMetadata(node: SafeNode): EventMetadata {
-    val children = node.ensureChildren("description", "group", "excludedPlatforms").bind()
+    val children = node.ensureChildren("description", "group", "includedPlatforms").bind()
     val description = children["description"]?.ensureText()?.bind()
     val group = children["group"]?.ensureText()?.bind()
-    val platforms = children["excludedPlatforms"]?.let { parsePlatforms(it) }.orEmpty()
+    val platforms = children["includedPlatforms"]?.let { parsePlatforms(it) }.orEmpty()
 
     return EventMetadata(description, group, platforms)
   }
@@ -266,5 +271,5 @@ private class SafeMap(
 private class EventMetadata(
   val description: String?,
   val group: String?,
-  val excludedPlatforms: Set<Platform>,
+  val includedPlatforms: Set<Platform>,
 )
