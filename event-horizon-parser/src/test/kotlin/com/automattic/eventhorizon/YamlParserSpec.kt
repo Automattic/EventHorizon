@@ -536,7 +536,26 @@ class YamlParserSpec : FunSpec({
     }
   }
 
-  test("parse an event's excluded platforms") {
+  test("use all platforms in an event when included platforms are undefined") {
+    val text = """
+      |schemaVersion: 1
+      |platforms:
+      |  - android
+      |  - ios
+      |  - web
+      |
+      |events:
+      |  event:
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val event = result.shouldBeRight().events.shouldHaveSingleElement()
+    event.excludedPlatforms shouldContainExactly platforms()
+  }
+
+  test("use no platforms in an event when included platforms are empty") {
     val text = """
       |schemaVersion: 1
       |platforms:
@@ -547,7 +566,28 @@ class YamlParserSpec : FunSpec({
       |events:
       |  event:
       |    _metadata:
-      |      excludedPlatforms:
+      |      includedPlatforms:
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val event = result.shouldBeRight().events.shouldHaveSingleElement()
+    event.excludedPlatforms shouldContainExactly platforms("android", "ios", "web")
+  }
+
+  test("parse an event's included platforms") {
+    val text = """
+      |schemaVersion: 1
+      |platforms:
+      |  - android
+      |  - ios
+      |  - web
+      |
+      |events:
+      |  event:
+      |    _metadata:
+      |      includedPlatforms:
       |        - ios
       |        - web
     """
@@ -556,7 +596,7 @@ class YamlParserSpec : FunSpec({
     val result = parser.parseSchema(tempFile)
 
     val event = result.shouldBeRight().events.shouldHaveSingleElement()
-    event.excludedPlatforms shouldContainExactly platforms("ios", "web")
+    event.excludedPlatforms shouldContainExactly platforms("android")
   }
 
   test("fail to parse metadata as an event") {

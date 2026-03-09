@@ -49,9 +49,10 @@ events:
       # If key is not present the event will be categorized as 'ungrouped'.
       group: group_a
       # Optional key.
-      # List of platforms for which event should not be generated. Must use predeclared platforms.
+      # List of platforms for which event should be generated. Must use predeclared platforms.
       # If key is not present event will be generated for all platforms.
-      excludedPlatforms:
+      # If key is empty event will not be generated for any platforms.
+      includedPlatforms:
         - android
         - web
     # Optional properties used with an event.
