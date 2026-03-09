@@ -62,7 +62,7 @@ class EventClassSpec : FunSpec({
       |    put("property_one", propertyOne)
       |    put("property_two", propertyTwo)
       |    put("property_three", propertyThree)
-      |    put("property_four", propertyFour)
+      |    put("property_four", propertyFour.toString())
       |    put("property_five", propertyFive)
       |  }
       |

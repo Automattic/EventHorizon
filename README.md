@@ -153,7 +153,7 @@ data class UpNextQueueReorderedEvent(
 
   @IgnoredOnParcel
   override val analyticsProperties: Map<String, Any> = buildMap<String, Any> {
-    put("direction", direction)
+    put("direction", direction.toString())
     put("is_next", isNext)
     put("source", source)
     if (slots != null) {

@@ -91,7 +91,15 @@ internal class EventClass(
       if (classProperty.type.isNullable) {
         beginControlFlow("if (%N != null)", classProperty)
       }
-      addStatement("put(%S, %N)", codeGenProperty.name.rawValue, classProperty)
+      when (codeGenProperty.type) {
+        is PropertyType.Enum -> {
+          addStatement("put(%S, %N.toString())", codeGenProperty.name.rawValue, classProperty)
+        }
+
+        else -> {
+          addStatement("put(%S, %N)", codeGenProperty.name.rawValue, classProperty)
+        }
+      }
       if (classProperty.type.isNullable) {
         endControlFlow()
       }

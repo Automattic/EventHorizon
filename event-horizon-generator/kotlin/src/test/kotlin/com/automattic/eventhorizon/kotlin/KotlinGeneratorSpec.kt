@@ -80,7 +80,7 @@ class KotlinGeneratorSpec : FunSpec({
       |
       |  @IgnoredOnParcel
       |  override val analyticsProperties: Map<String, Any> = buildMap<String, Any> {
-      |    put("property_a", propertyA)
+      |    put("property_a", propertyA.toString())
       |  }
       |
       |  public companion object {
@@ -102,9 +102,9 @@ class KotlinGeneratorSpec : FunSpec({
       |
       |  @IgnoredOnParcel
       |  override val analyticsProperties: Map<String, Any> = buildMap<String, Any> {
-      |    put("property_b", propertyB)
+      |    put("property_b", propertyB.toString())
       |    if (propertyA != null) {
-      |      put("property_a", propertyA)
+      |      put("property_a", propertyA.toString())
       |    }
       |  }
       |
