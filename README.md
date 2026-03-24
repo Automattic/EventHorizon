@@ -34,7 +34,7 @@ groups:
     # If key is not present name is derived from the group key.
     name: Some name
     # Optional key.
-    description: Some text
+    description: Some description
 
 # List of events
 events:
