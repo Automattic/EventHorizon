@@ -536,6 +536,25 @@ class YamlParserSpec : FunSpec({
     }
   }
 
+  test("use all platforms in an event when metadata is undefined") {
+    val text = """
+      |schemaVersion: 1
+      |platforms:
+      |  - android
+      |  - ios
+      |  - web
+      |
+      |events:
+      |  event:
+    """
+    tempFile.writeText(text.trimMargin())
+
+    val result = parser.parseSchema(tempFile)
+
+    val event = result.shouldBeRight().events.shouldHaveSingleElement()
+    event.excludedPlatforms shouldContainExactly platforms()
+  }
+
   test("use all platforms in an event when included platforms are undefined") {
     val text = """
       |schemaVersion: 1
@@ -546,6 +565,7 @@ class YamlParserSpec : FunSpec({
       |
       |events:
       |  event:
+      |    _metadata:
     """
     tempFile.writeText(text.trimMargin())
 
