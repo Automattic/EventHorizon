@@ -105,7 +105,7 @@ public class YamlParser {
     val children = node.ensureChildren("description", "group", "includedPlatforms").bind()
     val description = children["description"]?.ensureText()?.bind()
     val group = children["group"]?.ensureText()?.bind()
-    val platforms = children["includedPlatforms"]?.let { parsePlatforms(it) }.orEmpty()
+    val platforms = children["includedPlatforms"]?.let { parsePlatforms(it) }
 
     return EventMetadata(description, group, platforms)
   }
@@ -271,5 +271,5 @@ private class SafeMap(
 private class EventMetadata(
   val description: String?,
   val group: String?,
-  val includedPlatforms: Set<Platform>,
+  val includedPlatforms: Set<Platform>?,
 )
