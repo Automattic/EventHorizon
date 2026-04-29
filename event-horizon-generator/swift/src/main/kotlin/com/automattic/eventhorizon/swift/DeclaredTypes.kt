@@ -5,7 +5,5 @@ import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.STRING
 import io.outfoxx.swiftpoet.parameterizedBy
 
-internal val Hashable = DeclaredTypeName("Swift", "Hashable")
-internal val Hasher = DeclaredTypeName("Swift", "Hasher")
 internal val CustomStringConvertible = DeclaredTypeName("Swift", "CustomStringConvertible")
 internal val DictStringStringConvertible = DICTIONARY.parameterizedBy(STRING, CustomStringConvertible)

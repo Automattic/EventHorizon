@@ -44,97 +44,53 @@ class SwiftGeneratorSpec : FunSpec({
     file.readText() shouldBe """
       |public class EventHorizon {
       |
-      |  private let eventSink: (any Trackable) -> Void
+      |  private let eventSink: (Event) -> Void
       |
-      |  public init(eventSink: @escaping (any Trackable) -> Void) {
+      |  public init(eventSink: @escaping (Event) -> Void) {
       |    self.eventSink = eventSink
       |  }
       |
-      |  public func track(_ event: any Trackable) {
+      |  public func track(_ event: Event) {
       |    eventSink(event)
       |  }
       |
       |}
       |
-      |public protocol Trackable : Hashable, CustomStringConvertible {
+      |public struct Event {
       |
-      |  var analyticsName: String { get }
-      |  var analyticsProperties: [String : CustomStringConvertible] { get }
+      |  let name: String
+      |  let properties: [String : CustomStringConvertible]
       |
       |}
       |
-      |/**
-      | * Event description */
-      |public struct EventAEvent : Trackable {
+      |public extension Event {
       |
-      |  public static let eventName: String = "event_a"
-      |  public let propertyA: EnumA
-      |  public var analyticsName: String {
-      |    return EventAEvent.eventName
-      |  }
-      |  public let analyticsProperties: [String : CustomStringConvertible]
-      |  public var description: String {
-      |    var parts: [String] = []
-      |    parts.append("propertyA: \(propertyA)")
-      |    return "EventAEvent(\(parts.joined(separator: ", ")))"
-      |  }
-      |
-      |  public init(propertyA: EnumA) {
-      |    self.propertyA = propertyA
+      |  /**
+      |   * Event description
+      |   */
+      |  public static func eventA(propertyA: EnumA) -> Event {
       |    var _props: [String : CustomStringConvertible] = [:]
       |    _props["property_a"] = propertyA.analyticsValue
-      |    self.analyticsProperties = _props
+      |    return Event(
+      |      name: "event_a",
+      |      properties: _props
+      |    )
       |  }
       |
-      |  public static func ==(lhs: EventAEvent, rhs: EventAEvent) -> Bool {
-      |    return
-      |      lhs.propertyA == rhs.propertyA
-      |  }
-      |
-      |  public func hash(into hasher: inout Hasher) {
-      |    hasher.combine(propertyA)
-      |  }
-      |
-      |}
-      |
-      |public struct EventBEvent : Trackable {
-      |
-      |  public static let eventName: String = "event_b"
       |  /**
-      |   * Property description */
-      |  public let propertyB: EnumB
-      |  public let propertyA: EnumA?
-      |  public var analyticsName: String {
-      |    return EventBEvent.eventName
-      |  }
-      |  public let analyticsProperties: [String : CustomStringConvertible]
-      |  public var description: String {
-      |    var parts: [String] = []
-      |    parts.append("propertyB: \(propertyB)")
-      |    parts.append("propertyA: \(String(describing: propertyA))")
-      |    return "EventBEvent(\(parts.joined(separator: ", ")))"
-      |  }
-      |
-      |  public init(propertyB: EnumB, propertyA: EnumA? = nil) {
-      |    self.propertyB = propertyB
-      |    self.propertyA = propertyA
+      |   * - Parameters:
+      |   *   - propertyB: Property description
+      |   */
+      |  public static func eventB(propertyB: EnumB, propertyA: EnumA? = nil) -> Event {
       |    var _props: [String : CustomStringConvertible] = [:]
       |    _props["property_b"] = propertyB.analyticsValue
       |    if let propertyA = propertyA {
       |      _props["property_a"] = propertyA.analyticsValue
       |    }
-      |    self.analyticsProperties = _props
-      |  }
-      |
-      |  public static func ==(lhs: EventBEvent, rhs: EventBEvent) -> Bool {
-      |    return
-      |      lhs.propertyB == rhs.propertyB &&
-      |      lhs.propertyA == rhs.propertyA
-      |  }
-      |
-      |  public func hash(into hasher: inout Hasher) {
-      |    hasher.combine(propertyB)
-      |    hasher.combine(propertyA)
+      |    return Event(
+      |      name: "event_b",
+      |      properties: _props
+      |    )
       |  }
       |
       |}

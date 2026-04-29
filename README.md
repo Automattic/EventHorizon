@@ -199,56 +199,36 @@ Generated code:
 
 ```swift
 class EventHorizon {
-  private let eventSink: (any Trackable) -> Void
+  private let eventSink: (Event) -> Void
 
-  init(eventSink: @escaping (any Trackable) -> Void) {
+  init(eventSink: @escaping (Event) -> Void) {
     self.eventSink = eventSink
   }
 
-  func track(_ event: any Trackable) {
+  func track(_ event: Event) {
     eventSink(event)
   }
 }
 
-protocol Trackable : Hashable, CustomStringConvertible {
-  var analyticsName: String { get }
-  var analyticsProperties: [String : CustomStringConvertible] { get }
+struct Event {
+  let name: String
+  let properties: [String : CustomStringConvertible]
 }
 
-/**
- * Emitted when the user moves an episode up or down.
- */
-struct UpNextQueueReorderedEvent: Trackable {
-  static let eventName: String = "up_next_queue_reordered"
-
-  let direction: QueueDirection
+extension Event {
   /**
-   * Whether the episode was moved into the next slot to play.
+   * Emitted when the user moves an episode up or down.
+   *
+   * - Parameters:
+   *   - isNext: Whether the episode was moved into the next slot to play.
+   *   - slots: The number of positions the episode was moved.
    */
-  let isNext: Bool
-  let episodeUuid: String
-  /**
-   * The number of positions the episode was moved.
-   */
-  let slots: Int?
-
-  var analyticsName: String {
-    return UpNextQueueReorderedEvent.eventName
-  }
-
-  let analyticsProperties: [String : CustomStringConvertible]
-
-  init(
+  static func upNextQueueReordered(
     direction: QueueDirection,
     isNext: Bool,
     episodeUuid: String,
     slots: Int? = nil
-  ) {
-    self.direction = direction
-    self.isNext = isNext
-    self.episodeUuid = episodeUuid
-    self.slots = slots
-
+  ) -> Event {
     var _props: [String : CustomStringConvertible] = [:]
     _props["direction"] = direction.analyticsValue
     _props["is_next"] = isNext
@@ -256,35 +236,14 @@ struct UpNextQueueReorderedEvent: Trackable {
     if let slots = slots {
       _props["slots"] = slots
     }
-    self.analyticsProperties = _props
-  }
-
-  public static func == (lhs: UpNextQueueReorderedEvent, rhs: UpNextQueueReorderedEvent) -> Bool {
-    return
-      lhs.direction == rhs.direction &&
-      lhs.isNext == rhs.isNext &&
-      lhs.episodeUuid == rhs.episodeUuid &&
-      lhs.slots == rhs.slots
-  }
-
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(direction)
-    hasher.combine(isNext)
-    hasher.combine(episodeUuid)
-    hasher.combine(slots)
-  }
-
-  public var description: String {
-    var parts: [String] = []
-    parts.append("direction: \(direction)")
-    parts.append("isNext: \(isNext)")
-    parts.append("episodeUuid: \(episodeUuid)")
-    parts.append("slots: \(String(describing: slots))")
-    return "UpNextQueueReorderedEvent(\(parts.joined(separator: ", ")))"
+    return Event(
+      name: "up_next_queue_reordered",
+      properties: _props
+    )
   }
 }
 
-enum QueueDirection: String {
+enum QueueDirection : String {
   case up = "up"
   case down = "down"
 
@@ -299,15 +258,15 @@ Integration example:
 ```swift
 let tracker: AnalyticsTracker = TODO()
 let eventHorizon = EventHorizon { event in
-   // Delegate tracking to your analytics system.
+  // Delegate tracking to your analytics system.
 }
 
 
-let event = UpNextQueueReorderedEvent(
+let event = Event.upNextQueueReordered(
   direction: .up,
-  slots: 2,
   isNext: false,
   episodeUuid: episode.uuid,
+  slots: 2,
 )
 eventHorizon.track(event)
 ```
