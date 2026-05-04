@@ -8,13 +8,20 @@ import io.kotest.matchers.shouldBe
 
 class EventStructExtensionSpec : FunSpec({
   val eventStruct = EventStruct("MyModule")
+  val analyticsValueProtocol = AnalyticsValueProtocol("MyModule")
 
   test("event without properties") {
     val events = buildEvents {
       event("event_name")
     }
 
-    val extensionSpec = EventStructExtension("MyModule", eventStruct, events, Platform("ios")).extensionSpec
+    val extensionSpec = EventStructExtension(
+      "MyModule",
+      eventStruct,
+      analyticsValueProtocol,
+      events,
+      Platform("ios"),
+    ).extensionSpec
 
     extensionSpec.toString() shouldBe """
       |public extension MyModule.Event {
@@ -43,7 +50,13 @@ class EventStructExtensionSpec : FunSpec({
       }
     }
 
-    val extensionSpec = EventStructExtension("MyModule", eventStruct, events, Platform("ios")).extensionSpec
+    val extensionSpec = EventStructExtension(
+      "MyModule",
+      eventStruct,
+      analyticsValueProtocol,
+      events,
+      Platform("ios"),
+    ).extensionSpec
 
     extensionSpec.toString() shouldBe """
       |public extension MyModule.Event {
@@ -82,7 +95,13 @@ class EventStructExtensionSpec : FunSpec({
       }
     }
 
-    val extensionSpec = EventStructExtension("MyModule", eventStruct, events, Platform("ios")).extensionSpec
+    val extensionSpec = EventStructExtension(
+      "MyModule",
+      eventStruct,
+      analyticsValueProtocol,
+      events,
+      Platform("ios"),
+    ).extensionSpec
 
     extensionSpec.toString() shouldBe """
       |public extension MyModule.Event {
@@ -114,7 +133,13 @@ class EventStructExtensionSpec : FunSpec({
       }
     }
 
-    val extensionSpec = EventStructExtension("MyModule", eventStruct, events, Platform("ios")).extensionSpec
+    val extensionSpec = EventStructExtension(
+      "MyModule",
+      eventStruct,
+      analyticsValueProtocol,
+      events,
+      Platform("ios"),
+    ).extensionSpec
 
     extensionSpec.toString() shouldBe """
       |public extension MyModule.Event {
@@ -148,7 +173,13 @@ class EventStructExtensionSpec : FunSpec({
       }
     }
 
-    val extensionSpec = EventStructExtension("MyModule", eventStruct, events, Platform("ios")).extensionSpec
+    val extensionSpec = EventStructExtension(
+      "MyModule",
+      eventStruct,
+      analyticsValueProtocol,
+      events,
+      Platform("ios"),
+    ).extensionSpec
 
     extensionSpec.toString() shouldBe """
       |public extension MyModule.Event {
@@ -195,7 +226,13 @@ class EventStructExtensionSpec : FunSpec({
       }
     }
 
-    val extensionSpec = EventStructExtension("MyModule", eventStruct, events, Platform("ios")).extensionSpec
+    val extensionSpec = EventStructExtension(
+      "MyModule",
+      eventStruct,
+      analyticsValueProtocol,
+      events,
+      Platform("ios"),
+    ).extensionSpec
 
     extensionSpec.toString() shouldBe """
       |public extension MyModule.Event {

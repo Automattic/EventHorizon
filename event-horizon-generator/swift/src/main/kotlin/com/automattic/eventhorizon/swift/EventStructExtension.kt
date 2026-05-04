@@ -7,6 +7,7 @@ import com.automattic.eventhorizon.Property
 import com.automattic.eventhorizon.PropertyType
 import io.outfoxx.swiftpoet.BOOL
 import io.outfoxx.swiftpoet.CodeBlock
+import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.ExtensionSpec
 import io.outfoxx.swiftpoet.FLOAT
 import io.outfoxx.swiftpoet.FunctionSpec
@@ -20,6 +21,7 @@ import io.outfoxx.swiftpoet.TypeName
 internal class EventStructExtension(
   private val moduleName: String,
   private val eventStruct: EventStruct,
+  private val analyticsValueProtocol: AnalyticsValueProtocol,
   private val events: List<Event>,
   private val platform: Platform,
 ) {
@@ -141,7 +143,7 @@ internal class EventStructExtension(
         is PropertyType.NumberInt -> INT
         is PropertyType.NumberFloat -> FLOAT
         is PropertyType.Text -> STRING
-        is PropertyType.Enum -> EventPropertyEnum(moduleName, type).typeName
+        is PropertyType.Enum -> EventPropertyEnum(moduleName, type, analyticsValueProtocol).typeName
       }
       return if (isOptionalOnPlatform) typeName.makeOptional() else typeName
     }

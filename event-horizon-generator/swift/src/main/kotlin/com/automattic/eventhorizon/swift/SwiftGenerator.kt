@@ -14,9 +14,12 @@ public class SwiftGenerator(
   override fun generate(schema: Schema, outputPath: Path): Path {
     val platformEvents = schema.platformEvents(platform)
     val eventStruct = EventStruct(moduleName)
+    val analyticsValueProtocol = AnalyticsValueProtocol(moduleName)
     val eventHorizonType = EventHorizonClass(moduleName, eventStruct).typeSpec
-    val eventStructExtension = EventStructExtension(moduleName, eventStruct, platformEvents, platform).extensionSpec
-    val enumTypes = schema.platformEnums(platform).map { enum -> EventPropertyEnum(moduleName, enum).typeSpec }
+    val eventStructExtension = EventStructExtension(moduleName, eventStruct, analyticsValueProtocol, platformEvents, platform).extensionSpec
+    val enumTypes = schema.platformEnums(platform).map { enum ->
+      EventPropertyEnum(moduleName, enum, analyticsValueProtocol).typeSpec
+    }
     val hasEnums = enumTypes.isNotEmpty()
 
     val fileSpec = FileSpec
@@ -26,8 +29,8 @@ public class SwiftGenerator(
       .addExtension(eventStructExtension)
       .also { builder ->
         if (hasEnums) {
-          builder.addType(AnalyticsValueProtocol.typeSpec)
-          builder.addExtension(AnalyticsValueProtocol.extensionSpec)
+          builder.addType(analyticsValueProtocol.typeSpec)
+          builder.addExtension(analyticsValueProtocol.extensionSpec)
         }
       }
       .addTypes(enumTypes)

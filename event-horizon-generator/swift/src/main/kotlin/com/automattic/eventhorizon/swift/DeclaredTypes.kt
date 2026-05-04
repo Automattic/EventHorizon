@@ -7,5 +7,4 @@ import io.outfoxx.swiftpoet.parameterizedBy
 
 internal val CustomStringConvertible = DeclaredTypeName("Swift", "CustomStringConvertible")
 internal val DictStringStringConvertible = DICTIONARY.parameterizedBy(STRING, CustomStringConvertible)
-internal val AnalyticsValue = DeclaredTypeName("", "AnalyticsValue")
 internal val RawRepresentable = DeclaredTypeName("Swift", "RawRepresentable")
