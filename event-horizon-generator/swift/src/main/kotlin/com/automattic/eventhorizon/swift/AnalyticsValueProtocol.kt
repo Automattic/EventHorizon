@@ -1,5 +1,6 @@
 package com.automattic.eventhorizon.swift
 
+import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.ExtensionSpec
 import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.Modifier
@@ -10,9 +11,13 @@ import io.outfoxx.swiftpoet.TypeVariableName
 import io.outfoxx.swiftpoet.TypeVariableName.Bound.Constraint.CONFORMS_TO
 import io.outfoxx.swiftpoet.TypeVariableName.Bound.Constraint.SAME_TYPE
 
-internal object AnalyticsValueProtocol {
+internal class AnalyticsValueProtocol(
+  val moduleName: String,
+) {
+  val typeName get() = DeclaredTypeName(moduleName, "AnalyticsValue")
+
   val typeSpec
-    get() = TypeSpec.protocolBuilder(AnalyticsValue)
+    get() = TypeSpec.protocolBuilder(typeName)
       .addModifiers(Modifier.PUBLIC)
       .addProperty(
         PropertySpec.abstractBuilder("analyticsValue", STRING)
@@ -22,7 +27,7 @@ internal object AnalyticsValueProtocol {
       .build()
 
   val extensionSpec
-    get() = ExtensionSpec.builder(AnalyticsValue)
+    get() = ExtensionSpec.builder(typeName)
       .addConditionalConstraint(
         TypeVariableName("Self", TypeVariableName.bound(CONFORMS_TO, RawRepresentable)),
       )

@@ -10,6 +10,7 @@ import io.outfoxx.swiftpoet.TypeSpec
 internal class EventPropertyEnum(
   private val moduleName: String,
   private val enum: PropertyType.Enum,
+  private val analyticsValueProtocol: AnalyticsValueProtocol,
 ) {
   val typeName
     get() = DeclaredTypeName(moduleName, enum.name.toString(Case.Pascal))
@@ -19,7 +20,7 @@ internal class EventPropertyEnum(
       .enumBuilder(typeName)
       .addModifiers(Modifier.PUBLIC)
       .addSuperType(STRING)
-      .addSuperType(AnalyticsValue)
+      .addSuperType(analyticsValueProtocol.typeName)
       .also { builder ->
         enum.values.forEach { value ->
           builder.addEnumCase(value.toString(Case.Camel), value.rawValue)
