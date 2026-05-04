@@ -233,7 +233,7 @@ extension Event {
     _props["direction"] = direction.analyticsValue
     _props["is_next"] = isNext
     _props["episode_uuid"] = episodeUuid
-    if let slots = slots {
+    if let slots {
       _props["slots"] = slots
     }
     return Event(

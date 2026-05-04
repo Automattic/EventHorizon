@@ -208,7 +208,7 @@ class EventStructExtensionSpec : FunSpec({
       |    var _props: [Swift.String : Swift.CustomStringConvertible] = [:]
       |    _props["property_one"] = propertyOne
       |    _props["property_three"] = propertyThree
-      |    if let propertyTwo = propertyTwo {
+      |    if let propertyTwo {
       |      _props["property_two"] = propertyTwo
       |    }
       |    return Event(

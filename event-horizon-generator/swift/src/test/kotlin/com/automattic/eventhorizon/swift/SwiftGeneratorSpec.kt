@@ -84,7 +84,7 @@ class SwiftGeneratorSpec : FunSpec({
       |  public static func eventB(propertyB: EnumB, propertyA: EnumA? = nil) -> Event {
       |    var _props: [String : CustomStringConvertible] = [:]
       |    _props["property_b"] = propertyB.analyticsValue
-      |    if let propertyA = propertyA {
+      |    if let propertyA {
       |      _props["property_a"] = propertyA.analyticsValue
       |    }
       |    return Event(

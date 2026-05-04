@@ -108,7 +108,7 @@ internal class EventStructExtension(
 
   private fun FunctionSpec.Builder.addPropertyAssignment(property: Property) {
     if (property.isOptionalOnPlatform) {
-      beginControlFlow("if", "let %L = %L", property.swiftName, property.swiftName)
+      beginControlFlow("if", "let %L", property.swiftName)
     }
     addStatement("_props[%S] = %L", property.name.rawValue, property.analyticsValueExpression)
     if (property.isOptionalOnPlatform) {
