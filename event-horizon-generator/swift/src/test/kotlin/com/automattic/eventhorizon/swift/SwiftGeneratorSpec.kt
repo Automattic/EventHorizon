@@ -95,24 +95,29 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |}
       |
-      |public enum EnumA : String {
+      |public protocol AnalyticsValue {
       |
-      |  case value = "value"
-      |
-      |  public var analyticsValue: String {
-      |    return rawValue
-      |  }
+      |  var analyticsValue: String { get }
       |
       |}
       |
-      |public enum EnumB : String {
+      |extension AnalyticsValue where Self : RawRepresentable, Self.RawValue == String {
+      |
+      |  public var analyticsValue: String {
+      |    rawValue
+      |  }
+      |}
+      |
+      |public enum EnumA : String, AnalyticsValue {
+      |
+      |  case value = "value"
+      |
+      |}
+      |
+      |public enum EnumB : String, AnalyticsValue {
       |
       |  case valueA = "value_a"
       |  case valueB = "value_b"
-      |
-      |  public var analyticsValue: String {
-      |    return rawValue
-      |  }
       |
       |}
       |

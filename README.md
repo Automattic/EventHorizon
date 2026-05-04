@@ -243,13 +243,19 @@ extension Event {
   }
 }
 
-enum QueueDirection : String {
+protocol AnalyticsValue {
+  var analyticsValue: String { get }
+}
+
+extension AnalyticsValue where Self : RawRepresentable, Self.RawValue == String {
+  var analyticsValue: String {
+    rawValue
+  }
+}
+
+enum QueueDirection : String, AnalyticsValue {
   case up = "up"
   case down = "down"
-
-  var analyticsValue: String {
-    return rawValue
-  }
 }
 ```
 
