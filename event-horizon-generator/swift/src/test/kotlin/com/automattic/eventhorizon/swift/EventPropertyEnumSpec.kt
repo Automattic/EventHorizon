@@ -11,14 +11,10 @@ class EventPropertyEnumSpec : FunSpec({
     val typeSpec = EventPropertyEnum("MyModule", enum).typeSpec
 
     typeSpec.toString() shouldBe """
-      |public enum EnumName : Swift.String {
+      |public enum EnumName : Swift.String, AnalyticsValue {
       |
       |  case value1 = "value_1"
       |  case value2 = "value_2"
-      |
-      |  public var analyticsValue: Swift.String {
-      |    return rawValue
-      |  }
       |
       |}
       |

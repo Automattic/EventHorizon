@@ -3,7 +3,6 @@ package com.automattic.eventhorizon.swift
 import io.outfoxx.swiftpoet.DeclaredTypeName
 import io.outfoxx.swiftpoet.FunctionSpec
 import io.outfoxx.swiftpoet.FunctionTypeName
-import io.outfoxx.swiftpoet.GenericQualifier
 import io.outfoxx.swiftpoet.Modifier
 import io.outfoxx.swiftpoet.ParameterSpec
 import io.outfoxx.swiftpoet.PropertySpec
@@ -12,12 +11,10 @@ import io.outfoxx.swiftpoet.VOID
 
 internal class EventHorizonClass(
   private val packageName: String,
-  private val trackable: TrackableProtocol,
+  private val eventStruct: EventStruct,
 ) {
-  private val anyTrackableType = trackable.typeName.qualify(GenericQualifier.ANY)
-
   private val eventSinkType = FunctionTypeName.get(
-    parameters = arrayOf(anyTrackableType),
+    parameters = arrayOf(eventStruct.typeName),
     returnType = VOID,
   )
 
@@ -42,7 +39,7 @@ internal class EventHorizonClass(
   private val trackFunction
     get() = FunctionSpec.builder("track")
       .addModifiers(Modifier.PUBLIC)
-      .addParameter("_", "event", anyTrackableType)
+      .addParameter("_", "event", eventStruct.typeName)
       .addCode("%N(event)\n", eventSinkProperty)
       .build()
 
