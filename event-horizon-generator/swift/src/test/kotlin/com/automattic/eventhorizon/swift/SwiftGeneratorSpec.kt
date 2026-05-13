@@ -58,8 +58,8 @@ class SwiftGeneratorSpec : FunSpec({
       |
       |public struct Event {
       |
-      |  let name: String
-      |  let properties: [String : CustomStringConvertible]
+      |  public let name: String
+      |  public let properties: [String : CustomStringConvertible]
       |
       |}
       |
