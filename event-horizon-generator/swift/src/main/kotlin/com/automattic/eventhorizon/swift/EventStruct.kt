@@ -26,5 +26,5 @@ internal class EventStruct(
       .build()
 }
 
-private val NameProperty = PropertySpec.builder("name", STRING).build()
-private val PropertiesProperty = PropertySpec.builder("properties", DictStringStringConvertible).build()
+private val NameProperty = PropertySpec.builder("name", STRING).addModifiers(Modifier.PUBLIC).build()
+private val PropertiesProperty = PropertySpec.builder("properties", DictStringStringConvertible).addModifiers(Modifier.PUBLIC).build()
