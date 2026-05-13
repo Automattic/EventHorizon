@@ -10,8 +10,8 @@ class EventStructSpec : FunSpec({
     typeSpec.toString() shouldBe """
       |public struct Event {
       |
-      |  let name: Swift.String
-      |  let properties: [Swift.String : Swift.CustomStringConvertible]
+      |  public let name: Swift.String
+      |  public let properties: [Swift.String : Swift.CustomStringConvertible]
       |
       |}
       |
