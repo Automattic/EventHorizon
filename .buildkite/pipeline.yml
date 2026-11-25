@@ -60,7 +60,7 @@ steps:
 
       - label: "🧰 Build CLI (macOS ARM64)"
         env:
-          IMAGE_ID: "xcode-27.1"
+          IMAGE_ID: "xcode-27.2-v4"
         commands: |
             echo "Installing GraalVM..."
             brew install --cask graalvm-jdk@21
